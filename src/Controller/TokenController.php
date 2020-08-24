@@ -55,8 +55,8 @@ class TokenController
      */
     public function createToken(Request $request) : JsonResponse
     {
-        $responseHeaders = ["Access-Control-Allow-Origin" => "*"];
-        
+        $responseHeaders = ['Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Credentials' => true];
+
         $dataJson = json_decode($request->getContent(), true);
         if (is_array($dataJson[0])){
             foreach ($dataJson as $item){
@@ -80,7 +80,7 @@ class TokenController
 
         $this->entityManager->flush();
 
-        return new JsonResponse(['status' => 'success'], Response::HTTP_CREATED, $responseHeaders);
+        return new JsonResponse(['status' => 'success'], Response::HTTP_CREATED, array('Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Credentials' => true));
     }
 
     /**
