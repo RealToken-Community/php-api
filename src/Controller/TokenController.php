@@ -78,7 +78,7 @@ class TokenController
 
         $this->entityManager->flush();
 
-        return new JsonResponse(['status' => 'successs'], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'success'], Response::HTTP_CREATED);
     }
 
     /**
