@@ -55,9 +55,12 @@ class TokenController
      */
     public function createToken(Request $request) : JsonResponse
     {
+        $responseHeaders = ["Access-Control-Allow-Origin" => "*"];
+        
         $dataJson = json_decode($request->getContent(), true);
         if (is_array($dataJson[0])){
             foreach ($dataJson as $item){
+                if ($item['canal'] === "Alpha") continue;
                 if (!$this->entityManager->getRepository(Token::class)->findOneBy(
                         ['ethereumContract' => $item['ethereumContract']]
                     ) instanceof Token) {
@@ -65,12 +68,11 @@ class TokenController
                     $this->entityManager->persist($token);
                 }
             }
-            //return new JsonResponse();
-        }else{
+        } else {
             if ($this->entityManager->getRepository(Token::class)->findOneBy(
                     ['ethereumContract' => $dataJson['ethereumContract']]
                 ) instanceof Token) {
-                return new JsonResponse(['status' => 'success'], Response::HTTP_CREATED);
+                return new JsonResponse(['status' => 'success'], Response::HTTP_CREATED, $responseHeaders);
             }
             $token = $this->buildTokenObject($dataJson);
             $this->entityManager->persist($token);
@@ -78,7 +80,7 @@ class TokenController
 
         $this->entityManager->flush();
 
-        return new JsonResponse(['status' => 'success'], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'success'], Response::HTTP_CREATED, $responseHeaders);
     }
 
     /**
@@ -117,7 +119,11 @@ class TokenController
         $token->setImageLink($dataJson['imageLink']);
         $token->setPropertyType($dataJson['propertyType']);
         $token->setSquareFeet($dataJson['squareFeet']);
-        $token->setLotSize($dataJson['lotSize']);
+        var_dump($dataJson['lotSize']);
+        die();
+        if ($dataJson['lotSize'] === ""){
+            $token->setLotSize(0);
+        }
         $token->setBedroomBath($dataJson['bedroom/bath']);
         $token->setHasTenants($dataJson['hasTenants']);
         $token->setTermOfLease($dataJson['termOfLease']);
@@ -125,7 +131,9 @@ class TokenController
         if ($renewalDate instanceof \DateTime){
             $token->setRenewalDate($renewalDate);
         }
-        $token->setSection8paid($dataJson['section8paid']);
+        if ($dataJson['section8paid'] === ""){
+            $token->setSection8paid(0);
+        }
         $token->setSellPropertyTo($dataJson['sellPropertyTo']);
         $token->setOnUniswap($dataJson['onUniswap']);
         return $token;
