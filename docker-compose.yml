@@ -8,7 +8,6 @@ services:
       context: ./
     ports:
       - "9080:80"
-      - "9001:9001"
     networks:
       - realtapi
     volumes:
@@ -24,11 +23,19 @@ services:
     environment:
       - "MYSQL_ROOT_PASSWORD=k%V2%dcw#Yv2hL"
       - "MYSQL_USER=realt-api_user"
-      - "MYSQL_PASSWORD=8t%FHUR6%Mn@nR"
+      - "MYSQL_PASSWORD=9UgFYcRmRWnTx"
       - "MYSQL_DATABASE=realt_api"
     networks:
       - realtapi
     restart: always
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 18080:8080
+    networks:
+      - realtapi
 
 networks:
   realtapi:
