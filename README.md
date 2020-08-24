@@ -3,7 +3,7 @@ RealT-Community API for RealTokens
 
 ## Installation
 ```bash
-sudo docker build . -t realt-api
+sudo docker-compose build
 ```
 
 ```bash
