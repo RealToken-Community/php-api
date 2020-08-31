@@ -15,8 +15,9 @@ services:
       - ./logs/symfony:/var/www/html/var/log:cached
       - ./logs/nginx:/var/log/nginx:cached
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.sf-realt-api.rule=Host(`api.realt.ch`)"
-      - "traefik.http.services.sf-realt-api.loadbalancer.server.port=80"
+      - "traefik.http.routers.sf-realt-api.entrypoints=websecure"
     restart: always
 
   db:
