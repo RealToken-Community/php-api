@@ -35,7 +35,7 @@ class TokenController
     }
 
     /**
-     * @Route("/tokens/{uuid}", name="token_show", methods={"GET"})
+     * @Route("/token/{uuid}", name="token_show", methods={"GET"})
      */
     public function showToken(string $uuid) : JsonResponse
     {
