@@ -8,6 +8,7 @@ RUN composer install --no-dev --prefer-dist --no-interaction --no-suggest --opti
 RUN mv .env.prod .env
 #RUN php bin/console doctrine:schema:update --force
 
+# HTTPS
 ENV HTTPS false
 
 # Nginx
