@@ -56,6 +56,18 @@ class TokenController
     public function createToken(Request $request) : JsonResponse
     {
         $dataJson = json_decode($request->getContent(), true);
+
+        if (array_keys($dataJson)[0] === "tokens") {
+            $newData = [];
+            $data = $dataJson['tokens'];
+            foreach ($data as $key => $value) {
+                if ($value['canal'] === "Release") {
+                    $newData[] = $value;
+                }
+            }
+            $dataJson = $newData;
+        }
+
         if (is_array($dataJson[0])){
             foreach ($dataJson as $item){
                 if ($item['canal'] === "Alpha") continue;
@@ -67,14 +79,14 @@ class TokenController
                 }
             }
         } else {
-            if ($this->entityManager->getRepository(Token::class)->findOneBy(
-                    ['ethereumContract' => $dataJson['ethereumContract']]
-                ) instanceof Token) {
-                return new JsonResponse(['status' => 'success'], Response::HTTP_CREATED);
-            }
-            $token = $this->buildTokenObject($dataJson);
-            $this->entityManager->persist($token);
+        if ($this->entityManager->getRepository(Token::class)->findOneBy(
+                ['ethereumContract' => $dataJson['ethereumContract']]
+            ) instanceof Token) {
+            return new JsonResponse(['status' => 'success'], Response::HTTP_CREATED);
         }
+        $token = $this->buildTokenObject($dataJson);
+        $this->entityManager->persist($token);
+    }
 
         $this->entityManager->flush();
 
