@@ -602,8 +602,8 @@ class Token
             'fullName' => $this->fullName,
             'shortName' => $this->shortName,
             'tokenPrice' => $this->tokenPrice,
-            'isPublicSale' => $this->publicSale,
-            'canal' => $this->canal,
+            //'isPublicSale' => $this->publicSale,
+            //'canal' => $this->canal,
             'currency' => $this->currency,
             'ethereumContract' => $this->ethereumContract,
         ];
