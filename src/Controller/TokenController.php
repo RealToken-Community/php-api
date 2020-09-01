@@ -117,8 +117,6 @@ class TokenController
         $token->setImageLink($dataJson['imageLink']);
         $token->setPropertyType($dataJson['propertyType']);
         $token->setSquareFeet($dataJson['squareFeet']);
-        var_dump($dataJson['lotSize']);
-        die();
         if ($dataJson['lotSize'] === ""){
             $token->setLotSize(0);
         }
