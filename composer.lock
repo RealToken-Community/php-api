@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "40d0e59f34e377a97ee88c8e10829fe5",
+    "content-hash": "9f66b3c5b9765d21721745b663ceb421",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1660,6 +1660,64 @@
                 "crossdomain"
             ],
             "time": "2020-07-22T11:44:28+00:00"
+        },
+        {
+            "name": "noxlogic/ratelimit-bundle",
+            "version": "1.15.1",
+            "target-dir": "Noxlogic/RateLimitBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jaytaph/RateLimitBundle.git",
+                "reference": "167c16305604a7d04f7f9c7c5cbe4a280786789f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jaytaph/RateLimitBundle/zipball/167c16305604a7d04f7f9c7c5cbe4a280786789f",
+                "reference": "167c16305604a7d04f7f9c7c5cbe4a280786789f",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2",
+                "sensio/framework-extra-bundle": "^3.0|^4.0|^5.0",
+                "symfony/framework-bundle": "^3.4|^4.3|^5.0"
+            },
+            "require-dev": {
+                "doctrine/cache": "^1.5",
+                "friendsofsymfony/oauth-server-bundle": "^1.5",
+                "phpunit/phpunit": "^8.5",
+                "predis/predis": "^0.8|^1.1",
+                "psr/cache": "^1.0",
+                "psr/simple-cache": "^1.0"
+            },
+            "suggest": {
+                "doctrine/doctrine-cache-bundle": "Use Doctrine Cache as a storage engine.",
+                "friendsofsymfony/oauth-server-bundle": "Throttle using OAuth access tokens.",
+                "leaseweb/memcache-bundle": "Use Memcache as a storage engine.",
+                "snc/redis-bundle": "Use Redis as a storage engine."
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "Noxlogic\\RateLimitBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joshua Thijssen",
+                    "email": "jthijssen@noxlogic.nl"
+                }
+            ],
+            "description": "This bundle provides functionality to limit calls to actions based on rate limits",
+            "keywords": [
+                "api",
+                "rest",
+                "x-rate-limit"
+            ],
+            "time": "2020-02-11T10:04:45+00:00"
         },
         {
             "name": "ocramius/proxy-manager",

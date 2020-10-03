@@ -51,6 +51,4 @@
 /src/.preload.php
 /config/packages/dev/
 /config/packages/test/
-/config/packages/twig.yaml
 /config/routes/dev/
-/templates/

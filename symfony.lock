@@ -106,6 +106,9 @@
     "nikic/php-parser": {
         "version": "v4.10.2"
     },
+    "noxlogic/ratelimit-bundle": {
+        "version": "1.15.1"
+    },
     "ocramius/proxy-manager": {
         "version": "2.1.1"
     },
