@@ -3,7 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Token;
+use App\Security\TokenAuthenticator;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,9 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class TokenController
 {
-    /**
-     * @var EntityManagerInterface $entityManager
-     */
+    /** @var EntityManagerInterface $entityManager */
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -25,39 +27,66 @@ class TokenController
     }
 
     /**
+     * List all tokens.
+     *
+     * @param Request $request
+     * @return JsonResponse
      * @Route("/tokens", name="tokens_show", methods={"GET"})
      */
-    public function showTokens(): JsonResponse
+    public function showTokens(Request $request): JsonResponse
     {
+        $tokenAuthenticator = new TokenAuthenticator($this->entityManager);
+        $isAuth = $tokenAuthenticator->supports($request);
+
+        /** @var Token $tokens */
         $tokens = $this->entityManager->getRepository(Token::class)->findAll();
         $response = [];
         foreach ($tokens as $token){
-            $response[] = $token->__toArray();
+            $response[] = $token->__toArray($isAuth);
         }
         return new JsonResponse($response);
     }
 
     /**
+     * List specific tokens.
+     *
+     * @param string $uuid
+     * @param Request $request
+     * @return JsonResponse
      * @Route("/token/{uuid}", name="token_show", methods={"GET"})
      */
-    public function showToken(string $uuid) : JsonResponse
+    public function showToken(string $uuid, Request $request) : JsonResponse
     {
+        $tokenAuthenticator = new TokenAuthenticator($this->entityManager);
+        $isAuth = $tokenAuthenticator->supports($request);
+
+        /** @var Token $token */
         $token = $this->entityManager->getRepository(Token::class)->findOneBy(
             ['ethereumContract' => $uuid]
         );
         if ($token instanceof Token){
-            return new JsonResponse($token->__toArray());
+            return new JsonResponse($token->__toArray($isAuth));
         }
         return new JsonResponse(['status' => 'error', 'message' => 'not found'], Response::HTTP_NOT_FOUND);
     }
 
     /**
-     * @Route("/tokens", name="token_create", methods={"POST"})
+     * Create token data.
+     *
+     * @IsGranted("ROLE_ADMIN")
      * @param Request $request
      * @return JsonResponse
+     * @Route("/tokens", name="token_create", methods={"POST"})
      */
     public function createToken(Request $request) : JsonResponse
     {
+        $tokenAuthenticator = new TokenAuthenticator($this->entityManager);
+        $supports = $tokenAuthenticator->supports($request);
+
+        if (!$supports) {
+            return new JsonResponse(Response::HTTP_UNAUTHORIZED);
+        }
+
         $dataJson = json_decode($request->getContent(), true);
 
         if (array_keys($dataJson)[0] === "tokens") {
@@ -73,6 +102,7 @@ class TokenController
 
         if (is_array($dataJson[0])){
             foreach ($dataJson as $item){
+                if (empty($item['ethereumContract'])) throw new Exception("Field ethereumContract is empty !");
                 if ($item['canal'] === "Alpha") continue;
                 if (!$this->entityManager->getRepository(Token::class)->findOneBy(
                         ['ethereumContract' => $item['ethereumContract']]
@@ -97,6 +127,8 @@ class TokenController
     }
 
     /**
+     * Build token skeleton.
+     *
      * @param array $dataJson
      * @return Token
      */
@@ -139,7 +171,7 @@ class TokenController
         $token->setHasTenants($dataJson['hasTenants']);
         $token->setTermOfLease($dataJson['termOfLease']);
         $renewalDate = date_create_from_format('d\/m\/Y', $dataJson['renewalDate']);
-        if ($renewalDate instanceof \DateTime){
+        if ($renewalDate instanceof DateTime){
             $token->setRenewalDate($renewalDate);
         }
         if ($dataJson['section8paid'] === ""){

@@ -597,28 +597,52 @@ class Token
 
     public function __toArray($isAuth = false): array
     {
-
-        $Response = [
-            'fullName' => $this->fullName,
-            'shortName' => $this->shortName,
-            'tokenPrice' => $this->tokenPrice,
-            //'isPublicSale' => $this->publicSale,
-            //'canal' => $this->canal,
-            'currency' => $this->currency,
-            'ethereumContract' => $this->ethereumContract,
-        ];
-
-        if ($isAuth){
-            $Response[] = 0;
-            $Response[] = 0;
-            $Response[] = 0;
-            $Response[] = 0;
-            $Response[] = 0;
-            $Response[] = 0;
-            $Response[] = 0;
-            $Response[] = 0;
-
+        if ($isAuth) {
+            $response = [
+                'fullName' => $this->fullName,
+                'shortName' => $this->shortName,
+                'tokenPrice' => $this->tokenPrice,
+                'publicSale' => $this->publicSale,
+                'canal' => $this->canal,
+                'currency' => $this->currency,
+                'totalTokens' => $this->totalTokens,
+                'ethereumContract' => $this->ethereumContract,
+                'ethereumDistributor' => $this->ethereumDistributor,
+                'ethereumMaintenance' => $this->ethereumMaintenance,
+                'assetPrice' => $this->assetPrice,
+                'grossRent' => $this->grossRent,
+                'rentPerToken' => $this->rentPerToken,
+                'propertyManagementPercent' => $this->propertyManagementPercent,
+                'realtPlatformPercent' => $this->realtPlatformPercent,
+                'insurance' => $this->insurance,
+                'propertyTaxes' => $this->propertyTaxes,
+                'utilities' => $this->utilities,
+                'propertyMaintenance' => $this->propertyMaintenance,
+                'coordinate' => $this->coordinate,
+                'marketplaceLink' => $this->marketplaceLink,
+                'imageLink' => $this->imageLink,
+                'propertyType' => $this->propertyType,
+                'squareFeet' => $this->squareFeet,
+                'lotSize' => $this->lotSize,
+                'bedroomBath' => $this->bedroomBath,
+                'hasTenants' => $this->hasTenants,
+                'termOfLease' => $this->termOfLease,
+                'renewalDate' => $this->renewalDate,
+                'section8paid' => $this->section8paid,
+                'sellPropertyTo' => $this->sellPropertyTo,
+                'onUniswap' => $this->onUniswap
+            ];
+        } else {
+            $response = [
+                'fullName' => $this->fullName,
+                'shortName' => $this->shortName,
+                'tokenPrice' => $this->tokenPrice,
+                //'isPublicSale' => $this->publicSale,
+                //'canal' => $this->canal,
+                'currency' => $this->currency,
+                'ethereumContract' => $this->ethereumContract
+            ];
         }
-        return $Response;
+        return $response;
     }
 }
