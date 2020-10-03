@@ -3,15 +3,18 @@
 namespace App\Controller;
 
 use App\Entity\Token;
+use App\Entity\User;
 use App\Security\TokenAuthenticator;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Role\Role;
 
 /**
  * @Route("/v1")
@@ -29,6 +32,12 @@ class TokenController
     /**
      * List all tokens.
      *
+     * @OA\Response(
+     *     response=200,
+     *     description="Return list of tokens",
+     * )
+     * @OA\Tag(name="Tokens")
+     * @Security(name="Header")
      * @param Request $request
      * @return JsonResponse
      * @Route("/tokens", name="tokens_show", methods={"GET"})
@@ -48,8 +57,14 @@ class TokenController
     }
 
     /**
-     * List specific tokens.
+     * Return data from token.
      *
+     * @OA\Response(
+     *     response=200,
+     *     description="Return data from token",
+     * )
+     * @OA\Tag(name="Tokens")
+     * @Security(name="Header")
      * @param string $uuid
      * @param Request $request
      * @return JsonResponse
@@ -73,7 +88,18 @@ class TokenController
     /**
      * Create token data.
      *
-     * @IsGranted("ROLE_ADMIN")
+     * @OA\Response(
+     *     response=200,
+     *     description="Create token data",
+     * )
+     * @OA\Parameter(
+     *     name="data",
+     *     in="query",
+     *     description="JSON data token",
+     *     @OA\Schema(type="json")
+     * )
+     * @OA\Tag(name="Tokens")
+     * @Security(name="Header")
      * @param Request $request
      * @return JsonResponse
      * @Route("/tokens", name="token_create", methods={"POST"})
@@ -81,10 +107,18 @@ class TokenController
     public function createToken(Request $request) : JsonResponse
     {
         $tokenAuthenticator = new TokenAuthenticator($this->entityManager);
-        $supports = $tokenAuthenticator->supports($request);
+        $isAuth = $tokenAuthenticator->supports($request);
 
-        if (!$supports) {
-            return new JsonResponse(Response::HTTP_UNAUTHORIZED);
+        if (!$isAuth) {
+            return new JsonResponse(["status" => "error", "message" => "Invalid API Token."],Response::HTTP_UNAUTHORIZED);
+        } else {
+            $userRepository = $this->entityManager->getRepository(User::class);
+            $user = $userRepository->findOneBy(['apiToken' => $request->headers->get('X-AUTH-REALT-TOKEN')]);
+            $roles = $user->getRoles();
+
+            if (!in_array("ROLE_ADMIN", $roles)) {
+                return new JsonResponse(["status" => "error", "message" => "User is not granted."],Response::HTTP_FORBIDDEN);
+            }
         }
 
         $dataJson = json_decode($request->getContent(), true);
