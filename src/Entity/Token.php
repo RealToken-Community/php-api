@@ -75,12 +75,12 @@ class Token
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $grossRent;
+    private $grossRentMonth;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $rentPerToken;
+    private $annualPercentageYield;
 
     /**
      * @ORM\Column(type="float", nullable=true)
@@ -177,6 +177,41 @@ class Token
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $onUniswap;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $grossRentYear;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $propertyManagement;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $realtPlatform;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $netRentMonth;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $netRentYear;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $netRentYearPerToken;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $netRentMonthPerToken;
 
     public function getId(): ?int
     {
@@ -315,26 +350,38 @@ class Token
         return $this;
     }
 
-    public function getGrossRent(): ?float
+    public function getGrossRentMonth(): ?float
     {
-        return $this->grossRent;
+        return $this->grossRentMonth;
     }
 
-    public function setGrossRent(?float $grossRent): self
+    public function setGrossRentMonth(?float $grossRentMonth): self
     {
-        $this->grossRent = $grossRent;
+        $this->grossRentMonth = $grossRentMonth;
 
         return $this;
     }
 
-    public function getRentPerToken(): ?float
+    public function getGrossRentYear(): ?float
     {
-        return $this->rentPerToken;
+        return $this->grossRentYear;
     }
 
-    public function setRentPerToken(?float $rentPerToken): self
+    public function setGrossRentYear(?float $grossRentYear): self
     {
-        $this->rentPerToken = $rentPerToken;
+        $this->grossRentYear = $grossRentYear;
+
+        return $this;
+    }
+
+    public function getPropertyManagement(): ?float
+    {
+        return $this->propertyManagement;
+    }
+
+    public function setPropertyManagement(?float $propertyManagement): self
+    {
+        $this->propertyManagement = $propertyManagement;
 
         return $this;
     }
@@ -347,6 +394,18 @@ class Token
     public function setPropertyManagementPercent(?float $propertyManagementPercent): self
     {
         $this->propertyManagementPercent = $propertyManagementPercent;
+
+        return $this;
+    }
+
+    public function getRealtPlatform(): ?float
+    {
+        return $this->realtPlatform;
+    }
+
+    public function setRealtPlatform(?float $realtPlatform): self
+    {
+        $this->realtPlatform = $realtPlatform;
 
         return $this;
     }
@@ -407,6 +466,42 @@ class Token
     public function setPropertyMaintenance(?float $propertyMaintenance): self
     {
         $this->propertyMaintenance = $propertyMaintenance;
+
+        return $this;
+    }
+
+    public function getNetRentMonth(): ?float
+    {
+        return $this->netRentMonth;
+    }
+
+    public function setNetRentMonth(?float $netRentMonth): self
+    {
+        $this->netRentMonth = $netRentMonth;
+
+        return $this;
+    }
+
+    public function getNetRentYear(): ?float
+    {
+        return $this->netRentYear;
+    }
+
+    public function setNetRentYear(?float $netRentYear): self
+    {
+        $this->netRentYear = $netRentYear;
+
+        return $this;
+    }
+
+    public function getAnnualPercentageYield(): ?float
+    {
+        return $this->annualPercentageYield;
+    }
+
+    public function setAnnualPercentageYield(?float $annualPercentageYield): self
+    {
+        $this->annualPercentageYield = $annualPercentageYield;
 
         return $this;
     }
@@ -610,14 +705,21 @@ class Token
                 'ethereumDistributor' => $this->ethereumDistributor,
                 'ethereumMaintenance' => $this->ethereumMaintenance,
                 'assetPrice' => $this->assetPrice,
-                'grossRent' => $this->grossRent,
-                'rentPerToken' => $this->rentPerToken,
+                'grossRentYear' => $this->grossRentYear,
+                'grossRentMonth' => $this->grossRentMonth,
+                'propertyManagement' => $this->propertyManagement,
                 'propertyManagementPercent' => $this->propertyManagementPercent,
+                'realtPlatform' => $this->realtPlatform,
                 'realtPlatformPercent' => $this->realtPlatformPercent,
                 'insurance' => $this->insurance,
                 'propertyTaxes' => $this->propertyTaxes,
                 'utilities' => $this->utilities,
                 'propertyMaintenance' => $this->propertyMaintenance,
+                'netRentMonth' => $this->netRentMonth,
+                'netRentYear' => $this->netRentYear,
+                'netRentYearPerToken' => $this->netRentYearPerToken,
+                'netRentMonthPerToken' => $this->netRentMonthPerToken,
+                'annualPercentageYield' => $this->annualPercentageYield,
                 'coordinate' => $this->coordinate,
                 'marketplaceLink' => $this->marketplaceLink,
                 'imageLink' => $this->imageLink,
@@ -637,12 +739,34 @@ class Token
                 'fullName' => $this->fullName,
                 'shortName' => $this->shortName,
                 'tokenPrice' => $this->tokenPrice,
-                //'isPublicSale' => $this->publicSale,
-                //'canal' => $this->canal,
                 'currency' => $this->currency,
                 'ethereumContract' => $this->ethereumContract
             ];
         }
         return $response;
+    }
+
+    public function getNetRentYearPerToken(): ?float
+    {
+        return $this->netRentYearPerToken;
+    }
+
+    public function setNetRentYearPerToken(?float $netRentYearPerToken): self
+    {
+        $this->netRentYearPerToken = $netRentYearPerToken;
+
+        return $this;
+    }
+
+    public function getNetRentMonthPerToken(): ?float
+    {
+        return $this->netRentMonthPerToken;
+    }
+
+    public function setNetRentMonthPerToken(?float $netRentMonthPerToken): self
+    {
+        $this->netRentMonthPerToken = $netRentMonthPerToken;
+
+        return $this;
     }
 }
