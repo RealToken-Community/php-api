@@ -181,14 +181,26 @@ class TokenController
             $token->setEthereumMaintenance($dataJson['ethereumMaintenance']);
         }
         $token->setAssetPrice($dataJson['assetPrice']);
-        $token->setGrossRent($dataJson['grossRent']);
-        $token->setRentPerToken($dataJson['rentPerToken']);
-        //$token->setPropertyManagementPercent($dataJson['propertyManagementPercent']);
-        //$token->setRealtPlatformPercent($dataJson['realtPlatformPercent']);
+        $token->setGrossRentMonth($dataJson['grossRent']);
+        $token->setGrossRentYear($token->getGrossRentMonth() * 12);
+        $token->setPropertyManagement($dataJson['propertyManagement']);
+        $token->setPropertyManagementPercent($token->getPropertyManagement() / $token->getGrossRentMonth() * 100);
+        $token->setRealtPlatform($dataJson['realtPlatform']);
+        $token->setRealtPlatformPercent($token->getRealtPlatform() / $token->getGrossRentMonth() * 100);
         $token->setInsurance($dataJson['insurance']);
         $token->setPropertyTaxes($dataJson['propertyTaxes']);
         $token->setUtilities($dataJson['utilities']);
         $token->setPropertyMaintenance($dataJson['propertyMaintenance']);
+        $token->setNetRentMonth(
+            $token->getGrossRentMonth()
+            - $token->getPropertyManagement()
+            - $token->getRealtPlatform()
+            - $token->getPropertyTaxes()
+            - $token->getInsurance());
+        $token->setNetRentYear($token->getNetRentMonth() * 12);
+        $token->setNetRentYearPerToken($token->getNetRentYear() / $token->getTotalTokens());
+        $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12);
+        $token->setAnnualPercentageYield($token->getNetRentYear() / $token->getAssetPrice() * 100);
         $token->setCoordinate([
             'lat' => number_format(floatval($dataJson['coordinate']['lat']), 6),
             'lng' => number_format(floatval($dataJson['coordinate']['lng']), 6)
