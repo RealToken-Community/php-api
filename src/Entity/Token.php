@@ -494,6 +494,30 @@ class Token
         return $this;
     }
 
+    public function getNetRentYearPerToken(): ?float
+    {
+        return $this->netRentYearPerToken;
+    }
+
+    public function setNetRentYearPerToken(?float $netRentYearPerToken): self
+    {
+        $this->netRentYearPerToken = $netRentYearPerToken;
+
+        return $this;
+    }
+
+    public function getNetRentMonthPerToken(): ?float
+    {
+        return $this->netRentMonthPerToken;
+    }
+
+    public function setNetRentMonthPerToken(?float $netRentMonthPerToken): self
+    {
+        $this->netRentMonthPerToken = $netRentMonthPerToken;
+
+        return $this;
+    }
+
     public function getAnnualPercentageYield(): ?float
     {
         return $this->annualPercentageYield;
@@ -744,29 +768,5 @@ class Token
             ];
         }
         return $response;
-    }
-
-    public function getNetRentYearPerToken(): ?float
-    {
-        return $this->netRentYearPerToken;
-    }
-
-    public function setNetRentYearPerToken(?float $netRentYearPerToken): self
-    {
-        $this->netRentYearPerToken = $netRentYearPerToken;
-
-        return $this;
-    }
-
-    public function getNetRentMonthPerToken(): ?float
-    {
-        return $this->netRentMonthPerToken;
-    }
-
-    public function setNetRentMonthPerToken(?float $netRentMonthPerToken): self
-    {
-        $this->netRentMonthPerToken = $netRentMonthPerToken;
-
-        return $this;
     }
 }
