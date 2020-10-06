@@ -183,10 +183,10 @@ class TokenController
         $token->setAssetPrice($dataJson['assetPrice']);
         $token->setGrossRentMonth($dataJson['grossRent']);
         $token->setGrossRentYear($token->getGrossRentMonth() * 12);
-        $token->setPropertyManagement($dataJson['propertyManagement']);
-        $token->setPropertyManagementPercent($token->getPropertyManagement() / $token->getGrossRentMonth() * 100);
-        $token->setRealtPlatform($dataJson['realtPlatform']);
-        $token->setRealtPlatformPercent($token->getRealtPlatform() / $token->getGrossRentMonth() * 100);
+        $token->setPropertyManagementPercent($dataJson['propertyManagementPercent']);
+        $token->setPropertyManagement($token->getGrossRentMonth() * $token->getPropertyManagementPercent());
+        $token->setRealtPlatformPercent($dataJson['realtPlatformPercent']);
+        $token->setRealtPlatform($token->getGrossRentMonth() * $token->getRealtPlatformPercent());
         $token->setInsurance($dataJson['insurance']);
         $token->setPropertyTaxes($dataJson['propertyTaxes']);
         $token->setUtilities($dataJson['utilities']);
