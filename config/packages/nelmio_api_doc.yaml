@@ -1,9 +1,0 @@
-nelmio_api_doc:
-    documentation:
-        info:
-            title: RealT API Doc
-            description: The unique RealT API from Community
-            version: 1.0.0
-    areas: # to filter documented areas
-        path_patterns:
-            - ^/v1 # Accepts routes under /api except /api/doc

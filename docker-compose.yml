@@ -28,10 +28,10 @@ services:
     networks:
       - realtapi
     environment:
-      - "MYSQL_ROOT_PASSWORD=k%V2%dcw#Yv2hL"
-      - "MYSQL_USER=realt-api_user"
-      - "MYSQL_PASSWORD=9UgFYcRmRWnTx"
-      - "MYSQL_DATABASE=realt_api"
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
     restart: always
 
   adminer:
