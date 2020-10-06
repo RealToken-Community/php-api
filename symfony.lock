@@ -85,11 +85,7 @@
             "branch": "master",
             "version": "3.0",
             "ref": "c8e0c38e1a280ab9e37587a8fa32b251d5bc1c94"
-        },
-        "files": [
-            "config/packages/nelmio_api_doc.yaml",
-            "config/routes/nelmio_api_doc.yaml"
-        ]
+        }
     },
     "nelmio/cors-bundle": {
         "version": "1.5",
@@ -105,9 +101,6 @@
     },
     "nikic/php-parser": {
         "version": "v4.10.2"
-    },
-    "noxlogic/ratelimit-bundle": {
-        "version": "1.15.1"
     },
     "ocramius/proxy-manager": {
         "version": "2.1.1"
@@ -254,7 +247,7 @@
         "version": "v4.4.11"
     },
     "symfony/options-resolver": {
-        "version": "v4.4.14"
+        "version": "v4.4.15"
     },
     "symfony/orm-pack": {
         "version": "v2.0.0"
@@ -284,7 +277,7 @@
         "version": "v4.4.13"
     },
     "symfony/property-info": {
-        "version": "v4.4.14"
+        "version": "v4.4.15"
     },
     "symfony/routing": {
         "version": "4.2",
