@@ -31,22 +31,27 @@ class TokenService
         $em = $this->entityManager;
         $request = $this->request;
 
-        $userRepository = $em->getRepository(User::class);
-        $user = $userRepository->findOneBy(['apiToken' => $request->headers->get('X-AUTH-REALT-TOKEN')]);
-        $roles = $user->getRoles();
+        $token = $request->headers->get('X-AUTH-REALT-TOKEN');
 
-        if (!in_array("ROLE_ADMIN", $roles)) {
-            return new JsonResponse(["status" => "error", "message" => "User is not granted."], Response::HTTP_FORBIDDEN);
+        if (!empty($token)) {
+            $userRepository = $em->getRepository(User::class);
+            $user = $userRepository->findOneBy(['apiToken' => $token]);
+            $roles = $user->getRoles();
+
+            if (!in_array("ROLE_ADMIN", $roles)) {
+                return new JsonResponse(["status" => "error", "message" => "User is not granted."], Response::HTTP_FORBIDDEN);
+            }
+
+            $tokenAuthenticator = new TokenAuthenticator($this->entityManager);
+            $isAuth = $tokenAuthenticator->supports($request);
+
+            if (!$isAuth) {
+                return new JsonResponse(["status" => "error", "message" => "Invalid API Token."], Response::HTTP_UNAUTHORIZED);
+            }
+
+            return true;
         }
-
-        $tokenAuthenticator = new TokenAuthenticator($this->entityManager);
-        $isAuth = $tokenAuthenticator->supports($request);
-
-        if (!$isAuth) {
-            return new JsonResponse(["status" => "error", "message" => "Invalid API Token."], Response::HTTP_UNAUTHORIZED);
-        }
-
-        return true;
+        return false;
     }
 
     public function getTokens()
