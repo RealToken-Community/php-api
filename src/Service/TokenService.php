@@ -228,7 +228,7 @@ class TokenService
         $token->setInsurance($dataJson['insurance']);
         $token->setPropertyTaxes($dataJson['propertyTaxes']);
         $token->setUtilities($dataJson['utilities']);
-        $token->setPropertyMaintenance($dataJson['propertyManagement']);
+        $token->setPropertyMaintenance($dataJson['propertyMaintenance']);
         $token->setNetRentMonth(
             $token->getGrossRentMonth()
             - $token->getPropertyManagement()
