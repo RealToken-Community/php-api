@@ -13,6 +13,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class TokenService
+ * @package App\Service
+ */
 class TokenService
 {
     /** @var EntityManagerInterface $entityManager */
@@ -20,12 +24,23 @@ class TokenService
     /** @var Request $request */
     private $request;
 
+    /**
+     * TokenService constructor.
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     */
     public function __construct(Request $request, EntityManagerInterface $entityManager)
     {
         $this->request = $request;
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * Check if user is auth.
+     *
+     * @return bool|JsonResponse
+     */
     public function checkCredentials()
     {
         $em = $this->entityManager;
@@ -54,6 +69,11 @@ class TokenService
         return false;
     }
 
+    /**
+     * Get list of tokens.
+     *
+     * @return array|JsonResponse
+     */
     public function getTokens()
     {
         $isAuth = $this->checkCredentials();
@@ -74,6 +94,12 @@ class TokenService
         return $response;
     }
 
+    /**
+     * Get token by uuid.
+     *
+     * @param string $uuid
+     * @return array|JsonResponse
+     */
     public function getToken(string $uuid)
     {
         $isAuth = $this->checkCredentials();
@@ -89,7 +115,14 @@ class TokenService
         return $token->__toArray($isAuth);
     }
 
-    public function updateToken(string $uuid, ?array $dataJson)
+    /**
+     * Update token from uuid.
+     *
+     * @param string $uuid
+     * @param array|null $dataJson
+     * @return JsonResponse
+     */
+    public function updateToken(string $uuid, array $dataJson = [])
     {
         $this->checkCredentials();
 
@@ -111,6 +144,12 @@ class TokenService
         $em->flush();
     }
 
+    /**
+     * Delete token from uuid.
+     *
+     * @param string $uuid
+     * @return JsonResponse
+     */
     public function deleteToken(string $uuid)
     {
         $this->checkCredentials();
@@ -127,6 +166,11 @@ class TokenService
         $em->flush();
     }
 
+    /**
+     * Global token creation.
+     *
+     * @return JsonResponse
+     */
     public function createToken()
     {
         $this->checkCredentials();
@@ -185,6 +229,8 @@ class TokenService
     }
 
     /**
+     * Parse Json from request.
+     *
      * @return array $dataJson
      */
     public function getDataJson()
@@ -196,6 +242,7 @@ class TokenService
 
     /**
      * Build token skeleton.
+     *
      * @param array $dataJson
      * @param Token|null $token
      * @return Token
