@@ -32,7 +32,7 @@ class TokenController
      *     description="Return list of tokens",
      * )
      * @OA\Tag(name="Tokens")
-     * @Security(name="Header")
+     * @Security(name="api_key")
      * @param Request $request
      * @return JsonResponse
      * @Route("/tokens", name="tokens_show", methods={"GET"})
@@ -53,7 +53,7 @@ class TokenController
      *     description="Return data from token",
      * )
      * @OA\Tag(name="Tokens")
-     * @Security(name="Header")
+     * @Security(name="api_key")
      * @param string $uuid
      * @param Request $request
      * @return JsonResponse
@@ -81,7 +81,7 @@ class TokenController
      *     @OA\Schema(type="json")
      * )
      * @OA\Tag(name="Tokens")
-     * @Security(name="Header")
+     * @Security(name="api_key")
      * @param string $uuid
      * @param Request $request
      * @return JsonResponse
@@ -103,7 +103,7 @@ class TokenController
      *     description="Delete token",
      * )
      * @OA\Tag(name="Tokens")
-     * @Security(name="Header")
+     * @Security(name="api_key")
      * @param string $uuid
      * @param Request $request
      * @return JsonResponse
@@ -131,7 +131,7 @@ class TokenController
      *     @OA\Schema(type="json")
      * )
      * @OA\Tag(name="Tokens")
-     * @Security(name="Header")
+     * @Security(name="api_key")
      * @param Request $request
      * @return JsonResponse
      * @Route("/tokens", name="token_create", methods={"POST"})

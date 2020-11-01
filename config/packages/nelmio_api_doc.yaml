@@ -4,6 +4,14 @@ nelmio_api_doc:
       title: RealT API Doc
       description: The unique RealT API from Community
       version: 1.0.0
-  areas: # to filter documented areas
+    components:
+      securitySchemes:
+        api_key:
+          type: apiKey
+          name: 'X-AUTH-REALT-TOKEN'
+          in: header
+    security:
+      - api_key: []
+  areas:
     path_patterns:
-      - ^/v1 # Accepts routes under /api except /api/doc
+      - ^/v1
