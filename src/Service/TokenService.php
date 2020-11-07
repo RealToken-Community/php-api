@@ -124,7 +124,9 @@ class TokenService
      */
     public function updateToken(string $uuid, array $dataJson = [])
     {
-        $this->checkCredentials();
+        if (!$this->checkCredentials()) {
+            return new JsonResponse(["status" => "error", "message" => "Authentication Required"],Response::HTTP_UNAUTHORIZED);
+        }
 
         $em = $this->entityManager;
 
@@ -152,7 +154,9 @@ class TokenService
      */
     public function deleteToken(string $uuid)
     {
-        $this->checkCredentials();
+        if (!$this->checkCredentials()) {
+            return new JsonResponse(["status" => "error", "message" => "Authentication Required"],Response::HTTP_UNAUTHORIZED);
+        }
 
         $em = $this->entityManager;
 
@@ -173,7 +177,9 @@ class TokenService
      */
     public function createToken()
     {
-        $this->checkCredentials();
+        if (!$this->checkCredentials()) {
+            return new JsonResponse(["status" => "error", "message" => "Authentication Required"],Response::HTTP_UNAUTHORIZED);
+        }
 
         $em = $this->entityManager;
 
