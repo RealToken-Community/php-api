@@ -255,13 +255,12 @@ class TokenService
         $token->setFullName((string)$dataJson['fullName']);
         $token->setShortName($dataJson['shortName']);
         $token->setTokenPrice($dataJson['tokenPrice']);
-        $token->setPublicSale($dataJson['publicSale']);
         $token->setCanal($dataJson['canal']);
         $token->setCurrency($dataJson['currency']);
         $token->setTotalTokens($dataJson['totalTokens']);
         $token->setEthereumContract($dataJson['ethereumContract']);
         $token->setEthereumDistributor($dataJson['ethereumDistributor']);
-        if (strlen($dataJson['ethereumMaintenance']) <= 42){
+        if (strlen($dataJson['ethereumMaintenance']) <= 42) {
             $token->setEthereumMaintenance($dataJson['ethereumMaintenance']);
         }
         $token->setEthereumMaintenance($dataJson['ethereumMaintenance']);
@@ -283,8 +282,10 @@ class TokenService
             - $token->getPropertyTaxes()
             - $token->getInsurance());
         $token->setNetRentYear($token->getNetRentMonth() * 12);
+        $token->setNetRentDay($token->getNetRentYear() / 365);
         $token->setNetRentYearPerToken($token->getNetRentYear() / $token->getTotalTokens());
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12);
+        $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365);
         $token->setAnnualPercentageYield($token->getNetRentYear() / $token->getAssetPrice() * 100);
         $token->setCoordinate([
             'lat' => number_format(floatval($dataJson['coordinate']['lat']), 6),
@@ -294,21 +295,23 @@ class TokenService
         $token->setImageLink($dataJson['imageLink']);
         $token->setPropertyType($dataJson['propertyType']);
         $token->setSquareFeet($dataJson['squareFeet']);
-        if ($dataJson['lotSize'] === ""){
+        if ($dataJson['lotSize'] === "") {
             $token->setLotSize(0);
         }
         $token->setBedroomBath($dataJson['bedroom/bath']);
         $token->setHasTenants($dataJson['hasTenants']);
+        $token->setRentedUnits($dataJson['rentedUnits']);
+        $token->setTotalUnits($dataJson['totalUnits']);
         $token->setTermOfLease($dataJson['termOfLease']);
         $renewalDate = date_create_from_format('d\/m\/Y', $dataJson['renewalDate']);
-        if ($renewalDate instanceof DateTime){
+        if ($renewalDate instanceof DateTime) {
             $token->setRenewalDate($renewalDate);
         }
-        if ($dataJson['section8paid'] === ""){
+        if ($dataJson['section8paid'] === "") {
             $token->setSection8paid(0);
         }
         $token->setSellPropertyTo($dataJson['sellPropertyTo']);
-        $token->setOnUniswap($dataJson['onUniswap']);
+        $token->setSecondaryMarketplace($dataJson['secondaryMarketPlace']);
         $token->setLastUpdate(new DateTime());
 
         return $token;
