@@ -163,11 +163,18 @@ class TokenService
             return $token;
         }
 
-        if (empty($dataJson)) {
-            $dataJson = $this->getDataJson();
+        $parsedJson = $this->checkAndParseDataJson($dataJson);
+
+        if (!$parsedJson) {
+            $response->setData(["status" => "error", "message" => "Data is empty or not recognized"])
+                ->setStatusCode(Response::HTTP_NOT_ACCEPTABLE);
         }
 
-        $this->tokenMapping($dataJson, $token);
+        if (isset($parsedJson[0])) {
+            $parsedJson = $parsedJson[0];
+        }
+
+        $this->tokenMapping($parsedJson, $token);
         $em->flush();
 
         $response->setData(["status" => "success", "message" => "Token updated successfully"])
@@ -225,55 +232,30 @@ class TokenService
 
         $em = $this->entityManager;
 
-        $dataJson = $this->getDataJson();
+        $parsedJson = $this->checkAndParseDataJson();
 
-        if (empty($dataJson)) {
-            $response->setData(["status" => "error", "message" => "Data is empty"])
+        if (!$parsedJson) {
+            $response->setData(["status" => "error", "message" => "Data is empty or not recognized"])
                     ->setStatusCode(Response::HTTP_NOT_ACCEPTABLE);
-            return $response;
-        }
-
-        $format = "";
-        if (array_keys($dataJson)[0] === "fullName") {
-            $format = self::SIMPLE_FORMAT;
-        } elseif (array_keys($dataJson)[0] === "tokens") {
-            $format = self::ADVANCED_FORMAT;
-        }
-
-        if ($format === self::SIMPLE_FORMAT) {
-            $newData = [];
-            if ($dataJson["canal"] === "Release") {
-                $newData = $dataJson;
-            }
-            $dataJson = $newData;
-        } elseif ($format === self::ADVANCED_FORMAT) {
-            $newData = [];
-            $data = $dataJson['tokens'];
-            foreach ($data as $key => $value) {
-                if ($value['canal'] === "Release") {
-                    $newData[] = $value;
-                }
-            }
-            $dataJson = $newData;
         }
 
         // Check if unique value or multiple are push
-        if (!isset($dataJson[0])){
-            $actualToken = $em->getRepository(Token::class)->findOneBy(['ethereumContract' => $dataJson['ethereumContract']]);
+        if (!isset($parsedJson[0])){
+            $actualToken = $em->getRepository(Token::class)->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
             if ($actualToken instanceof Token) { // UPDATE
-                $token = $this->tokenMapping($dataJson);
-                $this->updateToken($token->getEthereumContract(), $dataJson);
+                $token = $this->tokenMapping($parsedJson);
+                $this->updateToken($token->getEthereumContract(), $parsedJson);
 
                 $response->setData(["status" => "success", "message" => "Token updated successfully"])
                         ->setStatusCode(Response::HTTP_ACCEPTED);
 
                 return $response;
             } else { // CREATE
-                $token = $this->tokenMapping($dataJson);
+                $token = $this->tokenMapping($parsedJson);
                 $em->persist($token);
             }
         } else {
-            foreach ($dataJson as $item){
+            foreach ($parsedJson as $item){
                 if (empty($item['ethereumContract'])) throw new Exception("Field ethereumContract is empty !");
                 if ($item['canal'] === "Alpha") continue;
 
@@ -342,6 +324,43 @@ class TokenService
         }
 
         return $token;
+    }
+
+    /**
+     * Check and parse body data.
+     *
+     * @param array $dataJson
+     * @return bool|array
+     */
+    private function checkAndParseDataJson(array $dataJson = [])
+    {
+        if (empty($dataJson) && empty($this->getDataJson())) {
+            return false;
+        } elseif (empty($dataJson)) {
+            $dataJson = $this->getDataJson();
+            if (empty($dataJson)) {
+                return false;
+            }
+        }
+
+        if (array_keys($dataJson)[0] === "fullName") {
+            $newData = [];
+            if ($dataJson["canal"] === "Release") {
+                $newData = $dataJson;
+            }
+            return $newData;
+        } elseif (array_keys($dataJson)[0] === "tokens") {
+            $newData = [];
+            $data = $dataJson['tokens'];
+            foreach ($data as $key => $value) {
+                if ($value['canal'] === "Release") {
+                    $newData[] = $value;
+                }
+            }
+            return $newData;
+        } else {
+            return false;
+        }
     }
 
     /**
