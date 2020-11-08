@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\TokenService;
 use Doctrine\ORM\EntityManagerInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -72,11 +73,14 @@ class TokenController
      *     response=200,
      *     description="Update token data",
      * )
-     * @OA\Parameter(
-     *     name="data",
-     *     in="query",
+     * @OA\RequestBody(
+     *     request="token",
      *     description="JSON data token",
-     *     @OA\Schema(type="json")
+     *     @OA\JsonContent(
+     *         @OA\MediaType(
+     *             mediaType="application/json"
+     *         )
+     *     )
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
@@ -120,11 +124,14 @@ class TokenController
      *     response=200,
      *     description="Create token data",
      * )
-     * @OA\Parameter(
-     *     name="data",
-     *     in="query",
+     * @OA\RequestBody(
+     *     request="token",
      *     description="JSON data token",
-     *     @OA\Schema(type="json")
+     *     @OA\JsonContent(
+     *         @OA\MediaType(
+     *             mediaType="application/json"
+     *         )
+     *     )
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
