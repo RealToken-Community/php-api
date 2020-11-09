@@ -95,6 +95,7 @@ class TokenService
         $em = $this->entityManager;
         $tokens = $em->getRepository(Token::class)->findAll();
 
+        $result = [];
         foreach ($tokens as $token){
             if (!($token instanceof Token)) {
                 $response->setData(["status" => "error", "message" => "Token not found"])
@@ -102,10 +103,11 @@ class TokenService
                 return $response;
             }
 
-            $response->setData($token->__toArray($isAuth))
-                    ->setStatusCode(Response::HTTP_OK);
+            $result[] = $token->__toArray($isAuth);
         }
 
+        $response->setData($result)
+            ->setStatusCode(Response::HTTP_OK);
         return $response;
     }
 
@@ -179,7 +181,6 @@ class TokenService
 
         $response->setData(["status" => "success", "message" => "Token updated successfully"])
                 ->setStatusCode(Response::HTTP_ACCEPTED);
-
         return $response;
     }
 
@@ -211,7 +212,6 @@ class TokenService
 
         $response->setData(["status" => "success", "message" => "Token deleted successfully"])
                 ->setStatusCode(Response::HTTP_OK);
-
         return $response;
     }
 
@@ -237,10 +237,11 @@ class TokenService
         if (!$parsedJson) {
             $response->setData(["status" => "error", "message" => "Data is empty or not recognized"])
                     ->setStatusCode(Response::HTTP_NOT_ACCEPTABLE);
+            return $response;
         }
 
         // Check if unique value or multiple are push
-        if (!isset($parsedJson[0])){
+        if (!isset($parsedJson[0])) {
             $actualToken = $em->getRepository(Token::class)->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
             if ($actualToken instanceof Token) { // UPDATE
                 $token = $this->tokenMapping($parsedJson);
@@ -248,11 +249,12 @@ class TokenService
 
                 $response->setData(["status" => "success", "message" => "Token updated successfully"])
                         ->setStatusCode(Response::HTTP_ACCEPTED);
-
-                return $response;
             } else { // CREATE
                 $token = $this->tokenMapping($parsedJson);
                 $em->persist($token);
+
+                $response->setData(["status" => "success", "message" => "Token created successfully"])
+                        ->setStatusCode(Response::HTTP_CREATED);
             }
         } else {
             foreach ($parsedJson as $item){
@@ -268,16 +270,12 @@ class TokenService
 
                     $response->setData(["status" => "success", "message" => "Token updated successfully"])
                             ->setStatusCode(Response::HTTP_ACCEPTED);
-
-                    return $response;
                 } else { // CREATE
                     $token = $this->tokenMapping($item);
                     $em->persist($token);
 
                     $response->setData(["status" => "success", "message" => "Token created successfully"])
                             ->setStatusCode(Response::HTTP_CREATED);
-
-                    return $response;
                 }
             }
         }
@@ -287,9 +285,10 @@ class TokenService
         } catch (ORMException $e) {
             $response->setData(["status" => "error", "message" => $e])
                     ->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
-
             return $response;
         }
+
+        return $response;
     }
 
     /**
