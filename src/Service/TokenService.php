@@ -19,9 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class TokenService
 {
-    const SIMPLE_FORMAT = "simple";
-    const ADVANCED_FORMAT = "wordpress";
-
     /** @var EntityManagerInterface $entityManager */
     private $entityManager;
     /** @var Request $request */
