@@ -245,10 +245,7 @@ class TokenService
             $actualToken = $em->getRepository(Token::class)->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
             if ($actualToken instanceof Token) { // UPDATE
                 $token = $this->tokenMapping($parsedJson);
-                $this->updateToken($token->getEthereumContract(), $parsedJson);
-
-                $response->setData(["status" => "success", "message" => "Token updated successfully"])
-                        ->setStatusCode(Response::HTTP_ACCEPTED);
+                $response = $this->updateToken($token->getEthereumContract(), $parsedJson);
             } else { // CREATE
                 $token = $this->tokenMapping($parsedJson);
                 $em->persist($token);
@@ -266,10 +263,7 @@ class TokenService
                 $actualToken = $tokenRepository->findOneBy(['ethereumContract' => $item['ethereumContract']]);
                 if ($actualToken instanceof Token) { // UPDATE
                     $token = $this->tokenMapping($item);
-                    $this->updateToken($token->getEthereumContract(), $item);
-
-                    $response->setData(["status" => "success", "message" => "Token updated successfully"])
-                            ->setStatusCode(Response::HTTP_ACCEPTED);
+                    $response = $this->updateToken($token->getEthereumContract(), $item);
                 } else { // CREATE
                     $token = $this->tokenMapping($item);
                     $em->persist($token);
