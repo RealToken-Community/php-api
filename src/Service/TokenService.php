@@ -88,7 +88,7 @@ class TokenService
         $response = new JsonResponse();
 
         $isAuth = $this->checkCredentials();
-        if (!boolval($isAuth)) {
+        if (!is_bool($isAuth)) {
             return $isAuth;
         }
 
@@ -120,7 +120,7 @@ class TokenService
         $response = new JsonResponse();
 
         $isAuth = $this->checkCredentials();
-        if (!boolval($isAuth)) {
+        if (!is_bool($isAuth)) {
             return $isAuth;
         }
 
