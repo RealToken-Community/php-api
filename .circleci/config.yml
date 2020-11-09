@@ -5,20 +5,12 @@
 version: 2.1
 orbs:
   discord: antonioned/discord@0.1.0
+
 jobs:
   build:
     docker:
       # Specify the version you desire here
-      - image: circleci/php:7.3-node-browsers
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # Using the RAM variation mitigates I/O contention
-      # for database intensive operations.
-      # - image: circleci/mysql:5.7-ram
-      #
-      # - image: redis:2.8.19
+      - image: circleci/php:7.4-node-browsers
 
     steps:
       - checkout
@@ -46,7 +38,7 @@ jobs:
       #- run: touch storage/testing.sqlite
       #- run: php artisan migrate --env=testing --database=sqlite_testing --force
       - discord/status:
-        fail_only: false
-        success_message: "**${CIRCLE_USERNAME}** deployed api to prod."
-        failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
-        webhook: "${DISCORD_STATUS_WEBHOOK}"
+          fail_only: false
+          success_message: "**${CIRCLE_USERNAME}** deployed api to prod."
+          failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
+          webhook: "${DISCORD_STATUS_WEBHOOK}"
