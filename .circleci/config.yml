@@ -36,7 +36,7 @@ jobs:
 
       # prepare the database
       #- run: touch storage/testing.sqlite
-      #- run: php artisan migrate --env=testing --database=sqlite_testing --force
+      #- run: php bin/console doctrine:migrations:migrate
       - discord/status:
           fail_only: false
           success_message: "**${CIRCLE_USERNAME}** deployed api to prod."
