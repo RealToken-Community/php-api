@@ -1,40 +1,40 @@
-noxlogic_rate_limit:
-  enabled:                true
-
-  # The storage engine where all the rates will be stored
-  storage_engine:         doctrine # One of "redis"; "memcache"; "doctrine"; "php_redis"; "php_redis_cluster"
-
-  redis_client:           default_client
-  redis_service:          null
-  php_redis_service:      null
-
-  memcache_client:        default
-  memcache_service:       null # Example: project.memcached
-
-  doctrine_provider:      null # Example: my_apc_cache
-  doctrine_service:       null # Example: project.my_apc_cache
-
-  # The HTTP status code to return when a client hits the rate limit
-  rate_response_code:     429
-
-  # Optional exception class that will be returned when a client hits the rate limit
-  rate_response_exception: null
-
-  # The HTTP message to return when a client hits the rate limit
-  rate_response_message:  'You exceeded the rate limit'
-
-  # Should the ratelimit headers be automatically added to the response?
-  display_headers:        true
-
-  # What are the different header names to add
-  headers:
-    limit:                X-RateLimit-Limit
-    remaining:            X-RateLimit-Remaining
-    reset:                X-RateLimit-Reset
-
-  # Rate limits for paths
-  path_limits:
-    - { path: /v1, limit: 10, period: 3600, methods: ['GET', 'POST']}
-
-  # Should the FOS OAuthServerBundle listener be enabled
-  fos_oauth_key_listener: true
+#noxlogic_rate_limit:
+#  enabled:                true
+#
+#  # The storage engine where all the rates will be stored
+#  storage_engine:         doctrine # One of "redis"; "memcache"; "doctrine"; "php_redis"; "php_redis_cluster"
+#
+#  redis_client:           default_client
+#  redis_service:          null
+#  php_redis_service:      null
+#
+#  memcache_client:        default
+#  memcache_service:       null # Example: project.memcached
+#
+#  doctrine_provider:      null # Example: my_apc_cache
+#  doctrine_service:       null # Example: project.my_apc_cache
+#
+#  # The HTTP status code to return when a client hits the rate limit
+#  rate_response_code:     429
+#
+#  # Optional exception class that will be returned when a client hits the rate limit
+#  rate_response_exception: null
+#
+#  # The HTTP message to return when a client hits the rate limit
+#  rate_response_message:  'You exceeded the rate limit'
+#
+#  # Should the ratelimit headers be automatically added to the response?
+#  display_headers:        true
+#
+#  # What are the different header names to add
+#  headers:
+#    limit:                X-RateLimit-Limit
+#    remaining:            X-RateLimit-Remaining
+#    reset:                X-RateLimit-Reset
+#
+#  # Rate limits for paths
+#  path_limits:
+#    - { path: /v1, limit: 10, period: 3600, methods: ['GET', 'POST']}
+#
+#  # Should the FOS OAuthServerBundle listener be enabled
+#  fos_oauth_key_listener: true

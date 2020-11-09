@@ -35,11 +35,6 @@ class Token
     private $tokenPrice;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $publicSale;
-
-    /**
      * @ORM\Column(type="string", length=50)
      */
     private $canal;
@@ -176,11 +171,6 @@ class Token
     private $sellPropertyTo;
 
     /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $onUniswap;
-
-    /**
      * @ORM\Column(type="float", nullable=true)
      */
     private $grossRentYear;
@@ -229,6 +219,21 @@ class Token
      * @ORM\Column(type="float", nullable=true)
      */
     private $netRentDayPerToken;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $rentedUnits;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $totalUnits;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $secondaryMarketplace = [];
 
 //    /**
 //     * Token constructor.
@@ -360,18 +365,6 @@ class Token
     public function setTokenPrice(?float $tokenPrice): self
     {
         $this->tokenPrice = $tokenPrice;
-
-        return $this;
-    }
-
-    public function getPublicSale(): ?string
-    {
-        return $this->publicSale;
-    }
-
-    public function setPublicSale(?string $publicSale): self
-    {
-        $this->publicSale = $publicSale;
 
         return $this;
     }
@@ -820,18 +813,6 @@ class Token
         return $this;
     }
 
-    public function getOnUniswap(): ?bool
-    {
-        return $this->onUniswap;
-    }
-
-    public function setOnUniswap(?bool $onUniswap): self
-    {
-        $this->onUniswap = $onUniswap;
-
-        return $this;
-    }
-
     /**
      * @return array
      */
@@ -860,6 +841,42 @@ class Token
         return $this;
     }
 
+    public function getRentedUnits(): ?int
+    {
+        return $this->rentedUnits;
+    }
+
+    public function setRentedUnits(?int $rentedUnits): self
+    {
+        $this->rentedUnits = $rentedUnits;
+
+        return $this;
+    }
+
+    public function getTotalUnits(): ?int
+    {
+        return $this->totalUnits;
+    }
+
+    public function setTotalUnits(?int $totalUnits): self
+    {
+        $this->totalUnits = $totalUnits;
+
+        return $this;
+    }
+
+    public function getSecondaryMarketplace(): ?array
+    {
+        return $this->secondaryMarketplace;
+    }
+
+    public function setSecondaryMarketplace(?array $secondaryMarketplace): self
+    {
+        $this->secondaryMarketplace = $secondaryMarketplace;
+
+        return $this;
+    }
+
     public function __toArray($isAuth = false): array
     {
         if ($isAuth) {
@@ -867,7 +884,6 @@ class Token
                 'fullName' => $this->fullName,
                 'shortName' => $this->shortName,
                 'tokenPrice' => $this->tokenPrice,
-                'publicSale' => $this->publicSale,
                 'canal' => $this->canal,
                 'currency' => $this->currency,
                 'totalTokens' => $this->totalTokens,
@@ -900,11 +916,13 @@ class Token
                 'lotSize' => $this->lotSize,
                 'bedroomBath' => $this->bedroomBath,
                 'hasTenants' => $this->hasTenants,
+                'rentedUnits' => $this->rentedUnits,
+                'totalUnits' => $this->totalUnits,
                 'termOfLease' => $this->termOfLease,
                 'renewalDate' => $this->renewalDate,
                 'section8paid' => $this->section8paid,
                 'sellPropertyTo' => $this->sellPropertyTo,
-                'onUniswap' => $this->onUniswap,
+                'secondaryMarketplace' => $this->secondaryMarketplace,
                 'lastUpdate' => $this->lastUpdate
             ];
         } else {
