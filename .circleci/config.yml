@@ -2,7 +2,9 @@
 #
 # Check https://circleci.com/docs/2.0/language-php/ for more details
 #
-version: 2
+version: 2.1
+orbs:
+  discord: antonioned/discord@0.1.0
 jobs:
   build:
     docker:
@@ -43,3 +45,8 @@ jobs:
       # prepare the database
       #- run: touch storage/testing.sqlite
       #- run: php artisan migrate --env=testing --database=sqlite_testing --force
+      - discord/status:
+        fail_only: false
+        success_message: "**${CIRCLE_USERNAME}** deployed api to prod."
+        failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
+        webhook: "${DISCORD_STATUS_WEBHOOK}"
