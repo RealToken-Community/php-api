@@ -1,7 +1,3 @@
-# PHP CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-php/ for more details
-#
 version: 2.1
 orbs:
   discord: antonioned/discord@0.1.0
@@ -9,36 +5,48 @@ orbs:
 jobs:
   build:
     docker:
-      # Specify the version you desire here
       - image: circleci/php:7.4-node-browsers
 
     steps:
       - checkout
 
-      - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
+      - run: sudo apt update
       - run: sudo docker-php-ext-install zip
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-            # "composer.lock" can be used if it is committed to the repo
             - v1-dependencies-{{ checksum "composer.json" }}
-            # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: mv .env.circleci .env
-      - run: composer install -n --prefer-dist
+      - run:
+          name: "Create Environment file"
+          command: mv .env.circleci .env
+      - run:
+          name: "Install Dependencies"
+          command : composer install -n --prefer-dist
 
       - save_cache:
           key: v1-dependencies-{{ checksum "composer.json" }}
           paths:
             - ./vendor
 
-      # prepare the database
+      - run:
+          name: "Run web server"
+          command: php bin/console server:run
+          background: true
+
+      # Database
       #- run: touch storage/testing.sqlite
       #- run: php bin/console doctrine:migrations:migrate
+
+      # Run tests with phpunit
+      #- run:
+      #    name: "Run tests"
+      #    command: composer test
+
       - discord/status:
           fail_only: false
-          success_message: "**${CIRCLE_USERNAME}** deployed api to prod."
+          success_message: "**${CIRCLE_USERNAME}** deployed successfully RealT API to PreProd."
           failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
           webhook: "${DISCORD_STATUS_WEBHOOK}"
