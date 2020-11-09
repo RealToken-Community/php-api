@@ -33,7 +33,8 @@ jobs:
 
       - run:
           name: "Run web server"
-          command: php bin/console server:run
+          #command: php bin/console server:run
+          command: symfony server:start
           background: true
 
       # Database
