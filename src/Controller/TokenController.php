@@ -7,7 +7,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -40,9 +39,8 @@ class TokenController
     public function showTokens(Request $request): JsonResponse
     {
         $tokenService = new TokenService($request, $this->entityManager);
-        $tokens = $tokenService->getTokens();
 
-        return new JsonResponse($tokens);
+        return $tokenService->getTokens();
     }
 
     /**
@@ -62,9 +60,8 @@ class TokenController
     public function showToken(string $uuid, Request $request) : JsonResponse
     {
         $tokenService = new TokenService($request, $this->entityManager);
-        $token = $tokenService->getToken($uuid);
 
-        return new JsonResponse($token);
+        return $tokenService->getToken($uuid);
     }
 
     /**
@@ -74,11 +71,14 @@ class TokenController
      *     response=200,
      *     description="Update token data",
      * )
-     * @OA\Parameter(
-     *     name="data",
-     *     in="query",
+     * @OA\RequestBody(
+     *     request="token",
      *     description="JSON data token",
-     *     @OA\Schema(type="json")
+     *     @OA\JsonContent(
+     *         @OA\MediaType(
+     *             mediaType="application/json"
+     *         )
+     *     )
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
@@ -90,9 +90,8 @@ class TokenController
     public function updateToken(string $uuid, Request $request) : JsonResponse
     {
         $tokenService = new TokenService($request, $this->entityManager);
-        $tokenService->updateToken($uuid);
 
-        return new JsonResponse(["status" => "success", "message" => "updated"], Response::HTTP_CREATED);
+        return $tokenService->updateToken($uuid);
     }
 
     /**
@@ -112,9 +111,8 @@ class TokenController
     public function deleteToken(string $uuid, Request $request) : JsonResponse
     {
         $tokenService = new TokenService($request, $this->entityManager);
-        $tokenService->deleteToken($uuid);
 
-        return new JsonResponse(["status" => "success", "message" => "deleted"], Response::HTTP_CREATED);
+        return $tokenService->deleteToken($uuid);
     }
 
     /**
@@ -124,11 +122,14 @@ class TokenController
      *     response=200,
      *     description="Create token data",
      * )
-     * @OA\Parameter(
-     *     name="data",
-     *     in="query",
+     * @OA\RequestBody(
+     *     request="token",
      *     description="JSON data token",
-     *     @OA\Schema(type="json")
+     *     @OA\JsonContent(
+     *         @OA\MediaType(
+     *             mediaType="application/json"
+     *         )
+     *     )
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
@@ -139,9 +140,8 @@ class TokenController
     public function createToken(Request $request) : JsonResponse
     {
         $tokenService = new TokenService($request, $this->entityManager);
-        $tokenService->createToken();
 
-        return new JsonResponse(["status" => "success", "message" => "created or updated"], Response::HTTP_CREATED);
+        return $tokenService->createToken();
     }
 }
 

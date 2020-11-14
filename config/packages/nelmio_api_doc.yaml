@@ -3,7 +3,7 @@ nelmio_api_doc:
     info:
       title: RealT API Doc
       description: The unique RealT API from Community
-      version: 1.0.0
+      version: 1.0.1
     components:
       securitySchemes:
         api_key:

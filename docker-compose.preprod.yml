@@ -1,32 +1,32 @@
 version: '3.2'
 
 services:
-  symfony:
-    image: realt-api:1.0
-    container_name: realT-API_sf
+  symfony-preprod:
+    image: realt-api:preprod
+    container_name: realT-API_sf-preprod
     build:
       context: ./
     ports:
       - "9080:80"
     networks:
-      - realtapi
+      - realtapipreprod
       - traefik-realt
     volumes:
       - ./logs/symfony:/var/www/html/var/log:cached
       - ./logs/nginx:/var/log/nginx:cached
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sf-realt-api.rule=Host(`api.realt.ch`)"
-      - "traefik.http.routers.sf-realt-api.entrypoints=websecure"
+      - "traefik.http.routers.sf-realt-api-preprod.rule=Host(`api.preprod.realt.ch`)"
+      - "traefik.http.routers.sf-realt-api-preprod.entrypoints=websecure"
     restart: always
 
-  db:
+  db-preprod:
     image: mysql:5.7
-    container_name: realT-API_db
+    container_name: realT-API_db-preprod
     ports:
       - "3306:3306"
     networks:
-      - realtapi
+      - realtapipreprod
     environment:
       - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
       - "MYSQL_USER=${MYSQL_USER}"
@@ -34,16 +34,16 @@ services:
       - "MYSQL_DATABASE=${MYSQL_DATABASE}"
     restart: always
 
-  adminer:
+  adminer-preprod:
     image: adminer
-    container_name: realT-API_adminer
+    container_name: realT-API_adminer-preprod
     ports:
       - 18080:8080
     networks:
-      - realtapi
+      - realtapipreprod
     restart: always
 
 networks:
-  realtapi:
+  realtapipreprod:
   traefik-realt:
     external: true
