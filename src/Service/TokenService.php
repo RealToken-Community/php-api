@@ -434,11 +434,7 @@ class TokenService
         $token->setCurrency($dataJson['currency']);
         $token->setTotalTokens($dataJson['totalTokens']);
         $token->setEthereumContract($dataJson['ethereumContract']);
-        $token->setEthereumDistributor($dataJson['ethereumDistributor']);
-        if (strlen($dataJson['ethereumMaintenance']) <= 42) {
-            $token->setEthereumMaintenance($dataJson['ethereumMaintenance']);
-        }
-        $token->setEthereumMaintenance($dataJson['ethereumMaintenance']);
+        $token->setMaticContract($dataJson['maticContract']);
         $token->setAssetPrice($dataJson['assetPrice']);
         $token->setGrossRentMonth($dataJson['grossRent']);
         $token->setGrossRentYear($token->getGrossRentMonth() * 12);
@@ -487,6 +483,7 @@ class TokenService
         }
         $token->setSellPropertyTo($dataJson['sellPropertyTo']);
         $token->setSecondaryMarketplace($dataJson['secondaryMarketPlace']);
+        $token->setBlockchainAddresses($dataJson['blockchainAddresses']);
         $token->setLastUpdate(new DateTime());
 
         return $token;

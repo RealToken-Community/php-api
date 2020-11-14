@@ -240,6 +240,16 @@ class Token
      */
     private $symbol;
 
+    /**
+     * @ORM\Column(type="string", length=42, nullable=true)
+     */
+    private $maticContract;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $blockchainAddresses = [];
+
 //    /**
 //     * Token constructor.
 //     * @param $id
@@ -894,6 +904,30 @@ class Token
         return $this;
     }
 
+    public function getMaticContract(): ?string
+    {
+        return $this->maticContract;
+    }
+
+    public function setMaticContract(?string $maticContract): self
+    {
+        $this->maticContract = $maticContract;
+
+        return $this;
+    }
+
+    public function getBlockchainAddresses(): ?array
+    {
+        return $this->blockchainAddresses;
+    }
+
+    public function setBlockchainAddresses(?array $blockchainAddresses): self
+    {
+        $this->blockchainAddresses = $blockchainAddresses;
+
+        return $this;
+    }
+
     public function __toArray($isAuth = false): array
     {
         if ($isAuth) {
@@ -906,8 +940,7 @@ class Token
                 'currency' => $this->currency,
                 'totalTokens' => $this->totalTokens,
                 'ethereumContract' => $this->ethereumContract,
-                'ethereumDistributor' => $this->ethereumDistributor,
-                'ethereumMaintenance' => $this->ethereumMaintenance,
+                'maticContract' => $this->maticContract,
                 'assetPrice' => $this->assetPrice,
                 'grossRentYear' => $this->grossRentYear,
                 'grossRentMonth' => $this->grossRentMonth,
@@ -951,6 +984,7 @@ class Token
                 'tokenPrice' => $this->tokenPrice,
                 'currency' => $this->currency,
                 'ethereumContract' => $this->ethereumContract,
+                'maticContract' => $this->maticContract,
                 'lastUpdate' => $this->lastUpdate
             ];
         }
