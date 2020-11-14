@@ -974,6 +974,7 @@ class Token
                 'section8paid' => $this->section8paid,
                 'sellPropertyTo' => $this->sellPropertyTo,
                 'secondaryMarketplace' => $this->secondaryMarketplace,
+                'blockchainAddresses' => $this->blockchainAddresses,
                 'lastUpdate' => $this->lastUpdate
             ];
         } else {
