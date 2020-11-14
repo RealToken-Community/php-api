@@ -235,6 +235,11 @@ class Token
      */
     private $secondaryMarketplace = [];
 
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $symbol;
+
 //    /**
 //     * Token constructor.
 //     * @param $id
@@ -877,12 +882,25 @@ class Token
         return $this;
     }
 
+    public function getSymbol(): ?string
+    {
+        return $this->symbol;
+    }
+
+    public function setSymbol(?string $symbol): self
+    {
+        $this->symbol = $symbol;
+
+        return $this;
+    }
+
     public function __toArray($isAuth = false): array
     {
         if ($isAuth) {
             $response = [
                 'fullName' => $this->fullName,
                 'shortName' => $this->shortName,
+                'symbol' => $this->symbol,
                 'tokenPrice' => $this->tokenPrice,
                 'canal' => $this->canal,
                 'currency' => $this->currency,
@@ -929,6 +947,7 @@ class Token
             $response = [
                 'fullName' => $this->fullName,
                 'shortName' => $this->shortName,
+                'symbol' => $this->symbol,
                 'tokenPrice' => $this->tokenPrice,
                 'currency' => $this->currency,
                 'ethereumContract' => $this->ethereumContract,
