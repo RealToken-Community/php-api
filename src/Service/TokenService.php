@@ -8,6 +8,7 @@ use App\Security\TokenAuthenticator;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
+use DOMDocument;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -112,6 +113,7 @@ class TokenService
      * Get token by uuid.
      *
      * @param string $uuid
+     *
      * @return array|JsonResponse
      */
     public function getToken(string $uuid)
@@ -143,6 +145,7 @@ class TokenService
      *
      * @param string $uuid
      * @param array|null $dataJson
+     *
      * @return JsonResponse
      */
     public function updateToken(string $uuid, array $dataJson = [])
@@ -185,6 +188,7 @@ class TokenService
      * Delete token from uuid.
      *
      * @param string $uuid
+     *
      * @return JsonResponse
      */
     public function deleteToken(string $uuid)
@@ -245,6 +249,10 @@ class TokenService
                 $response = $this->updateToken($token->getEthereumContract(), $parsedJson);
             } else { // CREATE
                 $token = $this->tokenMapping($parsedJson);
+                $symbol = $this->getRealtokenSymbol($token->getEthereumContract());
+                if ($symbol) {
+                    $token->setSymbol($symbol);
+                }
                 $em->persist($token);
 
                 $response->setData(["status" => "success", "message" => "Token created successfully"])
@@ -263,6 +271,10 @@ class TokenService
                     $response = $this->updateToken($token->getEthereumContract(), $item);
                 } else { // CREATE
                     $token = $this->tokenMapping($item);
+                    $symbol = $this->getRealtokenSymbol($token->getEthereumContract());
+                    if ($symbol) {
+                        $token->setSymbol($symbol);
+                    }
                     $em->persist($token);
 
                     $response->setData(["status" => "success", "message" => "Token created successfully"])
@@ -299,6 +311,7 @@ class TokenService
      *
      * @param EntityManagerInterface $em
      * @param string $uuid
+     *
      * @return Token|JsonResponse
      */
     private function checkTokenExistence(EntityManagerInterface $em, string $uuid)
@@ -320,6 +333,7 @@ class TokenService
      * Check and parse body data.
      *
      * @param array $dataJson
+     *
      * @return bool|array
      */
     private function checkAndParseDataJson(array $dataJson = [])
@@ -354,10 +368,58 @@ class TokenService
     }
 
     /**
+     * Get symbol token from EtherscanDOM.
+     *
+     * @param $ethereumContract
+     *
+     * @return false|mixed
+     */
+    private function getRealtokenSymbol($ethereumContract) {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://etherscan.io/token/".$ethereumContract,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $doc = new DOMDocument();
+        @$doc->loadHTML($response);
+
+        $title = $doc->getElementsByTagName('title');
+        $title = $title->item(0)->textContent;
+
+        if ($title === "Etherscan Error Page") {
+            return false;
+        }
+
+        preg_match("/\((.*)\)/", $title, $symbol);
+        $name = $symbol[1];
+
+        $validSymbol = strpos($name, "REALTOKEN-");
+
+        if (!$name || $validSymbol !== 0) {
+            return false;
+        }
+
+        return $name;
+    }
+
+    /**
      * Build token skeleton.
      *
      * @param array $dataJson
      * @param Token|null $token
+     *
      * @return Token
      */
     private function tokenMapping(array $dataJson, $token = null): Token
