@@ -71,6 +71,9 @@ class TokenService
                 return $response;
             }
 
+            $quotaService = new QuotaService($em);
+            $quotaService->consumeQuota($user);
+
             return true;
         }
         return false;
