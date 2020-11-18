@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -35,10 +37,14 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @var string API token
-     * @ORM\Column(type="string", unique=true, nullable=true)
+     * @ORM\OneToMany(targetEntity=Application::class, mappedBy="user_id", orphanRemoval=true)
      */
-    private $apiToken;
+    private $applications;
+
+    public function __construct()
+    {
+        $this->applications = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -102,22 +108,6 @@ class User implements UserInterface
     }
 
     /**
-     * @return string
-     */
-    public function getApiToken(): string
-    {
-        return $this->apiToken;
-    }
-
-    /**
-     * @param string $apiToken
-     */
-    public function setApiToken(string $apiToken): void
-    {
-        $this->apiToken = $apiToken;
-    }
-
-    /**
      * @see UserInterface
      */
     public function getSalt()
@@ -132,5 +122,35 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection|Application[]
+     */
+    public function getApplications(): Collection
+    {
+        return $this->applications;
+    }
+
+    public function addApplication(Application $application): self
+    {
+        if (!$this->applications->contains($application)) {
+            $this->applications[] = $application;
+            $application->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplication(Application $application): self
+    {
+        if ($this->applications->removeElement($application)) {
+            // set the owning side to null (unless already changed)
+            if ($application->getUserId() === $this) {
+                $application->setUserId(null);
+            }
+        }
+
+        return $this;
     }
 }
