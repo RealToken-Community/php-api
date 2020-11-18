@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
+use App\Entity\Application;
 use App\Entity\Quota;
-use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -20,15 +20,20 @@ class QuotaService
         $this->entityManager = $entityManager;
     }
 
-    public function consumeQuota(User $user)
+    /**
+     * Increment API quota.
+     *
+     * @param Application $application
+     */
+    public function consumeQuota(Application $application)
     {
         $em = $this->entityManager;
         $quotaService = $em->getRepository(Quota::class);
 
-        $quota = $quotaService->findOneBy(['user_id' => $user->getId()]);
+        $quota = $quotaService->findOneBy(['application' => $application]);
         if (!$quota) {
             $quota = new Quota();
-            $quota->setUserId($user);
+            $quota->setApplication($application);
         }
         $quota->setIncrement();
         $em->persist($quota);

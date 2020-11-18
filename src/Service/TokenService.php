@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Application;
 use App\Entity\Token;
 use App\Entity\User;
 use App\Security\TokenAuthenticator;
@@ -52,8 +53,16 @@ class TokenService
         $apiKey = $request->headers->get('X-AUTH-REALT-TOKEN');
 
         if (!empty($apiKey)) {
-            $userRepository = $em->getRepository(User::class);
-            $user = $userRepository->findOneBy(['apiToken' => $apiKey]);
+            $applicationRepository = $em->getRepository(Application::class);
+            $application = $applicationRepository->findOneBy(['apiToken' => $apiKey]);
+
+            if (!($application Instanceof Application)) {
+                $response->setData(["status" => "error", "message" => "Token is not recognized"])
+                    ->setStatusCode(Response::HTTP_UNAUTHORIZED);
+                return $response;
+            }
+
+            $user = $application->getUser();
             $roles = $user->getRoles();
 
             if (!in_array("ROLE_ADMIN", $roles)) {
@@ -72,7 +81,7 @@ class TokenService
             }
 
             $quotaService = new QuotaService($em);
-            $quotaService->consumeQuota($user);
+            $quotaService->consumeQuota($application);
 
             return true;
         }

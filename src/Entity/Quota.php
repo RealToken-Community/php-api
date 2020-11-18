@@ -18,13 +18,13 @@ class Quota
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Application::class, cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user_id;
+    private $application;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default" : 0})
      */
     private $increment;
 
@@ -33,14 +33,14 @@ class Quota
         return $this->id;
     }
 
-    public function getUserId(): ?User
+    public function getApplication(): ?Application
     {
-        return $this->user_id;
+        return $this->application;
     }
 
-    public function setUserId(User $user_id): self
+    public function setApplication(Application $application): self
     {
-        $this->user_id = $user_id;
+        $this->application = $application;
 
         return $this;
     }
