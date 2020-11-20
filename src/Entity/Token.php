@@ -928,7 +928,7 @@ class Token
         return $this;
     }
 
-    public function __toArray($isAuth = false): array
+    public function __toArray($isAuth = false, $isAdmin = false): array
     {
         if ($isAuth) {
             $response = [
@@ -940,7 +940,7 @@ class Token
                 'currency' => $this->currency,
                 'totalTokens' => $this->totalTokens,
                 'ethereumContract' => $this->ethereumContract,
-                'maticContract' => $this->maticContract,
+                //'maticContract' => $this->maticContract,
                 'assetPrice' => $this->assetPrice,
                 'grossRentYear' => $this->grossRentYear,
                 'grossRentMonth' => $this->grossRentMonth,
@@ -977,6 +977,7 @@ class Token
                 'blockchainAddresses' => $this->blockchainAddresses,
                 'lastUpdate' => $this->lastUpdate
             ];
+
         } else {
             $response = [
                 'fullName' => $this->fullName,
@@ -985,10 +986,15 @@ class Token
                 'tokenPrice' => $this->tokenPrice,
                 'currency' => $this->currency,
                 'ethereumContract' => $this->ethereumContract,
-                'maticContract' => $this->maticContract,
+                //'maticContract' => $this->maticContract,
                 'lastUpdate' => $this->lastUpdate
             ];
         }
+
+        if ($isAdmin) {
+            $response['maticContract'] = $this->maticContract;
+        }
+
         return $response;
     }
 }
