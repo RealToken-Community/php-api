@@ -67,7 +67,7 @@ class Token
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $assetPrice;
+    private $totalInvestment;
 
     /**
      * @ORM\Column(type="float", nullable=true)
@@ -107,7 +107,7 @@ class Token
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $propertyMaintenance;
+    private $initialMaintenanceReserve;
 
     /**
      * @var array $coordinate
@@ -249,6 +249,26 @@ class Token
      * @ORM\Column(type="array", nullable=true)
      */
     private $blockchainAddresses = [];
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $underlyingAssetPrice;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $renovationReserve;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $propertyMaintenanceMonthly;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $rentStartDay;
 
 //    /**
 //     * Token constructor.
@@ -456,14 +476,14 @@ class Token
         return $this;
     }
 
-    public function getAssetPrice(): ?float
+    public function getTotalInvestment(): ?float
     {
-        return $this->assetPrice;
+        return $this->totalInvestment;
     }
 
-    public function setAssetPrice(?float $assetPrice): self
+    public function setTotalInvestment(?float $totalInvestment): self
     {
-        $this->assetPrice = $assetPrice;
+        $this->totalInvestment = $totalInvestment;
 
         return $this;
     }
@@ -576,14 +596,14 @@ class Token
         return $this;
     }
 
-    public function getPropertyMaintenance(): ?float
+    public function getInitialMaintenanceReserve(): ?float
     {
-        return $this->propertyMaintenance;
+        return $this->initialMaintenanceReserve;
     }
 
-    public function setPropertyMaintenance(?float $propertyMaintenance): self
+    public function setInitialMaintenanceReserve(?float $initialMaintenanceReserve): self
     {
-        $this->propertyMaintenance = $propertyMaintenance;
+        $this->initialMaintenanceReserve = $initialMaintenanceReserve;
 
         return $this;
     }
@@ -928,6 +948,54 @@ class Token
         return $this;
     }
 
+    public function getUnderlyingAssetPrice(): ?float
+    {
+        return $this->underlyingAssetPrice;
+    }
+
+    public function setUnderlyingAssetPrice(?float $underlyingAssetPrice): self
+    {
+        $this->underlyingAssetPrice = $underlyingAssetPrice;
+
+        return $this;
+    }
+
+    public function getRenovationReserve(): ?float
+    {
+        return $this->renovationReserve;
+    }
+
+    public function setRenovationReserve(?float $renovationReserve): self
+    {
+        $this->renovationReserve = $renovationReserve;
+
+        return $this;
+    }
+
+    public function getPropertyMaintenanceMonthly(): ?float
+    {
+        return $this->propertyMaintenanceMonthly;
+    }
+
+    public function setPropertyMaintenanceMonthly(?float $propertyMaintenanceMonthly): self
+    {
+        $this->propertyMaintenanceMonthly = $propertyMaintenanceMonthly;
+
+        return $this;
+    }
+
+    public function getRentStartDay(): ?\DateTimeInterface
+    {
+        return $this->rentStartDay;
+    }
+
+    public function setRentStartDay(?\DateTimeInterface $rentStartDay): self
+    {
+        $this->rentStartDay = $rentStartDay;
+
+        return $this;
+    }
+
     public function __toArray($isAuth = false, $isAdmin = false): array
     {
         if ($isAuth) {
@@ -941,7 +1009,7 @@ class Token
                 'totalTokens' => $this->totalTokens,
                 'ethereumContract' => $this->ethereumContract,
                 //'maticContract' => $this->maticContract,
-                'assetPrice' => $this->assetPrice,
+                'totalInvestment' => $this->totalInvestment,
                 'grossRentYear' => $this->grossRentYear,
                 'grossRentMonth' => $this->grossRentMonth,
                 'propertyManagement' => $this->propertyManagement,
@@ -951,7 +1019,7 @@ class Token
                 'insurance' => $this->insurance,
                 'propertyTaxes' => $this->propertyTaxes,
                 'utilities' => $this->utilities,
-                'propertyMaintenance' => $this->propertyMaintenance,
+                'initialMaintenanceReserve' => $this->initialMaintenanceReserve,
                 'netRentDay' => $this->netRentDay,
                 'netRentMonth' => $this->netRentMonth,
                 'netRentYear' => $this->netRentYear,
@@ -975,6 +1043,10 @@ class Token
                 'sellPropertyTo' => $this->sellPropertyTo,
                 'secondaryMarketplace' => $this->secondaryMarketplace,
                 'blockchainAddresses' => $this->blockchainAddresses,
+                'underlyingAssetPrice' => $this->underlyingAssetPrice,
+                'renovationReserve' => $this->renovationReserve,
+                'propertyMaintenanceMonthly' => $this->propertyMaintenanceMonthly,
+                'rentStartDay' => $this->rentStartDay,
                 'lastUpdate' => $this->lastUpdate
             ];
 

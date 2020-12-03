@@ -487,7 +487,7 @@ class TokenService
         $token->setTotalTokens($dataJson['totalTokens'] ?? null);
         $token->setEthereumContract($dataJson['ethereumContract']);
         $token->setMaticContract($dataJson['maticContract'] ?? null);
-        $token->setAssetPrice($dataJson['assetPrice'] ?? null);
+        $token->setTotalInvestment($dataJson['totalInvestment'] ?? null);
         $token->setGrossRentMonth($dataJson['grossRent'] ?? null);
         $token->setGrossRentYear($token->getGrossRentMonth() * 12 ?? null);
         $token->setPropertyManagementPercent($dataJson['propertyManagementPercent'] ?? null);
@@ -532,6 +532,10 @@ class TokenService
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?? null);
         $token->setSecondaryMarketplace($dataJson['secondaryMarketPlace'] ?? null);
         $token->setBlockchainAddresses($dataJson['blockchainAddresses'] ?? null);
+        $token->setUnderlyingAssetPrice($dataJson['underlyingAssetPrice'] ?? null);
+        $token->setRenovationReserve($dataJson['renovationReserve'] ?? null);
+        $token->setPropertyMaintenanceMonthly($dataJson['propertyMaintenanceMonthly'] ?? null);
+        $token->setRentStartDay($dataJson['rentStartDay'] ?? null);
         $token->setLastUpdate(new DateTime());
 
         return $token;
