@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\Entity\Application;
 use App\Entity\Token;
-use App\Entity\User;
 use App\Security\TokenAuthenticator;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -497,7 +496,6 @@ class TokenService
         $token->setInsurance($dataJson['insurance'] ?? null);
         $token->setPropertyTaxes($dataJson['propertyTaxes'] ?? null);
         $token->setUtilities($dataJson['utilities'] ?? null);
-        $token->setPropertyMaintenance($dataJson['propertyMaintenance'] ?? null);
         $token->setNetRentMonth(
             $token->getGrossRentMonth()
             - $token->getPropertyManagement()
@@ -509,7 +507,7 @@ class TokenService
         $token->setNetRentYearPerToken($token->getNetRentYear() / $token->getTotalTokens() ?? null);
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?? null);
         $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?? null);
-        $token->setAnnualPercentageYield($token->getNetRentYear() / $token->getAssetPrice() * 100 ?? null);
+        $token->setAnnualPercentageYield($token->getNetRentYear() / $token->getTotalInvestment() * 100 ?? null);
         $token->setCoordinate([
             'lat' => number_format(floatval($dataJson['coordinate']['lat']), 6),
             'lng' => number_format(floatval($dataJson['coordinate']['lng']), 6)
