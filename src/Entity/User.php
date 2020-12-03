@@ -41,6 +41,16 @@ class User implements UserInterface
      */
     private $applications;
 
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    private $username;
+
+    /**
+     * @ORM\Column(type="string", length=42)
+     */
+    private $ethereumAddress;
+
     public function __construct()
     {
         $this->applications = new ArrayCollection();
@@ -150,6 +160,25 @@ class User implements UserInterface
                 $application->setUserId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getEthereumAddress(): ?string
+    {
+        return $this->ethereumAddress;
+    }
+
+    public function setEthereumAddress(string $ethereumAddress): self
+    {
+        $this->ethereumAddress = $ethereumAddress;
 
         return $this;
     }
