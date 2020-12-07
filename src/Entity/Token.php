@@ -141,7 +141,7 @@ class Token
     private $lotSize;
 
     /**
-     * @ORM\Column(type="string", length=20, nullable=true)
+     * @ORM\Column(type="string", length=30, nullable=true)
      */
     private $bedroomBath;
 
@@ -268,7 +268,7 @@ class Token
     /**
      * @ORM\Column(type="date", nullable=true)
      */
-    private $rentStartDay;
+    private $rentStartDate;
 
 //    /**
 //     * Token constructor.
@@ -984,14 +984,14 @@ class Token
         return $this;
     }
 
-    public function getRentStartDay(): ?\DateTimeInterface
+    public function getRentStartDate(): ?\DateTimeInterface
     {
-        return $this->rentStartDay;
+        return $this->rentStartDate;
     }
 
-    public function setRentStartDay(?\DateTimeInterface $rentStartDay): self
+    public function setRentStartDate(?\DateTimeInterface $rentStartDate): self
     {
-        $this->rentStartDay = $rentStartDay;
+        $this->rentStartDate = $rentStartDate;
 
         return $this;
     }
@@ -1046,7 +1046,7 @@ class Token
                 'underlyingAssetPrice' => $this->underlyingAssetPrice,
                 'renovationReserve' => $this->renovationReserve,
                 'propertyMaintenanceMonthly' => $this->propertyMaintenanceMonthly,
-                'rentStartDay' => $this->rentStartDay,
+                'rentStartDay' => $this->rentStartDate,
                 'lastUpdate' => $this->lastUpdate
             ];
 
