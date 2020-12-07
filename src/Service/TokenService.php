@@ -413,7 +413,15 @@ class TokenService
                 }
             }
             return $newData;
-        } else {
+        } elseif (array_key_first($dataJson[0]) === "fullName") {
+            $newData = [];
+            foreach ($dataJson as $key => $value) {
+                if ($value['canal'] === "Release") {
+                    $newData[] = $value;
+                }
+            }
+            return $newData;
+        }else {
             return false;
         }
     }
@@ -480,22 +488,22 @@ class TokenService
         }
         $token->setFullName((string)$dataJson['fullName']);
         $token->setShortName($dataJson['shortName'] ?? null);
-        $token->setTokenPrice($dataJson['tokenPrice'] ?? null);
+        $token->setTokenPrice((float)$dataJson['tokenPrice'] ?? null);
         $token->setCanal($dataJson['canal'] ?? null);
         $token->setCurrency($dataJson['currency'] ?? null);
         $token->setTotalTokens($dataJson['totalTokens'] ?? null);
         $token->setEthereumContract($dataJson['ethereumContract']);
         $token->setMaticContract($dataJson['maticContract'] ?? null);
-        $token->setTotalInvestment($dataJson['totalInvestment'] ?? null);
-        $token->setGrossRentMonth($dataJson['grossRent'] ?? null);
+        $token->setTotalInvestment((float)$dataJson['totalInvestment'] ?? null);
+        $token->setGrossRentMonth((float)$dataJson['grossRent'] ?? null);
         $token->setGrossRentYear($token->getGrossRentMonth() * 12 ?? null);
-        $token->setPropertyManagementPercent($dataJson['propertyManagementPercent'] ?? null);
+        $token->setPropertyManagementPercent((float)$dataJson['propertyManagementPercent'] ?? null);
         $token->setPropertyManagement($token->getGrossRentMonth() * $token->getPropertyManagementPercent() ?? null);
-        $token->setRealtPlatformPercent($dataJson['realTPlatformPercent'] ?? null);
+        $token->setRealtPlatformPercent((float)$dataJson['realTPlatformPercent'] ?? null);
         $token->setRealtPlatform($token->getGrossRentMonth() * $token->getRealtPlatformPercent() ?? null);
-        $token->setInsurance($dataJson['insurance'] ?? null);
-        $token->setPropertyTaxes($dataJson['propertyTaxes'] ?? null);
-        $token->setUtilities($dataJson['utilities'] ?? null);
+        $token->setInsurance((float)$dataJson['insurance'] ?? null);
+        $token->setPropertyTaxes((float)$dataJson['propertyTaxes'] ?? null);
+        $token->setUtilities((float)$dataJson['utilities'] ?? null);
         $token->setNetRentMonth(
             $token->getGrossRentMonth()
             - $token->getPropertyManagement()
@@ -507,7 +515,8 @@ class TokenService
         $token->setNetRentYearPerToken($token->getNetRentYear() / $token->getTotalTokens() ?? null);
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?? null);
         $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?? null);
-        $token->setAnnualPercentageYield($token->getNetRentYear() / $token->getTotalInvestment() * 100 ?? null);
+        //$token->setAnnualPercentageYield($token->getNetRentYear() / $token->getTotalInvestment() * 100 ?? null);
+        $token->setAnnualPercentageYield($token->getTotalInvestment() ? $token->getNetRentYear() / $token->getTotalInvestment() * 100 : null);
         $token->setCoordinate([
             'lat' => number_format(floatval($dataJson['coordinate']['lat']), 6),
             'lng' => number_format(floatval($dataJson['coordinate']['lng']), 6)
@@ -530,10 +539,10 @@ class TokenService
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?? null);
         $token->setSecondaryMarketplace($dataJson['secondaryMarketPlace'] ?? null);
         $token->setBlockchainAddresses($dataJson['blockchainAddresses'] ?? null);
-        $token->setUnderlyingAssetPrice($dataJson['underlyingAssetPrice'] ?? null);
-        $token->setRenovationReserve($dataJson['renovationReserve'] ?? null);
-        $token->setPropertyMaintenanceMonthly($dataJson['propertyMaintenanceMonthly'] ?? null);
-        $token->setRentStartDay($dataJson['rentStartDay'] ?? null);
+        $token->setUnderlyingAssetPrice((float)$dataJson['underlyingAssetPrice'] ?? null);
+        $token->setRenovationReserve((float)$dataJson['renovationReserve'] ?? null);
+        $token->setPropertyMaintenanceMonthly((float)$dataJson['propertyMaintenanceMonthly'] ?? null);
+        $token->setRentStartDate($dataJson['rentStartDate'] ? new DateTime($dataJson['rentStartDate']) : null);
         $token->setLastUpdate(new DateTime());
 
         return $token;
