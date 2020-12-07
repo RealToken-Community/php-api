@@ -1046,7 +1046,7 @@ class Token
                 'underlyingAssetPrice' => $this->underlyingAssetPrice,
                 'renovationReserve' => $this->renovationReserve,
                 'propertyMaintenanceMonthly' => $this->propertyMaintenanceMonthly,
-                'rentStartDay' => $this->rentStartDate,
+                'rentStartDate' => $this->rentStartDate,
                 'lastUpdate' => $this->lastUpdate
             ];
 
