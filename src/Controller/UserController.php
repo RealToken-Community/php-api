@@ -2,8 +2,122 @@
 
 namespace App\Controller;
 
-class UserController
+use App\Entity\Application;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class UserController extends AbstractController
 {
+    /** @var EntityManagerInterface $entityManager */
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * Register new Api User.
+     *
+     * @param Request $request
+     *
+     * @Route("/register/apiUser", name="register_api_user", methods={"GET", "POST"})
+     */
+    public function registerApiUser(Request $request)
+    {
+        $em = $this->entityManager;
+
+        $user = $application = "";
+
+        if ($request->getMethod() == 'POST') {
+            $rqt = $request->request;
+
+            $adminToken = $rqt->get('adminToken');
+            $isAdmin = $this->isAdmin($adminToken);
+
+            if (!$isAdmin) {
+                $response = new JsonResponse();
+
+                $response->setData(["status" => "error", "message" => "User is not granted"])
+                        ->setStatusCode(Response::HTTP_UNAUTHORIZED);
+                return $response;
+            }
+
+            if ($rqt->get('isAdmin')) {
+                $roles = ["ROLE_USER", "ROLE_ADMIN"];
+            } else {
+                $roles = ["ROLE_USER"];
+            }
+
+            $user = new User();
+            $user->setEmail($rqt->get('email'));
+            $user->setRoles($roles);
+            $user->setPassword('eeaeaeae');
+            $user->setUsername($rqt->get('username'));
+            $user->setEthereumAddress($rqt->get('ethereumAddress'));
+            $em->persist($user);
+
+            $application = new Application();
+            $application->setUser($user);
+            $application->setName($rqt->get('appName'));
+            $application->setApiToken($this->generateToken());
+            $em->persist($application);
+
+            $em->flush();
+        }
+
+        return $this->render(
+            "registerApiUser.html.twig", [
+                'user' => $user,
+                'application' => $application,
+            ]
+        );
+    }
+
+    private function isAdmin(string $apiKey)
+    {
+        $em = $this->entityManager;
+        $applicationRepository = $em->getRepository(Application::class);
+        $application = $applicationRepository->findOneBy(['apiToken' => $apiKey]);
+
+        $user = $application->getUser();
+        $roles = $user->getRoles();
+
+        if (!in_array("ROLE_ADMIN", $roles)) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Generate unique token.
+     *
+     * @return string
+     */
+    private function generateToken()
+    {
+        return $this->generateUuid(8).'-preprod-1'.$this->generateUuid(3).'-'.$this->generateUuid(4).'-'.$this->generateUuid(12);
+    }
+
+    /**
+     * Generate unique uuid.
+     *
+     * @param int $length
+     *
+     * @return string
+     */
+    private function generateUuid(int $length)
+    {
+        return substr(bin2hex(random_bytes(15)), 0, $length);
+    }
+
 //    public function __construct(TokenStorageInterface $tokenStorageInterface, JWTTokenManagerInterface $jwtManager, LoggerInterface $logger)
 //    {
 //        $this->jwtManager = $jwtManager;
