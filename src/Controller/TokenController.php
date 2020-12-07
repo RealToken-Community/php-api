@@ -33,6 +33,7 @@ class TokenController
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
      * @param Request $request
+     *
      * @return JsonResponse
      * @Route("/tokens", name="tokens_show", methods={"GET"})
      */
@@ -54,6 +55,7 @@ class TokenController
      * @Security(name="api_key")
      * @param string $uuid
      * @param Request $request
+     *
      * @return JsonResponse
      * @Route("/token/{uuid}", name="token_show", methods={"GET"})
      */
@@ -84,6 +86,7 @@ class TokenController
      * @Security(name="api_key")
      * @param string $uuid
      * @param Request $request
+     *
      * @return JsonResponse
      * @Route("/token/{uuid}", name="token_update", methods={"PUT"})
      */
@@ -105,6 +108,7 @@ class TokenController
      * @Security(name="api_key")
      * @param string $uuid
      * @param Request $request
+     *
      * @return JsonResponse
      * @Route("/token/{uuid}", name="token_delete", methods={"DELETE"})
      */
@@ -134,6 +138,7 @@ class TokenController
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
      * @param Request $request
+     *
      * @return JsonResponse
      * @Route("/tokens", name="token_create", methods={"POST"})
      */
