@@ -57,7 +57,7 @@ class UserController extends AbstractController
             $user = new User();
             $user->setEmail($rqt->get('email'));
             $user->setRoles($roles);
-            $user->setPassword('eeaeaeae');
+            $user->setPassword($this->generatePassword());
             $user->setUsername($rqt->get('username'));
             $user->setEthereumAddress($rqt->get('ethereumAddress'));
             $em->persist($user);
@@ -116,6 +116,17 @@ class UserController extends AbstractController
     private function generateUuid(int $length)
     {
         return substr(bin2hex(random_bytes(15)), 0, $length);
+    }
+
+    private function generatePassword($length = 12)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*?';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 
 //    public function __construct(TokenStorageInterface $tokenStorageInterface, JWTTokenManagerInterface $jwtManager, LoggerInterface $logger)
