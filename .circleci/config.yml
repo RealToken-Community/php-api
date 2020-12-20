@@ -64,12 +64,12 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
               sudo gem install capistrano
-              sudo gem install capistrano-ext
+              sudo gem install capistrano-ext capistrano-multiconfig
               cap staging deploy
             fi
 
-      - discord/status:
-          fail_only: false
-          success_message: "**${CIRCLE_USERNAME}** deployed successfully RealT API to PreProd."
-          failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
-          webhook: "${DISCORD_STATUS_WEBHOOK}"
+#      - discord/status:
+#          fail_only: false
+#          success_message: "**${CIRCLE_USERNAME}** deployed successfully RealT API to PreProd."
+#          failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
+#          webhook: "${DISCORD_STATUS_WEBHOOK}"
