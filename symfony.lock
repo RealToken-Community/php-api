@@ -110,7 +110,7 @@
         "version": "2.1.1"
     },
     "php": {
-        "version": "7.3"
+        "version": "7.4"
     },
     "phpdocumentor/reflection-common": {
         "version": "2.2.0"
@@ -125,6 +125,9 @@
         "version": "1.0.1"
     },
     "psr/container": {
+        "version": "1.0.0"
+    },
+    "psr/event-dispatcher": {
         "version": "1.0.0"
     },
     "psr/log": {
@@ -167,11 +170,11 @@
             "config/bootstrap.php"
         ]
     },
-    "symfony/debug": {
-        "version": "v4.4.11"
-    },
     "symfony/dependency-injection": {
         "version": "v4.4.11"
+    },
+    "symfony/deprecation-contracts": {
+        "version": "v2.2.0"
     },
     "symfony/doctrine-bridge": {
         "version": "v4.4.11"
@@ -227,16 +230,13 @@
         ]
     },
     "symfony/http-client-contracts": {
-        "version": "v1.1.10"
+        "version": "v2.3.1"
     },
     "symfony/http-foundation": {
         "version": "v4.4.11"
     },
     "symfony/http-kernel": {
         "version": "v4.4.11"
-    },
-    "symfony/inflector": {
-        "version": "v4.4.13"
     },
     "symfony/maker-bundle": {
         "version": "1.0",
@@ -247,25 +247,19 @@
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
     },
-    "symfony/mime": {
-        "version": "v4.4.11"
-    },
     "symfony/options-resolver": {
         "version": "v4.4.15"
     },
     "symfony/orm-pack": {
         "version": "v2.0.0"
     },
-    "symfony/polyfill-intl-idn": {
-        "version": "v1.18.1"
+    "symfony/polyfill-intl-grapheme": {
+        "version": "v1.20.0"
     },
     "symfony/polyfill-intl-normalizer": {
         "version": "v1.18.1"
     },
     "symfony/polyfill-mbstring": {
-        "version": "v1.18.1"
-    },
-    "symfony/polyfill-php72": {
         "version": "v1.18.1"
     },
     "symfony/polyfill-php73": {
@@ -326,6 +320,9 @@
     },
     "symfony/stopwatch": {
         "version": "v4.4.11"
+    },
+    "symfony/string": {
+        "version": "v5.1.8"
     },
     "symfony/translation-contracts": {
         "version": "v1.1.10"

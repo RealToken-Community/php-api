@@ -21,3 +21,8 @@ Create Table :
 ```
 sudo docker-compose exec -T symfony php bin/console doctrine:schema:update --force
 ```
+
+Migrate :
+```
+sudo docker-compose exec -T symfony php bin/console doctrine:migrations:migrate
+```
