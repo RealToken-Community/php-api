@@ -12,8 +12,8 @@ jobs:
       - checkout
 
       - run: sudo apt update
-      - run: sudo apt install ruby rubygems ruby-full
-      - run: sudo docker-php-ext-install zip ruby
+      - run: sudo apt install ruby
+      - run: sudo docker-php-ext-install zip
 
       # Download and cache dependencies
       - restore_cache:
