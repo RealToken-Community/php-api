@@ -15,27 +15,27 @@ jobs:
 
       # Download and cache dependencies
       - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "composer.json" }}
-            - v1-dependencies-
+        keys:
+          - v1-dependencies-{{ checksum "composer.json" }}
+          - v1-dependencies-
 
       - run:
-          name: "Create Environment file"
-          command: mv .env.circleci .env
+        name: "Create Environment file"
+        command: mv .env.circleci .env
       - run:
-          name: "Install Dependencies"
-          command : composer install -n --prefer-dist
+        name: "Install Dependencies"
+        command : composer install -n --prefer-dist
 
       - save_cache:
-          key: v1-dependencies-{{ checksum "composer.json" }}
-          paths:
-            - ./vendor
+        key: v1-dependencies-{{ checksum "composer.json" }}
+        paths:
+          - ./vendor
 
       - run:
-          name: "Run web server"
-          #command: php bin/console server:run
-          command: symfony server:start
-          background: true
+        name: "Run web server"
+        #command: php bin/console server:run
+        command: symfony server:start
+        background: true
 
       # Database
       #- run: touch storage/testing.sqlite
@@ -43,11 +43,31 @@ jobs:
 
       # Run tests with phpunit
       #- run:
-      #    name: "Run tests"
-      #    command: composer test
+      #  name: "Run tests"
+      #  command: composer test
+
+      - add_ssh_keys:
+        fingerprints:
+          - "20:00:72:01:07:09:68:c9:78:df:ee:54:2e:72:5a:c8"
+
+      - deploy:
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            gem install capistrano
+            gem install capistrano-ext
+            cap production deploy
+          fi
+
+      - deploy:
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "preprod" ]; then
+            gem install capistrano
+            gem install capistrano-ext
+            cap staging deploy
+          fi
 
       - discord/status:
-          fail_only: false
-          success_message: "**${CIRCLE_USERNAME}** deployed successfully RealT API to PreProd."
-          failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
-          webhook: "${DISCORD_STATUS_WEBHOOK}"
+        fail_only: false
+        success_message: "**${CIRCLE_USERNAME}** deployed successfully RealT API to PreProd."
+        failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
+        webhook: "${DISCORD_STATUS_WEBHOOK}"
