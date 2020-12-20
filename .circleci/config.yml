@@ -12,7 +12,7 @@ jobs:
       - checkout
 
       - run: sudo apt update
-      - run: sudo apt install ruby
+      - run: sudo apt install ruby-gem
       - run: sudo docker-php-ext-install zip
 
       # Download and cache dependencies
@@ -63,7 +63,6 @@ jobs:
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
-              bundle exec cap staging deploy
               gem install capistrano
               gem install capistrano-ext
               cap staging deploy
