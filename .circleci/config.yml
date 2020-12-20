@@ -12,7 +12,7 @@ jobs:
       - checkout
 
       - run: sudo apt update
-      - run: sudo apt install ruby-full
+      - run: sudo apt install ruby
       - run: sudo docker-php-ext-install zip
 
       # Download and cache dependencies
@@ -56,7 +56,7 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               sudo gem install capistrano
-              gem install capistrano-ext
+              sudo gem install capistrano-ext
               cap production deploy
             fi
 
