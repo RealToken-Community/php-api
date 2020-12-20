@@ -5,13 +5,14 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/php:7.4-node-browsers
+      - image: circleci/php:7.4
+#      - image: circleci/ruby:2.7.2
 
     steps:
       - checkout
 
       - run: sudo apt update
-      - run: sudo docker-php-ext-install zip ruby-full
+      - run: sudo docker-php-ext-install zip ruby
 
       # Download and cache dependencies
       - restore_cache:
