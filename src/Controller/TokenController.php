@@ -3,11 +3,10 @@
 namespace App\Controller;
 
 use App\Service\TokenService;
-use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -15,14 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class TokenController
 {
-    /** @var EntityManagerInterface $entityManager */
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
     /**
      * List all tokens.
      *
@@ -32,15 +23,13 @@ class TokenController
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
-     * @param Request $request
+     * @param TokenService $tokenService
      *
      * @return JsonResponse
      * @Route("/tokens", name="tokens_show", methods={"GET"})
      */
-    public function showTokens(Request $request): JsonResponse
+    public function showTokens(TokenService $tokenService): JsonResponse
     {
-        $tokenService = new TokenService($request, $this->entityManager);
-
         return $tokenService->getTokens();
     }
 
@@ -53,16 +42,14 @@ class TokenController
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
+     * @param TokenService $tokenService
      * @param string $uuid
-     * @param Request $request
      *
      * @return JsonResponse
      * @Route("/token/{uuid}", name="token_show", methods={"GET"})
      */
-    public function showToken(string $uuid, Request $request) : JsonResponse
+    public function showToken(TokenService $tokenService, string $uuid) : JsonResponse
     {
-        $tokenService = new TokenService($request, $this->entityManager);
-
         return $tokenService->getToken($uuid);
     }
 
@@ -84,16 +71,15 @@ class TokenController
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
+     * @param TokenService $tokenService
      * @param string $uuid
-     * @param Request $request
      *
      * @return JsonResponse
+     * @throws Exception
      * @Route("/token/{uuid}", name="token_update", methods={"PUT"})
      */
-    public function updateToken(string $uuid, Request $request) : JsonResponse
+    public function updateToken(TokenService $tokenService, string $uuid) : JsonResponse
     {
-        $tokenService = new TokenService($request, $this->entityManager);
-
         return $tokenService->updateToken($uuid);
     }
 
@@ -106,16 +92,14 @@ class TokenController
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
+     * @param TokenService $tokenService
      * @param string $uuid
-     * @param Request $request
      *
      * @return JsonResponse
      * @Route("/token/{uuid}", name="token_delete", methods={"DELETE"})
      */
-    public function deleteToken(string $uuid, Request $request) : JsonResponse
+    public function deleteToken(TokenService $tokenService, string $uuid) : JsonResponse
     {
-        $tokenService = new TokenService($request, $this->entityManager);
-
         return $tokenService->deleteToken($uuid);
     }
 
@@ -137,15 +121,14 @@ class TokenController
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
-     * @param Request $request
+     * @param TokenService $tokenService
      *
      * @return JsonResponse
+     * @throws Exception
      * @Route("/tokens", name="token_create", methods={"POST"})
      */
-    public function createToken(Request $request) : JsonResponse
+    public function createToken(TokenService $tokenService) : JsonResponse
     {
-        $tokenService = new TokenService($request, $this->entityManager);
-
         return $tokenService->createToken();
     }
 }
