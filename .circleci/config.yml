@@ -55,7 +55,7 @@ jobs:
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              gem install capistrano
+              sudo gem install capistrano
               gem install capistrano-ext
               cap production deploy
             fi
