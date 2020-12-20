@@ -60,7 +60,7 @@ jobs:
 
       - deploy:
           command: |
-            if [ "${CIRCLE_BRANCH}" == "preprod" ]; then
+            if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
               gem install capistrano
               gem install capistrano-ext
               cap staging deploy
