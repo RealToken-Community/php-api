@@ -12,7 +12,7 @@ jobs:
       - checkout
 
       - run: sudo apt update
-      - run: sudo apt install ruby-gem
+      - run: sudo apt install ruby-full
       - run: sudo docker-php-ext-install zip
 
       # Download and cache dependencies
