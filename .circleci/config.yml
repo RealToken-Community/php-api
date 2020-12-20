@@ -55,16 +55,16 @@ jobs:
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              sudo gem install capistrano
-              sudo gem install capistrano-ext
+              gem install capistrano
+              gem install capistrano-ext
               cap production deploy
             fi
 
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
-              gem install capistrano
-              gem install capistrano-ext
+              sudo gem install capistrano
+              sudo gem install capistrano-ext
               cap staging deploy
             fi
 
