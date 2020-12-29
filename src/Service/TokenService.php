@@ -11,7 +11,7 @@ use Doctrine\ORM\ORMException;
 use DOMDocument;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -20,21 +20,19 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class TokenService
 {
-    /** @var EntityManagerInterface $entityManager */
-    private $entityManager;
-    /** @var Request $request */
-    private $request;
+    private $em;
+    protected $request;
 
     /**
      * TokenService constructor.
      *
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
+     * @param RequestStack $requestStack
+     * @param EntityManagerInterface $em
      */
-    public function __construct(Request $request, EntityManagerInterface $entityManager)
+    public function __construct(RequestStack $requestStack, EntityManagerInterface $em)
     {
-        $this->request = $request;
-        $this->entityManager = $entityManager;
+        $this->request = $requestStack->getCurrentRequest();
+        $this->em = $em;
     }
 
     /**
@@ -46,14 +44,11 @@ class TokenService
     {
         $response = new JsonResponse();
 
-        $em = $this->entityManager;
-        $request = $this->request;
-
-        $apiKey = $request->headers->get('X-AUTH-REALT-TOKEN');
+        $apiKey = $this->request->headers->get('X-AUTH-REALT-TOKEN');
         $credentials = ['isAdmin' => false];
 
         if (!empty($apiKey)) {
-            $applicationRepository = $em->getRepository(Application::class);
+            $applicationRepository = $this->em->getRepository(Application::class);
             $application = $applicationRepository->findOneBy(['apiToken' => $apiKey]);
 
             if (!($application Instanceof Application)) {
@@ -69,8 +64,8 @@ class TokenService
                 $credentials = ['isAdmin' => true];
             }
 
-            $tokenAuthenticator = new TokenAuthenticator($this->entityManager);
-            $isAuth = $tokenAuthenticator->supports($request);
+            $tokenAuthenticator = new TokenAuthenticator($this->em);
+            $isAuth = $tokenAuthenticator->supports($this->request);
 
             if (!$isAuth) {
                 $response->setData(["status" => "error", "message" => "Invalid API Token"])
@@ -78,7 +73,7 @@ class TokenService
                 return $response;
             }
 
-            $quotaService = new QuotaService($em);
+            $quotaService = new QuotaService($this->em);
             $quotaService->consumeQuota($application);
 
             $credentials['isAuth'] = true;
@@ -105,8 +100,7 @@ class TokenService
         $isAuth = $credentials['isAuth'] ?? false;
         $isAdmin = $credentials['isAdmin'] ?? false;
 
-        $em = $this->entityManager;
-        $tokens = $em->getRepository(Token::class)->findAll();
+        $tokens = $this->em->getRepository(Token::class)->findAll();
 
         $result = [];
         foreach ($tokens as $token){
@@ -143,9 +137,7 @@ class TokenService
         $isAuth = $credentials['isAuth'] ?? false;
         $isAdmin = $credentials['isAdmin'] ?? false;
 
-        $em = $this->entityManager;
-
-        $token = $em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]);
+        $token = $this->em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]);
 
         if (!($token instanceof Token)) {
             $response->setData(['status' => 'error', 'message' => 'Token not found'])
@@ -165,6 +157,7 @@ class TokenService
      * @param array|null $dataJson
      *
      * @return JsonResponse
+     * @throws \Exception
      */
     public function updateToken(string $uuid, array $dataJson = [])
     {
@@ -187,8 +180,7 @@ class TokenService
             return $response;
         }
 
-        $em = $this->entityManager;
-        $token = $this->checkTokenExistence($em, $uuid);
+        $token = $this->checkTokenExistence($uuid);
 
         if (!($token Instanceof Token)) {
             return $token;
@@ -206,7 +198,7 @@ class TokenService
         }
 
         $this->tokenMapping($parsedJson, $token);
-        $em->flush();
+        $this->em->flush();
 
         $response->setData(["status" => "success", "message" => "Token updated successfully"])
                 ->setStatusCode(Response::HTTP_ACCEPTED);
@@ -241,15 +233,14 @@ class TokenService
             return $response;
         }
 
-        $em = $this->entityManager;
-        $token = $this->checkTokenExistence($em, $uuid);
+        $token = $this->checkTokenExistence($uuid);
 
         if (!($token Instanceof Token)) {
             return $token;
         }
 
-        $em->remove($token);
-        $em->flush();
+        $this->em->remove($token);
+        $this->em->flush();
 
         $response->setData(["status" => "success", "message" => "Token deleted successfully"])
                 ->setStatusCode(Response::HTTP_OK);
@@ -260,6 +251,7 @@ class TokenService
      * Global token creation.
      *
      * @return JsonResponse
+     * @throws \Exception
      */
     public function createToken()
     {
@@ -282,8 +274,6 @@ class TokenService
             return $response;
         }
 
-        $em = $this->entityManager;
-
         $parsedJson = $this->checkAndParseDataJson();
 
         if (!$parsedJson) {
@@ -292,10 +282,12 @@ class TokenService
             return $response;
         }
 
+        $tokenRepository = $this->em->getRepository(Token::class);
+
         // Check if unique value or multiple are push
-        if (!isset($parsedJson[0])) {
-            $actualToken = $em->getRepository(Token::class)->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
-            if ($actualToken instanceof Token) { // UPDATE
+        if (!isset($parsedJson[0])) { // Single
+            $actualtoken = $tokenRepository->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
+            if ($actualtoken instanceof Token) { // UPDATE
                 $token = $this->tokenMapping($parsedJson);
                 $response = $this->updateToken($token->getEthereumContract(), $parsedJson);
             } else { // CREATE
@@ -304,17 +296,15 @@ class TokenService
                 if ($symbol) {
                     $token->setSymbol($symbol);
                 }
-                $em->persist($token);
+                $this->em->persist($token);
 
                 $response->setData(["status" => "success", "message" => "Token created successfully"])
                         ->setStatusCode(Response::HTTP_CREATED);
             }
-        } else {
+        } else { // Multiple
             foreach ($parsedJson as $item){
-                if (empty($item['ethereumContract'])) throw new Exception("Field ethereumContract is empty !");
-                if ($item['canal'] === "Alpha") continue;
-
-                $tokenRepository = $em->getRepository(Token::class);
+                if (empty($item['ethereumContract'])) continue;
+                if (!$this->haveValidChannel($item['canal'])) continue;
 
                 $actualToken = $tokenRepository->findOneBy(['ethereumContract' => $item['ethereumContract']]);
                 if ($actualToken instanceof Token) { // UPDATE
@@ -326,7 +316,7 @@ class TokenService
                     if ($symbol) {
                         $token->setSymbol($symbol);
                     }
-                    $em->persist($token);
+                    $this->em->persist($token);
 
                     $response->setData(["status" => "success", "message" => "Token created successfully"])
                             ->setStatusCode(Response::HTTP_CREATED);
@@ -335,7 +325,7 @@ class TokenService
         }
 
         try {
-            $em->flush();
+            $this->em->flush();
         } catch (ORMException $e) {
             $response->setData(["status" => "error", "message" => $e])
                     ->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -352,24 +342,21 @@ class TokenService
      */
     public function getDataJson()
     {
-        $request = $this->request;
-
-        return json_decode($request->getContent(), true);
+        return json_decode($this->request->getContent(), true);
     }
 
     /**
      * Check existence of Token.
      *
-     * @param EntityManagerInterface $em
      * @param string $uuid
      *
      * @return Token|JsonResponse
      */
-    private function checkTokenExistence(EntityManagerInterface $em, string $uuid)
+    private function checkTokenExistence(string $uuid)
     {
         $response = new JsonResponse();
 
-        $token = $em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]);
+        $token = $this->em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]);
 
         if (!$token) {
             $response->setData(["status" => "error", "message" => "This record doesn't exist"])
@@ -400,7 +387,7 @@ class TokenService
 
         if (array_keys($dataJson)[0] === "fullName") {
             $newData = [];
-            if ($dataJson["canal"] === "Release") {
+            if ($this->haveValidChannel($dataJson['canal'])) {
                 $newData = $dataJson;
             }
             return $newData;
@@ -408,7 +395,7 @@ class TokenService
             $newData = [];
             $data = $dataJson['tokens'];
             foreach ($data as $key => $value) {
-                if ($value['canal'] === "Release") {
+                if ($this->haveValidChannel($value['canal'])) {
                     $newData[] = $value;
                 }
             }
@@ -416,12 +403,28 @@ class TokenService
         } elseif (array_key_first($dataJson[0]) === "fullName") {
             $newData = [];
             foreach ($dataJson as $key => $value) {
-                if ($value['canal'] === "Release") {
+                if ($this->haveValidChannel($value['canal'])) {
                     $newData[] = $value;
                 }
             }
             return $newData;
-        }else {
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check channel validity.
+     *
+     * @param $channel
+     *
+     * @return bool
+     */
+    private function haveValidChannel($channel)
+    {
+        if ($channel === Token::CANAL_RELEASE || $channel === Token::CANAL_COMING_SOON) {
+            return true;
+        } else {
             return false;
         }
     }
@@ -433,7 +436,8 @@ class TokenService
      *
      * @return false|mixed
      */
-    private function getRealtokenSymbol($ethereumContract) {
+    private function getRealtokenSymbol($ethereumContract)
+    {
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -480,6 +484,7 @@ class TokenService
      * @param Token|null $token
      *
      * @return Token
+     * @throws \Exception
      */
     private function tokenMapping(array $dataJson, $token = null): Token
     {
@@ -509,13 +514,14 @@ class TokenService
             - $token->getPropertyManagement()
             - $token->getRealtPlatform()
             - $token->getPropertyTaxes()
-            - $token->getInsurance() ?? null);
+            - $token->getInsurance()
+            - $token->getUtilities()
+            - $token->getPropertyMaintenanceMonthly() ?? null);
         $token->setNetRentYear($token->getNetRentMonth() * 12 ?? null);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?? null);
         $token->setNetRentYearPerToken($token->getNetRentYear() / $token->getTotalTokens() ?? null);
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?? null);
         $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?? null);
-        //$token->setAnnualPercentageYield($token->getNetRentYear() / $token->getTotalInvestment() * 100 ?? null);
         $token->setAnnualPercentageYield($token->getTotalInvestment() ? $token->getNetRentYear() / $token->getTotalInvestment() * 100 : null);
         $token->setCoordinate([
             'lat' => number_format(floatval($dataJson['coordinate']['lat']), 6),

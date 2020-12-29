@@ -12,6 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Token
 {
+    const CANAL_RELEASE = "Release";
+    const CANAL_COMING_SOON = "Coming Soon";
+    const CANAL_CLOSED = "Closed";
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -100,7 +104,7 @@ class Token
     private $propertyTaxes;
 
     /**
-     * @ORM\Column(type="string", length=30, nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      */
     private $utilities;
 
@@ -584,12 +588,12 @@ class Token
         return $this;
     }
 
-    public function getUtilities(): ?string
+    public function getUtilities(): ?float
     {
         return $this->utilities;
     }
 
-    public function setUtilities(?string $utilities): self
+    public function setUtilities(?float $utilities): self
     {
         $this->utilities = $utilities;
 
