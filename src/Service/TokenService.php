@@ -282,10 +282,12 @@ class TokenService
             return $response;
         }
 
+        $tokenRepository = $this->em->getRepository(Token::class);
+
         // Check if unique value or multiple are push
-        if (!isset($parsedJson[0])) {
-            $actualToken = $this->em->getRepository(Token::class)->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
-            if ($actualToken instanceof Token) { // UPDATE
+        if (!isset($parsedJson[0])) { // Single
+            $actualtoken = $tokenRepository->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
+            if ($actualtoken instanceof Token) { // UPDATE
                 $token = $this->tokenMapping($parsedJson);
                 $response = $this->updateToken($token->getEthereumContract(), $parsedJson);
             } else { // CREATE
@@ -299,12 +301,10 @@ class TokenService
                 $response->setData(["status" => "success", "message" => "Token created successfully"])
                         ->setStatusCode(Response::HTTP_CREATED);
             }
-        } else {
+        } else { // Multiple
             foreach ($parsedJson as $item){
                 if (empty($item['ethereumContract'])) throw new Exception("Field ethereumContract is empty !");
-                if ($item['canal'] === "Alpha") continue;
-
-                $tokenRepository = $this->em->getRepository(Token::class);
+                if (!$this->haveValidChannel($item['canal'])) continue;
 
                 $actualToken = $tokenRepository->findOneBy(['ethereumContract' => $item['ethereumContract']]);
                 if ($actualToken instanceof Token) { // UPDATE
@@ -387,7 +387,7 @@ class TokenService
 
         if (array_keys($dataJson)[0] === "fullName") {
             $newData = [];
-            if ($dataJson["canal"] === "Release") {
+            if ($this->haveValidChannel($dataJson['canal'])) {
                 $newData = $dataJson;
             }
             return $newData;
@@ -395,7 +395,7 @@ class TokenService
             $newData = [];
             $data = $dataJson['tokens'];
             foreach ($data as $key => $value) {
-                if ($value['canal'] === "Release") {
+                if ($this->haveValidChannel($value['canal'])) {
                     $newData[] = $value;
                 }
             }
@@ -403,12 +403,28 @@ class TokenService
         } elseif (array_key_first($dataJson[0]) === "fullName") {
             $newData = [];
             foreach ($dataJson as $key => $value) {
-                if ($value['canal'] === "Release") {
+                if ($this->haveValidChannel($value['canal'])) {
                     $newData[] = $value;
                 }
             }
             return $newData;
-        }else {
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check channel validity.
+     *
+     * @param $channel
+     *
+     * @return bool
+     */
+    private function haveValidChannel($channel)
+    {
+        if ($channel === Token::CANAL_RELEASE || $channel === Token::CANAL_COMING_SOON) {
+            return true;
+        } else {
             return false;
         }
     }
@@ -420,7 +436,8 @@ class TokenService
      *
      * @return false|mixed
      */
-    private function getRealtokenSymbol($ethereumContract) {
+    private function getRealtokenSymbol($ethereumContract)
+    {
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -497,7 +514,9 @@ class TokenService
             - $token->getPropertyManagement()
             - $token->getRealtPlatform()
             - $token->getPropertyTaxes()
-            - $token->getInsurance() ?? null);
+            - $token->getInsurance()
+            - $token->getUtilities()
+            - $token->getPropertyMaintenanceMonthly() ?? null);
         $token->setNetRentYear($token->getNetRentMonth() * 12 ?? null);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?? null);
         $token->setNetRentYearPerToken($token->getNetRentYear() / $token->getTotalTokens() ?? null);
