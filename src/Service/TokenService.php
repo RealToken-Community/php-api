@@ -303,7 +303,7 @@ class TokenService
             }
         } else { // Multiple
             foreach ($parsedJson as $item){
-                if (empty($item['ethereumContract'])) throw new Exception("Field ethereumContract is empty !");
+                if (empty($item['ethereumContract'])) continue;
                 if (!$this->haveValidChannel($item['canal'])) continue;
 
                 $actualToken = $tokenRepository->findOneBy(['ethereumContract' => $item['ethereumContract']]);
