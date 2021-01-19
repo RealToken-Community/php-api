@@ -7,7 +7,7 @@ set :symfony_server_user, 'realt'
 set :application, 'api.preprod.realt.ch'
 set :branch, 'preprod'
 
-set :deploy_to, -> { "/home/realt/docker/api" }
+set :deploy_to, -> { "/home/realt/docker/api/preprod" }
 set :repo_path, -> { "#{fetch(:deploy_to)}/repo" }
 
 # Set .env files
