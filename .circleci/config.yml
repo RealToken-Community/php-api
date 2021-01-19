@@ -15,7 +15,12 @@ jobs:
       - run: sudo apt update
       - run: sudo apt install ruby ruby-dev
       - run: sudo docker-php-ext-install zip
+
+      # Install Bundler & Capistrano
       - run: sudo gem install bundler
+      - run: sudo gem install capistrano
+      - run: sudo gem install capistrano-ext
+      - run: sudo gem install capistrano-multiconfig
 
       # Download and cache dependencies
       - restore_cache:
@@ -57,16 +62,12 @@ jobs:
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              gem install capistrano
-              gem install capistrano-ext
               cap production deploy
             fi
 
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
-              sudo gem install capistrano
-              sudo gem install capistrano-ext capistrano-multiconfig
               cap staging deploy
             fi
 
