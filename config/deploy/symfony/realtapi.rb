@@ -35,6 +35,13 @@ namespace :symfony do
     end
 end
 
+# Bypass Composer
+namespace :composer do
+    task :run do
+        execute ""
+    end
+end
+
 namespace :deploy do
     desc 'Starting deployement'
     after :publishing, "symfony:migrate"
