@@ -3,7 +3,6 @@ FROM sigri44/docker-symfony:latest
 # Composer
 WORKDIR /var/www/html
 COPY . ./
-RUN ls -lah
 RUN cp .env.testing .env
 RUN composer install --prefer-dist --no-interaction --no-suggest --optimize-autoloader --no-progress
 RUN mv .env.prod .env
