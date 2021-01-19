@@ -5,10 +5,10 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/php:7.4
+#      - image: circleci/php:7.4
 #      - image: circleci/ruby:2.7.2
 #      - image: yoant/circleci-node-ruby
-#      - image: sigri44/circleci-php-ruby-capistrano
+      - image: sigri44/circleci-php-ruby-capistrano
 
     steps:
       - checkout
@@ -20,7 +20,7 @@ jobs:
       # Install Bundler & Capistrano
       - run: sudo gem install bundler
       - run: sudo gem install capistrano capistrano-ext capistrano-multiconfig
-      - run: sudo bundle install
+      - run: bundle install
 
       # Download and cache dependencies
       - restore_cache:
@@ -68,7 +68,7 @@ jobs:
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
-              bundle exec cap staging deploy
+              cap staging deploy
             fi
 
       - discord/status:
