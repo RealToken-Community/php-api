@@ -19,9 +19,7 @@ jobs:
 
       # Install Bundler & Capistrano
       - run: sudo gem install bundler
-      - run: sudo gem install capistrano
-      - run: sudo gem install capistrano-ext
-      - run: sudo gem install capistrano-multiconfig
+      - run: sudo gem install capistrano capistrano-ext capistrano-multiconfig
 
       # Download and cache dependencies
       - restore_cache:
