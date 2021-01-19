@@ -7,6 +7,7 @@ namespace :docker do
         on roles(:staging) do
             within release_path do
                 # Restart containers on Staging
+                execute "pwd"
                 execute "ls", "-lah"
                 execute "docker-compose", "build"
                 execute "docker-compose", "-f", "docker-compose.preprod.yml", "up", "-d", "--force"
