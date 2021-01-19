@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 # Capistrano & multiconfig/composer
 gem "capistrano", "~> 3.11.2"
-gem "capistrano-composer"
+#gem "capistrano-composer"
 gem "capistrano-multiconfig"
 
 # SSH & Git
