@@ -64,7 +64,7 @@ jobs:
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
-              cap staging deploy
+              cap symfony:realtapi:staging deploy
             fi
 
       - discord/status:
