@@ -69,7 +69,6 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
               bundle exec cap staging deploy
-#              cap staging deploy
             fi
 
       - discord/status:
