@@ -16,6 +16,7 @@ set :repo_path, -> { "#{fetch(:deploy_to)}/repo" }
 
 # set :linked_dirs, %w{vendor}
 set :linked_files, %w{.env}
+set :linked_files, %w{.env.testing}
 set :keep_releases, 5
 
 # Use local composer.phar
