@@ -3,14 +3,14 @@ set :repo_url, 'git@github.com:RealT-Community/RealT-API.git'
 ## Default Symfony Config
 
 namespace :symfony do
-    desc "Run Laravel Artisan migrate."
-    task :migrate do
-    	on roles(:all) do
-        	within release_path do
-                symfony_console('doctrine:migrations:migrate', '--no-interaction')
-            end
-        end
-    end
+#     desc "Run Laravel Artisan migrate."
+#     task :migrate do
+#     	on roles(:all) do
+#         	within release_path do
+#                 symfony_console('doctrine:migrations:migrate', '--no-interaction')
+#             end
+#         end
+#     end
 
     desc "Custom RealT jobs for containers/Symfony config"
     task :realt do
