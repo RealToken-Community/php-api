@@ -8,6 +8,7 @@ jobs:
       - image: circleci/php:7.4
 #      - image: circleci/ruby:2.7.2
 #      - image: yoant/circleci-node-ruby
+#      - image: sigri44/circleci-php-ruby-capistrano
 
     steps:
       - checkout
@@ -62,13 +63,13 @@ jobs:
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              cap production deploy
+              bundle exec cap production deploy
             fi
 
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
-              cap staging deploy
+              bundle exec cap staging deploy
             fi
 
       - discord/status:
