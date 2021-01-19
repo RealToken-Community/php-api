@@ -15,9 +15,7 @@ set :repo_path, -> { "#{fetch(:deploy_to)}/repo" }
 #set :symfony_upload_dotenv_file_on_deploy, false
 
 # set :linked_dirs, %w{vendor}
-set :linked_files, %w{.env}
-set :linked_files, %w{.env.prod}
-set :linked_files, %w{.env.testing}
+set :linked_files, %w{.env, .env.prod, .env.testing}
 set :keep_releases, 5
 
 # Use local composer.phar
