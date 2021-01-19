@@ -20,6 +20,7 @@ jobs:
       # Install Bundler & Capistrano
       - run: sudo gem install bundler
       - run: sudo gem install capistrano capistrano-ext capistrano-multiconfig
+      - run: sudo bundle install
 
       # Download and cache dependencies
       - restore_cache:
@@ -68,6 +69,7 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
               bundle exec cap staging deploy
+#              cap staging deploy
             fi
 
       - discord/status:
