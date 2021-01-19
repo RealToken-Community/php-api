@@ -5,8 +5,9 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/php:7.4
+#      - image: circleci/php:7.4
 #      - image: circleci/ruby:2.7.2
+      - image: yoant/circleci-node-ruby
 
     steps:
       - checkout
@@ -68,8 +69,8 @@ jobs:
               cap staging deploy
             fi
 
-#      - discord/status:
-#          fail_only: false
-#          success_message: "**${CIRCLE_USERNAME}** deployed successfully RealT API to PreProd."
-#          failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
-#          webhook: "${DISCORD_STATUS_WEBHOOK}"
+      - discord/status:
+          fail_only: false
+          success_message: "**${CIRCLE_USERNAME}** deployed successfully RealT API to PreProd."
+          failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
+          webhook: "${DISCORD_STATUS_WEBHOOK}"
