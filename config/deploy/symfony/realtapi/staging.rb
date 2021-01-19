@@ -12,7 +12,7 @@ set :repo_path, -> { "#{fetch(:deploy_to)}/repo" }
 
 # Set .env files
 #set :symfony_dotenv_file, './.env.staging' # (Uncomment if use cap in local)
-set :symfony_upload_dotenv_file_on_deploy, false
+#set :symfony_upload_dotenv_file_on_deploy, false
 
 # set :linked_dirs, %w{vendor}
 set :linked_files, %w{.env}

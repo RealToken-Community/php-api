@@ -1,17 +1,7 @@
 set :repo_url, 'git@github.com:RealT-Community/RealT-API.git'
 
-## Default Symfony Config
-
-namespace :symfony do
-#     desc "Run Laravel Artisan migrate."
-#     task :migrate do
-#     	on roles(:all) do
-#         	within release_path do
-#                 symfony_console('doctrine:migrations:migrate', '--no-interaction')
-#             end
-#         end
-#     end
-
+## Docker Config
+namespace :docker do
     desc "Custom RealT jobs for containers/Symfony config"
     task :realt do
         on roles(:staging) do
@@ -35,15 +25,8 @@ namespace :symfony do
     end
 end
 
-# Bypass Composer
-namespace :composer do
-    task :run do
-        execute ""
-    end
-end
-
 namespace :deploy do
     desc 'Starting deployement'
-    after :publishing, "symfony:migrate"
-    after :publishing, "symfony:realt"
+#    after :publishing, "symfony:migrate"
+    after :publishing, "docker:realt"
 end
