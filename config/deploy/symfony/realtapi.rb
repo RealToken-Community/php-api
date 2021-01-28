@@ -8,7 +8,7 @@ namespace :docker do
             within release_path do
                 # Restart containers on Staging
                 execute "runuser", "-l", "realt", "-c", "'whoami'"
-                execute "runuser", "-l", "realt", "-c", "'.${deploy_to}/current/.circleci/continous_deployment.sh'"
+                execute "runuser", "-l", "realt", "-c", "'cd_api_preprod && ./current/.circleci/continous_deployment.sh'"
 #                 execute "pwd"
 #                 execute "ls", "-lah"
 #                 execute "docker-compose", "build"
