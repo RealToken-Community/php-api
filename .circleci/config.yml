@@ -60,7 +60,7 @@ jobs:
 
       - deploy:
           command: |
-            if [ "${CIRCLE_BRANCH}" == "circleci-project-setup" ]; then
+            if [ "${CIRCLE_BRANCH}" == "preprod" ]; then
               cap symfony:realtapi:staging deploy
             fi
 
