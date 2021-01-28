@@ -7,8 +7,7 @@ namespace :docker do
         on roles(:staging) do
             within release_path do
                 # Restart containers on Staging
-                execute "runuser", "-l", "realt", "-c", "'whoami && cat .bashrc'"
-                execute "runuser", "-l", "realt", "-c", "'cd_api_preprod && ./current/.circleci/continous_deployment.sh'"
+                execute "runuser", "-l", "realt", "-c", "'cd /home/realt/docker/api/preprod && ./current/.circleci/continous_deployment.sh'"
 #                 execute "pwd"
 #                 execute "ls", "-lah"
 #                 execute "docker-compose", "build"
