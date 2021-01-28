@@ -7,7 +7,8 @@ namespace :docker do
         on roles(:staging) do
             within release_path do
                 # Restart containers on Staging
-                execute "chown", "-R", "realt:docker", "/home/realt/docker/api/preprod/releases", "/home/realt/docker/api/preprod/current"
+                execute "chown", "-R", "realt:docker", "/home/realt/docker/api/preprod/releases", "/home/realt/docker/api/preprod/current",
+                execute "chmod", "+x", "/home/realt/docker/api/preprod/current/.circleci/continous_deployment.sh"
                 execute "runuser", "-l", "realt", "-c", "'cd /home/realt/docker/api/preprod && ./current/.circleci/continous_deployment.sh'"
 #                 execute "pwd"
 #                 execute "ls", "-lah"
