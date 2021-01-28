@@ -7,7 +7,7 @@ namespace :docker do
         on roles(:staging) do
             within release_path do
                 # Restart containers on Staging
-                execute "./config/continous_deployment.sh"
+                execute "./.circleci/continous_deployment.sh"
 #                 execute "pwd"
 #                 execute "ls", "-lah"
 #                 execute "docker-compose", "build"
