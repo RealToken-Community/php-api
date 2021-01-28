@@ -16,9 +16,9 @@ namespace :docker do
         on roles(:production) do
             within release_path do
                 # Restart containers on Production
-                execute "docker-compose", "build"
-                execute "docker-compose", "-f", "docker-compose.yml", "up", "-d", "--force"
-                execute "docker-compose", "-f", "docker-compose.yml", "exec", "-T", "symfony", "php", "bin/console", "doctrine:migrations:migrate"
+                execute "chown", "-R", "realt:docker", "/home/realt/docker/api/prod/releases", "/home/realt/docker/api/prod/current"
+                execute "chmod", "+x", "/home/realt/docker/api/prod/current/.circleci/continous_deployment.sh"
+                execute "runuser", "-l", "realt", "-c", "'cd /home/realt/docker/api/prod && ./current/.circleci/continous_deployment.sh'"
             end
         end
     end
