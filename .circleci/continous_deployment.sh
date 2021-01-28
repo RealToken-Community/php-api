@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKING_DIR=${PWD%/*}
+WORKING_DIR=${PWD}
 
 # Remove linked .env
 rm .env*
