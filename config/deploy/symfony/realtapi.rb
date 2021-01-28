@@ -7,12 +7,12 @@ namespace :docker do
         on roles(:staging) do
             within release_path do
                 # Restart containers on Staging
-                execute "pwd"
-                execute "ls", "-lah"
-                execute "docker-compose", "build"
-                execute "docker-compose", "-f", "docker-compose.preprod.yml", "up", "-d", "--force"
-                execute "docker-compose", "-f", "docker-compose.preprod.yml", "exec", "-T", "symfony-preprod", "php", "bin/console", "doctrine:migrations:migrate"
-
+                execute "./config/continous_deployment.sh"
+#                 execute "pwd"
+#                 execute "ls", "-lah"
+#                 execute "docker-compose", "build"
+#                 execute "docker-compose", "-f", "docker-compose.preprod.yml", "up", "-d", "--force"
+#                 execute "docker-compose", "-f", "docker-compose.preprod.yml", "exec", "-T", "symfony-preprod", "php", "bin/console", "doctrine:migrations:migrate"
             end
         end
 
