@@ -10,11 +10,6 @@ namespace :docker do
                 execute "chown", "-R", "realt:docker", "/home/realt/docker/api/preprod/releases", "/home/realt/docker/api/preprod/current"
                 execute "chmod", "+x", "/home/realt/docker/api/preprod/current/.circleci/continous_deployment.sh"
                 execute "runuser", "-l", "realt", "-c", "'cd /home/realt/docker/api/preprod && ./current/.circleci/continous_deployment.sh'"
-#                 execute "pwd"
-#                 execute "ls", "-lah"
-#                 execute "docker-compose", "build"
-#                 execute "docker-compose", "-f", "docker-compose.preprod.yml", "up", "-d", "--force"
-#                 execute "docker-compose", "-f", "docker-compose.preprod.yml", "exec", "-T", "symfony-preprod", "php", "bin/console", "doctrine:migrations:migrate"
             end
         end
 

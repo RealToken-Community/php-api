@@ -14,4 +14,4 @@ docker build .
 docker-compose -f docker-compose.preprod.yml up -d --force
 
 # Migrate
-docker-compose -f docker-compose.preprod.yml exec -T symfony-preprod php bin/console doctrine:migrations:migrate
+docker-compose -f docker-compose.preprod.yml exec -T symfony-preprod php bin/console doctrine:migrations:migrate -q
