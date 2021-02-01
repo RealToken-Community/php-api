@@ -33,21 +33,6 @@ jobs:
           paths:
             - ./vendor
 
-#      - run:
-#          name: "Run web server"
-#          #command: php bin/console server:run
-#          command: symfony server:start
-#          background: true
-
-#       Database
-#      - run: touch storage/testing.sqlite
-#      - run: php bin/console doctrine:migrations:migrate
-#
-#       Run tests with phpunit
-#      - run:
-#          name: "Run tests"
-#          command: composer test
-
       - add_ssh_keys:
           fingerprints:
             - "20:00:72:01:07:09:68:c9:78:df:ee:54:2e:72:5a:c8"
