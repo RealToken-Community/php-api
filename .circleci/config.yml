@@ -1,56 +1,49 @@
-version: 2.1
+version: 2
+
 orbs:
   discord: antonioned/discord@0.1.0
 
 jobs:
   build:
     docker:
-      - image: sigri44/circleci-php-ruby-capistrano
-
+#      - image: sigri44/circleci-php-ruby-capistrano
+      - image: circleci/buildpack-deps:stretch
+        environment:
+          IMAGE_NAME: silarhi/symfony-docker-ci
     steps:
       - checkout
 
-      - run: sudo docker-php-ext-install zip
-
-      # Install Bundler & Capistrano
-      - run: bundle install
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "composer.json" }}
-            - v1-dependencies-
-
-      - run:
-          name: "Create Environment file"
-          command: mv .env.circleci .env
-      - run:
-          name: "Install Dependencies"
-          command : composer install -n --prefer-dist
-
-      - save_cache:
-          key: v1-dependencies-{{ checksum "composer.json" }}
-          paths:
-            - ./vendor
-
+  deploy:
+    machine:
+      enabled: true
+    steps:
       - add_ssh_keys:
           fingerprints:
             - "20:00:72:01:07:09:68:c9:78:df:ee:54:2e:72:5a:c8"
-
-#      - deploy:
-#          command: |
-#            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-#              bundle exec cap production deploy
-#            fi
-
-      - deploy:
+      - run:
+          name: "Deploy image to staging"
           command: |
-            if [ "${CIRCLE_BRANCH}" == "preprod" ]; then
-              cap symfony:realtapi:staging deploy
-            fi
+            ssh root@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "cd ${VPS_REALT_PATH} && ./deploy.sh"
 
+  webhook:
+    steps:
       - discord/status:
           fail_only: false
           success_message: "**${CIRCLE_USERNAME}** deployed successfully RealT API to PreProd."
           failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
           webhook: "${DISCORD_STATUS_WEBHOOK}"
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: preprod
+      - webhook:
+          requires:
+            - deploy
