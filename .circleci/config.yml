@@ -37,11 +37,11 @@ jobs:
           fingerprints:
             - "20:00:72:01:07:09:68:c9:78:df:ee:54:2e:72:5a:c8"
 
-      - deploy:
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+#      - deploy:
+#          command: |
+#            if [ "${CIRCLE_BRANCH}" == "master" ]; then
 #              bundle exec cap production deploy
-            fi
+#            fi
 
       - deploy:
           command: |
