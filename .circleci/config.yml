@@ -23,7 +23,7 @@ jobs:
       - run:
           name: "Deploy image to staging"
           command: |
-            ssh ${VPS_REALT_USER}@${VPS_REALT_IP}:${VPS_REALT_PORT} "cd ${VPS_REALT_PATH} && ./deploy.sh"
+            ssh ${VPS_REALT_USER}@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "cd ${VPS_REALT_PATH} && ./deploy.sh"
 
   webhook:
     machine:
