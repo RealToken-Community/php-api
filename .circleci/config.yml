@@ -41,7 +41,6 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
 #              bundle exec cap production deploy
-               echo "Prod CI/CD not implemented for yet."
             fi
 
       - deploy:
