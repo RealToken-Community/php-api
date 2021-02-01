@@ -3,9 +3,9 @@
 WORKING_DIR=${PWD}
 
 # Remove linked .env
-rm current/.env*
+rm .env*
 # Copy real .env files
-cp "${WORKING_DIR}"/shared/.env* current/
+cp "${WORKING_DIR}"/../shared/.env* .
 
 # Docker build
 docker build .
