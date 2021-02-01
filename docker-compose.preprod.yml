@@ -1,7 +1,7 @@
 version: '3.2'
 
 services:
-  symfony:
+  symfony-preprod:
     image: realt-api:preprod
     container_name: realtapi_preprod-sf
     build:
@@ -20,7 +20,7 @@ services:
       - "traefik.http.routers.sf-realt-api-preprod.entrypoints=websecure"
     restart: always
 
-  db:
+  db-preprod:
     image: mysql:5.7
     container_name: realtapi_preprod-db
     ports:
@@ -34,7 +34,7 @@ services:
       - "MYSQL_DATABASE=${MYSQL_DATABASE}"
     restart: always
 
-  adminer:
+  adminer-preprod:
     image: adminer
     container_name: realtapi_preprod-adminer
     ports:
