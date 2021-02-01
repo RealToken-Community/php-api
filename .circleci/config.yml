@@ -26,6 +26,8 @@ jobs:
             ssh root@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "cd ${VPS_REALT_PATH} && ./deploy.sh"
 
   webhook:
+    machine:
+      enabled: true
     steps:
       - discord/status:
           fail_only: false
