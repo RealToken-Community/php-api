@@ -25,8 +25,10 @@ jobs:
           command: |
             echo ${VPS_REALT_HOST}
             echo $VPS_REALT_HOST
-            ${VPS_REALT_USER}@${VPS_REALT_HOST} "ls -lah"
-            ${VPS_REALT_USER}@${VPS_REALT_HOST} -p ${VPS_REALT_PORT} "ls -lah"
+            ssh ${VPS_REALT_USER}@${VPS_REALT_HOST} "ls -lah"
+            ssh ${VPS_REALT_USER}@${VPS_REALT_IP} "ls -lah"
+            ssh ${VPS_REALT_USER}@${VPS_REALT_HOST} -p ${VPS_REALT_PORT} "ls -lah"
+            ssh ${VPS_REALT_USER}@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "ls -lah"
 #            ssh ${VPS_REALT_USER}@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "cd ${VPS_REALT_PATH} && ./deploy.sh"
 
   webhook:
