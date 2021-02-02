@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 orbs:
   discord: antonioned/discord@0.1.0
@@ -23,8 +23,8 @@ jobs:
       - run:
           name: "Deploy image to staging"
           command: |
-            echo ${VPS_REALT_PATH}
-            ssh ${VPS_REALT_USER}@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "cd ${VPS_REALT_PATH} && ./deploy.sh"
+            echo "${VPS_REALT_PATH}"
+#            ssh ${VPS_REALT_USER}@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "cd ${VPS_REALT_PATH} && ./deploy.sh"
 
   webhook:
     machine:
@@ -37,7 +37,6 @@ jobs:
           webhook: "${DISCORD_STATUS_WEBHOOK}"
 
 workflows:
-  version: 2
   build-and-deploy:
     jobs:
       - build
