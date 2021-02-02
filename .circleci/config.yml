@@ -24,6 +24,7 @@ jobs:
           name: "Deploy image to staging"
           command: |
             echo ${VPS_REALT_PATH} $VPS_REALT_PATH "${VPS_REALT_PATH}" "$VPS_REALT_PATH"
+            echo "${DISCORD_STATUS_WEBHOOK}"
 #            ssh ${VPS_REALT_USER}@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "cd ${VPS_REALT_PATH} && ./deploy.sh"
 
   webhook:
