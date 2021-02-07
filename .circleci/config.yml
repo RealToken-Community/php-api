@@ -20,6 +20,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "20:00:72:01:07:09:68:c9:78:df:ee:54:2e:72:5a:c8"
+      - run: echo ${VPS_REALT_HOST}
       - run:
           name: "Deploy image to staging"
           command: |
@@ -30,7 +31,6 @@ jobs:
             ssh ${VPS_REALT_USER}@${VPS_REALT_HOST} -p ${VPS_REALT_PORT} "ls -lah"
             ssh ${VPS_REALT_USER}@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "ls -lah"
 #            ssh ${VPS_REALT_USER}@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "cd ${VPS_REALT_PATH} && ./deploy.sh"
-      - run: echo ${VPS_REALT_HOST}
 
   webhook:
     machine:
