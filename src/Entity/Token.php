@@ -61,12 +61,12 @@ class Token
     /**
      * @ORM\Column(type="string", length=42, nullable=true)
      */
-    private $ethereumDistributor;
+    private $maticContract;
 
     /**
      * @ORM\Column(type="string", length=42, nullable=true)
      */
-    private $ethereumMaintenance;
+    private $xDaiContract;
 
     /**
      * @ORM\Column(type="float", nullable=true)
@@ -243,11 +243,6 @@ class Token
      * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $symbol;
-
-    /**
-     * @ORM\Column(type="string", length=42, nullable=true)
-     */
-    private $maticContract;
 
     /**
      * @ORM\Column(type="array", nullable=true)
@@ -456,26 +451,26 @@ class Token
         return $this;
     }
 
-    public function getEthereumDistributor(): ?string
+    public function getMaticContract(): ?string
     {
-        return $this->ethereumDistributor;
+        return $this->maticContract;
     }
 
-    public function setEthereumDistributor(?string $ethereumDistributor): self
+    public function setMaticContract(?string $maticContract): self
     {
-        $this->ethereumDistributor = $ethereumDistributor;
+        $this->maticContract = $maticContract;
 
         return $this;
     }
 
-    public function getEthereumMaintenance(): ?string
+    public function getXDaiContract(): ?string
     {
-        return $this->ethereumMaintenance;
+        return $this->xDaiContract;
     }
 
-    public function setEthereumMaintenance(?string $ethereumMaintenance): self
+    public function setXDaiContract(?string $xDaiContract): self
     {
-        $this->ethereumMaintenance = $ethereumMaintenance;
+        $this->xDaiContract = $xDaiContract;
 
         return $this;
     }
@@ -928,18 +923,6 @@ class Token
         return $this;
     }
 
-    public function getMaticContract(): ?string
-    {
-        return $this->maticContract;
-    }
-
-    public function setMaticContract(?string $maticContract): self
-    {
-        $this->maticContract = $maticContract;
-
-        return $this;
-    }
-
     public function getBlockchainAddresses(): ?array
     {
         return $this->blockchainAddresses;
@@ -1013,6 +996,7 @@ class Token
                 'totalTokens' => $this->totalTokens,
                 'ethereumContract' => $this->ethereumContract,
                 //'maticContract' => $this->maticContract,
+                //'xDaiContract' => $this->xDaiContract,
                 'totalInvestment' => $this->totalInvestment,
                 'grossRentYear' => $this->grossRentYear,
                 'grossRentMonth' => $this->grossRentMonth,
@@ -1063,12 +1047,14 @@ class Token
                 'currency' => $this->currency,
                 'ethereumContract' => $this->ethereumContract,
                 //'maticContract' => $this->maticContract,
+                //'xDaiContract' => $this->xDaiContract,
                 'lastUpdate' => $this->lastUpdate
             ];
         }
 
         if ($isAdmin) {
             $response['maticContract'] = $this->maticContract;
+            $response['xDaiContract'] = $this->xDaiContract;
         }
 
         return $response;
