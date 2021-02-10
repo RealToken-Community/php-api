@@ -51,10 +51,12 @@ class DefiService
      */
     public function getCommunityList()
     {
+        $refer = $this->request->headers->get('referer');
+
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://realt.ch/tokensListes/",
+            CURLOPT_URL => "https://realt.ch/tokensListes/?referer=" . $refer,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,

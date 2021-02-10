@@ -44,6 +44,7 @@
 
 # Custom
 /.env*
+/.env.*
 /.idea/
 /.php-version
 /php.ini

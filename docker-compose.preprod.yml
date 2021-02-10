@@ -3,11 +3,11 @@ version: '3.2'
 services:
   symfony-preprod:
     image: realt-api:preprod
-    container_name: realT-API_sf-preprod
+    container_name: realtapi_preprod-sf
     build:
       context: ./
     ports:
-      - "9080:80"
+      - "9081:80"
     networks:
       - realtapipreprod
       - traefik-realt
@@ -16,15 +16,15 @@ services:
       - ./logs/nginx:/var/log/nginx:cached
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sf-realt-api-preprod.rule=Host(`api.preprod.realt.ch`)"
+      - "traefik.http.routers.sf-realt-api-preprod.rule=Host(`api.preprod.realt.community`)"
       - "traefik.http.routers.sf-realt-api-preprod.entrypoints=websecure"
     restart: always
 
   db-preprod:
     image: mysql:5.7
-    container_name: realT-API_db-preprod
+    container_name: realtapi_preprod-db
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - realtapipreprod
     environment:
@@ -36,9 +36,9 @@ services:
 
   adminer-preprod:
     image: adminer
-    container_name: realT-API_adminer-preprod
+    container_name: realtapi_preprod-adminer
     ports:
-      - 18080:8080
+      - "18081:8080"
     networks:
       - realtapipreprod
     restart: always

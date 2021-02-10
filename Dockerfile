@@ -5,8 +5,6 @@ WORKDIR /var/www/html
 COPY . ./
 RUN cp .env.testing .env
 RUN composer install --prefer-dist --no-interaction --no-suggest --optimize-autoloader --no-progress
-RUN mv .env.prod .env
-#RUN php bin/console doctrine:schema:update --force
 
 # HTTPS
 ENV HTTPS false
