@@ -1046,7 +1046,7 @@ class Token
                 'currency' => $this->currency,
                 'ethereumContract' => $this->ethereumContract,
                 //'maticContract' => $this->maticContract,
-                //'xDaiContract' => $this->xDaiContract,
+                'xDaiContract' => $this->xDaiContract,
                 'lastUpdate' => $this->lastUpdate
             ];
         }
