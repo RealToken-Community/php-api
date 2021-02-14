@@ -996,7 +996,7 @@ class Token
                 'totalTokens' => $this->totalTokens,
                 'ethereumContract' => $this->ethereumContract,
                 //'maticContract' => $this->maticContract,
-                //'xDaiContract' => $this->xDaiContract,
+                'xDaiContract' => $this->xDaiContract,
                 'totalInvestment' => $this->totalInvestment,
                 'grossRentYear' => $this->grossRentYear,
                 'grossRentMonth' => $this->grossRentMonth,
@@ -1037,7 +1037,6 @@ class Token
                 'rentStartDate' => $this->rentStartDate,
                 'lastUpdate' => $this->lastUpdate
             ];
-
         } else {
             $response = [
                 'fullName' => $this->fullName,
@@ -1054,7 +1053,6 @@ class Token
 
         if ($isAdmin) {
             $response['maticContract'] = $this->maticContract;
-            $response['xDaiContract'] = $this->xDaiContract;
         }
 
         return $response;
