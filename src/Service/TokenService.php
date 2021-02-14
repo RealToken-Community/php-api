@@ -549,6 +549,7 @@ class TokenService
         $token->setRenovationReserve((float)$dataJson['renovationReserve'] ?? null);
         $token->setPropertyMaintenanceMonthly((float)$dataJson['propertyMaintenanceMonthly'] ?? null);
         $token->setRentStartDate($dataJson['rentStartDate'] ? new DateTime($dataJson['rentStartDate']) : null);
+        $token->setXDaiContract($dataJson['xDaiContract'] ?? null);
         $token->setLastUpdate(new DateTime());
 
         return $token;
