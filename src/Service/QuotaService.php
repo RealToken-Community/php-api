@@ -12,7 +12,6 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class QuotaService
 {
-    /** @var EntityManagerInterface $entityManager */
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -27,8 +26,7 @@ class QuotaService
      */
     public function consumeQuota(Application $application)
     {
-        $em = $this->entityManager;
-        $quotaService = $em->getRepository(Quota::class);
+        $quotaService = $this->entityManager->getRepository(Quota::class);
 
         $quota = $quotaService->findOneBy(['application' => $application]);
         if (!$quota) {
@@ -36,7 +34,12 @@ class QuotaService
             $quota->setApplication($application);
         }
         $quota->setIncrement();
-        $em->persist($quota);
-        $em->flush();
+        $this->entityManager->persist($quota);
+        $this->entityManager->flush();
+    }
+
+    public function getAllQuota()
+    {
+
     }
 }

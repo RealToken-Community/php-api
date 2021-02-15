@@ -13,19 +13,19 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class DefiService
 {
-    private $em;
+    private $entityManager;
     protected $request;
 
     /**
      * DefiService constructor.
      *
      * @param RequestStack $requestStack
-     * @param EntityManagerInterface $em
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(RequestStack $requestStack, EntityManagerInterface $em)
+    public function __construct(RequestStack $requestStack, EntityManagerInterface $entityManager)
     {
         $this->request = $requestStack->getCurrentRequest();
-        $this->em = $em;
+        $this->entityManager = $entityManager;
     }
 
     /**
