@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Application;
 use App\Entity\Quota;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,13 +21,13 @@ class QuotaRepository extends ServiceEntityRepository
         parent::__construct($registry, Quota::class);
     }
 
-    public function getTotalUsersQuota()
+    public function findAllDetailledQuota()
     {
         $rqt = $this->_em->createQueryBuilder();
         $rqt->select('u, a, q')
-            ->from('Quota', 'q')
-            ->leftJoin('Application', 'a', 'WITH','a.id = q.application_id')
-            ->leftJoin('User', 'u', 'WITH','u.id = a.user_id');
+            ->from(Quota::class, 'q')
+            ->leftJoin(Application::class, 'a', 'WITH','a.id = q.id')
+            ->leftJoin(User::class, 'u', 'WITH','u.id = a.id');
 
         return $rqt->getQuery()->getResult();
     }

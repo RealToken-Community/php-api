@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Quota;
 use App\Repository\QuotaRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,12 +35,12 @@ class AdminService
      *
      * @return JsonResponse
      */
-    public function getTokenListForAMM()
+    public function getTotalUsersQuota(): JsonResponse
     {
         $response = new JsonResponse();
 
-        $quotaRepository = $this->entityManager->getRepository(QuotaRepository::class);
-        $usersQuota = $quotaRepository->getTotalUsersQuota();
+        $quotaRepository = $this->entityManager->getRepository(Quota::class);
+        $usersQuota = $quotaRepository->findAllDetailledQuota();
 
         $response->setData($usersQuota)
             ->setStatusCode(Response::HTTP_OK);
