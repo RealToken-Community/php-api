@@ -36,10 +36,11 @@ class QuotaService
         $quota->setIncrement();
         $this->entityManager->persist($quota);
         $this->entityManager->flush();
-    }
 
-    public function getAllQuota()
-    {
-
+        if ($application->getQuota() === null) {
+            $application->setQuota($quota);
+            $this->entityManager->persist($application);
+            $this->entityManager->flush();
+        }
     }
 }

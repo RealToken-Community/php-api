@@ -21,14 +21,19 @@ class QuotaRepository extends ServiceEntityRepository
         parent::__construct($registry, Quota::class);
     }
 
-    public function findAllDetailledQuota()
+    /**
+     * Get fully detailed quota.
+     *
+     * @return array
+     */
+    public function findAllDetailedQuota(): array
     {
-        $rqt = $this->_em->createQueryBuilder();
-        $rqt->select('u, a, q')
-            ->from(Quota::class, 'q')
-            ->leftJoin(Application::class, 'a', 'WITH','a.id = q.id')
-            ->leftJoin(User::class, 'u', 'WITH','u.id = a.id');
-
-        return $rqt->getQuery()->getResult();
+        return $this->_em
+            ->getRepository(Quota::class)
+            ->createQueryBuilder('q')
+            ->join('q.application', 'a')
+            ->join('a.user', 'u')
+            ->getQuery()
+            ->getResult();
     }
 }

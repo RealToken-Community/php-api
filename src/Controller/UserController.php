@@ -27,6 +27,8 @@ class UserController extends AbstractController
      * @param Request $request
      *
      * @Route("/register/apiUser", name="register_api_user", methods={"GET", "POST"})
+     *
+     * @return JsonResponse|Response
      */
     public function registerApiUser(Request $request)
     {
@@ -94,7 +96,6 @@ class UserController extends AbstractController
 
         return true;
     }
-
 
     /**
      * Generate unique token.
