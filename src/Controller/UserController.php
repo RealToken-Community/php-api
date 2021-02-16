@@ -4,8 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Application;
 use App\Entity\User;
+use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +29,7 @@ class UserController extends AbstractController
      *
      * @param Request $request
      *
-     * @Route("/register/apiUser", name="register_api_user", methods={"GET", "POST"})
+     * @Route("/admin/register/apiUser", name="register_api_user", methods={"GET", "POST"})
      *
      * @return JsonResponse|Response
      */
@@ -73,10 +76,24 @@ class UserController extends AbstractController
             $em->flush();
         }
 
+        // FORM TEST
+        $user = new User();
+//        $userForm = $this->createForm(User::class, $user);
+
+        $builder = $this->createFormBuilder();
+        $builder
+            ->add('email', EmailType::class)
+            ->add('roles', ChoiceType::class)
+            ->add('username', TextType::class)
+            ->add('ethereumAddress', TextType::class)
+            ->add('applicationName', TextType::class);
+
         return $this->render(
-            "registerApiUser.html.twig", [
+            "admin/registerApiUser.html.twig", [
                 'user' => $user,
                 'application' => $application,
+                'builder' => $builder,
+//                'userForm' => $userForm->createView(),
             ]
         );
     }
