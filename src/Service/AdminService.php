@@ -32,17 +32,16 @@ class AdminService
 
     /**
      * Generate token list for AMM.
-     *
-     * @return array
      */
-    public function getTotalUsersQuota(): array
+    public function getTotalUsersQuota()
     {
         $authenticator = new AuthenticatorService($this->request, $this->entityManager);
-        $result = $authenticator->checkCredentials();
+        $application = $authenticator->getApplicationByToken($this->request->query->get('realtAuthToken'));
+        $isAdmin = $authenticator->applicationHaveAdminRights($application);
 
-//        if (!$result['isAdmin']) {
-//            return [];
-//        }
+        if (!($application Instanceof Application) || !$isAdmin) {
+            return [];
+        }
 
         $applicationRepository = $this->entityManager->getRepository(Application::class);
         $applicationsQuota = $applicationRepository->findAllWithQuota();

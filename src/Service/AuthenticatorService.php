@@ -43,19 +43,17 @@ class AuthenticatorService
         $headerParam = $this->request->headers->get('X-AUTH-REALT-TOKEN');
         $queryParam = $this->request->query->get('realtAuthToken');
 
+        $apiKey = null;
         if (!empty($headerParam)) {
             $apiKey = $headerParam;
-        }
-
-        if (!empty($queryParam)) {
+        } elseif (!empty($queryParam)) {
             $apiKey = $queryParam;
         }
 
         $credentials = ['isAdmin' => false];
 
         if (!empty($apiKey)) {
-            $applicationRepository = $this->em->getRepository(Application::class);
-            $application = $applicationRepository->findOneBy(['apiToken' => $apiKey]);
+            $application = $this->getApplicationByToken($apiKey);
 
             if (!($application Instanceof Application)) {
                 $response->setData(["status" => "error", "message" => "Token is not recognized"])
@@ -87,5 +85,36 @@ class AuthenticatorService
         }
         $credentials['isAuth'] = false;
         return $credentials;
+    }
+
+    /**
+     * Get Application by token string.
+     *
+     * @param string $apiKey
+     *
+     * @return Application|null
+     */
+    public function getApplicationByToken(string $apiKey): ?Application
+    {
+        $applicationRepository = $this->em->getRepository(Application::class);
+        return $applicationRepository->findOneBy(['apiToken' => $apiKey]);
+    }
+
+    /**
+     * Check if Application have admin rights.
+     *
+     * @param Application $application
+     *
+     * @return bool
+     */
+    public function applicationHaveAdminRights(Application $application): bool{
+        $user = $application->getUser();
+        $roles = $user->getRoles();
+
+        if (in_array("ROLE_ADMIN", $roles)) {
+            return true;
+        }
+
+        return false;
     }
 }
