@@ -197,6 +197,13 @@ class TokenService
             $parsedJson = $parsedJson[0];
         }
 
+        if (empty($token->getSymbol())) {
+            $symbol = $this->getRealtokenSymbol($token->getEthereumContract());
+            if ($symbol) {
+                $token->setSymbol($symbol);
+            }
+        }
+
         $this->tokenMapping($parsedJson, $token);
         $this->em->flush();
 
