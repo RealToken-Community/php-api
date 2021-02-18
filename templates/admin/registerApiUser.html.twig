@@ -11,6 +11,7 @@
 {% block javascripts %}{% endblock %}
 
 <div class="container">
+{#    {{ form(form) }}#}
     <div class="row">
         <div class="col-md-6">
             <form action="{{ path('register_api_user') }}" method="POST">
@@ -95,9 +96,9 @@
                     </pre>
                 </div>
             </div>
-        </div>
+        {% endif %}
     </div>
-    {% endif %}
+</div>
 </div>
 
 <footer>

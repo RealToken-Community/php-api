@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Application;
 use App\Entity\User;
+use App\Form\UserRegistrationForm;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,9 +37,13 @@ class UserController extends AbstractController
     public function registerApiUser(Request $request)
     {
         $em = $this->entityManager;
-
         $user = $application = "";
 
+//        $user = new User();
+//        $form = $this->createForm(UserRegistrationForm::class, $user);
+//        $form->handleRequest($request);
+
+//        if ($form->isSubmitted() && $form->isValid()) {
         if ($request->getMethod() == 'POST') {
             $rqt = $request->request;
 
@@ -59,13 +64,15 @@ class UserController extends AbstractController
                 $roles = ["ROLE_USER"];
             }
 
-            $user = new User();
-            $user->setEmail($rqt->get('email'));
-            $user->setRoles($roles);
-            $user->setPassword($this->generatePassword());
-            $user->setUsername($rqt->get('username'));
-            $user->setEthereumAddress($rqt->get('ethereumAddress'));
-            $em->persist($user);
+//            $user = $form->getData();
+
+//            $user = new User();
+//            $user->setEmail($rqt->get('email'));
+//            $user->setRoles($roles);
+//            $user->setPassword($this->generatePassword());
+//            $user->setUsername($rqt->get('username'));
+//            $user->setEthereumAddress($rqt->get('ethereumAddress'));
+//            $em->persist($user);
 
             $application = new Application();
             $application->setUser($user);
@@ -76,24 +83,12 @@ class UserController extends AbstractController
             $em->flush();
         }
 
-        // FORM TEST
-        $user = new User();
-//        $userForm = $this->createForm(User::class, $user);
-
-        $builder = $this->createFormBuilder();
-        $builder
-            ->add('email', EmailType::class)
-            ->add('roles', ChoiceType::class)
-            ->add('username', TextType::class)
-            ->add('ethereumAddress', TextType::class)
-            ->add('applicationName', TextType::class);
-
         return $this->render(
             "admin/registerApiUser.html.twig", [
                 'user' => $user,
                 'application' => $application,
-                'builder' => $builder,
-//                'userForm' => $userForm->createView(),
+//                'builder' => $builder,
+//                'form' => $form->createView(),
             ]
         );
     }
