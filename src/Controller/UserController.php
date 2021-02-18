@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Application;
 use App\Entity\User;
 use App\Form\UserRegistrationForm;
+use App\Service\UserService;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,118 +29,27 @@ class UserController extends AbstractController
     /**
      * Register new Api User.
      *
-     * @param Request $request
-     *
-     * @Route("/admin/register/apiUser", name="register_api_user", methods={"GET", "POST"})
+     * @param UserService $userService
      *
      * @return JsonResponse|Response
+     * @Route("/admin/register/apiUser", name="register_api_user", methods={"GET", "POST"})
      */
-    public function registerApiUser(Request $request)
+    public function registerApiUser(UserService $userService)
     {
-        $em = $this->entityManager;
-        $user = $application = "";
+        $result = $userService->userRegistration();
 
-//        $user = new User();
-//        $form = $this->createForm(UserRegistrationForm::class, $user);
-//        $form->handleRequest($request);
-
-//        if ($form->isSubmitted() && $form->isValid()) {
-        if ($request->getMethod() == 'POST') {
-            $rqt = $request->request;
-
-            $adminToken = $rqt->get('adminToken');
-            $isAdmin = $this->isAdmin($adminToken);
-
-            if (!$isAdmin) {
-                $response = new JsonResponse();
-
-                $response->setData(["status" => "error", "message" => "User is not granted"])
-                        ->setStatusCode(Response::HTTP_UNAUTHORIZED);
-                return $response;
-            }
-
-            if ($rqt->get('isAdmin')) {
-                $roles = ["ROLE_USER", "ROLE_ADMIN"];
-            } else {
-                $roles = ["ROLE_USER"];
-            }
-
-//            $user = $form->getData();
-
-//            $user = new User();
-//            $user->setEmail($rqt->get('email'));
-//            $user->setRoles($roles);
-//            $user->setPassword($this->generatePassword());
-//            $user->setUsername($rqt->get('username'));
-//            $user->setEthereumAddress($rqt->get('ethereumAddress'));
-//            $em->persist($user);
-
-            $application = new Application();
-            $application->setUser($user);
-            $application->setName($rqt->get('appName'));
-            $application->setApiToken($this->generateToken());
-            $em->persist($application);
-
-            $em->flush();
+        if (empty($result)) {
+            return new Response();
         }
 
         return $this->render(
             "admin/registerApiUser.html.twig", [
-                'user' => $user,
-                'application' => $application,
+                'user' => $result['user'],
+                'application' => $result['application'],
 //                'builder' => $builder,
 //                'form' => $form->createView(),
             ]
         );
-    }
-
-    private function isAdmin(string $apiKey)
-    {
-        $em = $this->entityManager;
-        $applicationRepository = $em->getRepository(Application::class);
-        $application = $applicationRepository->findOneBy(['apiToken' => $apiKey]);
-
-        $user = $application->getUser();
-        $roles = $user->getRoles();
-
-        if (!in_array("ROLE_ADMIN", $roles)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Generate unique token.
-     *
-     * @return string
-     */
-    private function generateToken()
-    {
-        return $this->generateUuid(8).'-preprod-1'.$this->generateUuid(3).'-'.$this->generateUuid(4).'-'.$this->generateUuid(12);
-    }
-
-    /**
-     * Generate unique uuid.
-     *
-     * @param int $length
-     *
-     * @return string
-     */
-    private function generateUuid(int $length)
-    {
-        return substr(bin2hex(random_bytes(15)), 0, $length);
-    }
-
-    private function generatePassword($length = 12)
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*?';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
     }
 
 //    public function __construct(TokenStorageInterface $tokenStorageInterface, JWTTokenManagerInterface $jwtManager, LoggerInterface $logger)

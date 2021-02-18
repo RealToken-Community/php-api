@@ -37,7 +37,10 @@ class AdminService
     {
         $authenticator = new AuthenticatorService($this->request, $this->entityManager);
         $application = $authenticator->getApplicationByToken($this->request->query->get('realtAuthToken'));
-        $isAdmin = $authenticator->applicationHaveAdminRights($application);
+
+        if (!empty($application)) {
+            $isAdmin = $authenticator->applicationHaveAdminRights($application);
+        }
 
         if (!($application Instanceof Application) || !$isAdmin) {
             return [];
