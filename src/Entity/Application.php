@@ -24,6 +24,11 @@ class Application
     private $user;
 
     /**
+     * @ORM\OneToOne(targetEntity=Quota::class, cascade={"persist", "remove"})
+     */
+    private $quota;
+
+    /**
      * @ORM\Column(type="string", length=50)
      */
     private $name;
@@ -47,6 +52,18 @@ class Application
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getQuota(): ?Quota
+    {
+        return $this->quota;
+    }
+
+    public function setQuota(?Quota $quota): self
+    {
+        $this->quota = $quota;
 
         return $this;
     }

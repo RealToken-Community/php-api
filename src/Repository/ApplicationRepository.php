@@ -18,4 +18,20 @@ class ApplicationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Application::class);
     }
+
+    /**
+     * Get fully detailed quota.
+     *
+     * @return array
+     */
+    public function findAllWithQuota(): array
+    {
+        return $this->_em
+            ->getRepository(Application::class)
+            ->createQueryBuilder('a')
+            ->leftJoin('a.quota', 'q')
+            ->leftJoin('a.user', 'u')
+            ->getQuery()
+            ->getResult();
+    }
 }

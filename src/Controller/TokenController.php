@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
+use App\Service\AuthenticatorService;
 use App\Service\TokenService;
+use App\Traits\DataControllerTrait;
+use App\Traits\HeadersControllerTrait;
 use Exception;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -14,6 +18,20 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class TokenController
 {
+    use HeadersControllerTrait;
+    use DataControllerTrait;
+
+    /** @var AuthenticatorService */
+    private AuthenticatorService $authenticatorService;
+    /** @var TokenService */
+    private TokenService $tokenService;
+
+    public function __construct(AuthenticatorService $authenticatorService, TokenService $tokenService)
+    {
+        $this->authenticatorService = $authenticatorService;
+        $this->tokenService = $tokenService;
+    }
+
     /**
      * List all tokens.
      *
@@ -23,14 +41,16 @@ class TokenController
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
-     * @param TokenService $tokenService
+     * @param Request $request
      *
      * @return JsonResponse
      * @Route("/tokens", name="tokens_show", methods={"GET"})
      */
-    public function showTokens(TokenService $tokenService): JsonResponse
+    public function showTokens(Request $request): JsonResponse
     {
-        return $tokenService->getTokens();
+        $credentials = $this->authenticatorService->checkCredentials($this->getApiToken($request));
+
+        return $this->tokenService->getTokens($credentials);
     }
 
     /**
@@ -42,15 +62,17 @@ class TokenController
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
-     * @param TokenService $tokenService
+     * @param Request $request
      * @param string $uuid
      *
      * @return JsonResponse
      * @Route("/token/{uuid}", name="token_show", methods={"GET"})
      */
-    public function showToken(TokenService $tokenService, string $uuid) : JsonResponse
+    public function showToken(Request $request, string $uuid) : JsonResponse
     {
-        return $tokenService->getToken($uuid);
+        $credentials = $this->authenticatorService->checkCredentials($this->getApiToken($request));
+
+        return $this->tokenService->getToken($credentials, $uuid);
     }
 
     /**
@@ -71,16 +93,18 @@ class TokenController
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
-     * @param TokenService $tokenService
+     * @param Request $request
      * @param string $uuid
      *
      * @return JsonResponse
      * @throws Exception
      * @Route("/token/{uuid}", name="token_update", methods={"PUT"})
      */
-    public function updateToken(TokenService $tokenService, string $uuid) : JsonResponse
+    public function updateToken(Request $request, string $uuid) : JsonResponse
     {
-        return $tokenService->updateToken($uuid);
+        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+
+        return $this->tokenService->updateToken($uuid, $this->getDataJson($request));
     }
 
     /**
@@ -92,15 +116,17 @@ class TokenController
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
-     * @param TokenService $tokenService
+     * @param Request $request
      * @param string $uuid
      *
      * @return JsonResponse
      * @Route("/token/{uuid}", name="token_delete", methods={"DELETE"})
      */
-    public function deleteToken(TokenService $tokenService, string $uuid) : JsonResponse
+    public function deleteToken(Request $request, string $uuid): JsonResponse
     {
-        return $tokenService->deleteToken($uuid);
+        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+
+        return $this->tokenService->deleteToken($uuid);
     }
 
     /**
@@ -121,15 +147,17 @@ class TokenController
      * )
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
-     * @param TokenService $tokenService
+     * @param Request $request
      *
      * @return JsonResponse
      * @throws Exception
      * @Route("/tokens", name="token_create", methods={"POST"})
      */
-    public function createToken(TokenService $tokenService) : JsonResponse
+    public function createToken(Request $request): JsonResponse
     {
-        return $tokenService->createToken();
+        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+
+        return $this->tokenService->createToken($this->getDataJson($request));
     }
 }
 

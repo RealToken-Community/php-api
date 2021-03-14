@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Service\DefiService;
+use App\Traits\DataControllerTrait;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -12,6 +14,16 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DefiController
 {
+    use DataControllerTrait;
+
+    /** @var DefiService */
+    private DefiService $defiService;
+
+    public function __construct(DefiService $defiService)
+    {
+        $this->defiService = $defiService;
+    }
+
     /**
      * RealToken list for AMM.
      *
@@ -20,13 +32,14 @@ class DefiController
      *     description="Return list of RealToken for Automatic Market Maker",
      * )
      * @OA\Tag(name="DeFi")
-     * @param DefiService $defiService
+     *
+     * @param Request $request
      *
      * @return JsonResponse
      * @Route("/tokenList", name="amm_list", methods={"GET"})
      */
-    public function getTokenList(DefiService $defiService): JsonResponse
+    public function getTokenList(Request $request): JsonResponse
     {
-        return $defiService->getTokenListForAMM();
+        return $this->defiService->getTokenListForAMM($this->getRefer($request));
     }
 }

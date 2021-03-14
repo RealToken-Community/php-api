@@ -1,0 +1,56 @@
+{% extends "base.html.twig" %}
+
+{% block title %}[ADMIN] Token mapping{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h3>Token mapping</h3>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-2">Id</div>
+            <div class="col-2">RealT name</div>
+            <div class="col-2">API name</div>
+        </div>
+        {% for token in tokens %}
+            <form id="{{ token.id }}" action="{{ path('admin_manage_token_mapping', {realtAuthToken: apiKey, method: 'update', id: token.id}) }}" method="POST">
+                <div class="row">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="id" placeholder="Id" value="{{ token.id }}" disabled="disabled" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="sourceName" placeholder="SourceName" value="{{ token.sourceName }}" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="destinationName" placeholder="DestinationName" value="{{ token.destinationName }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-success mb-4">Update</button>
+                    <a href="{{ path('admin_manage_token_mapping', {realtAuthToken: apiKey, method: 'delete', id: token.id}) }}"
+                       class="btn btn-danger mb-4">
+                        <button type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </a>
+                </div>
+            </form>
+        {% endfor %}
+        <form action="{{ path('admin_manage_token_mapping', {realtAuthToken: apiKey, method: 'create'}) }}" method="POST">
+            <div class="row">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="formGroupId"
+                           name="id" placeholder="id" disabled="disabled">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="formGroupSourceName"
+                           name="sourceName" placeholder="source name" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="formGroupDestinationName"
+                           name="destinationName" placeholder="destination name" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary mb-4">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

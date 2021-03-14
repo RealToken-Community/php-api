@@ -983,9 +983,9 @@ class Token
         return $this;
     }
 
-    public function __toArray($isAuth = false, $isAdmin = false): array
+    public function __toArray(array $credentials): array
     {
-        if ($isAuth) {
+        if ($credentials['isAuth']) {
             $response = [
                 'fullName' => $this->fullName,
                 'shortName' => $this->shortName,
@@ -1051,7 +1051,7 @@ class Token
             ];
         }
 
-        if ($isAdmin) {
+        if ($credentials['isAdmin']) {
             $response['maticContract'] = $this->maticContract;
         }
 
