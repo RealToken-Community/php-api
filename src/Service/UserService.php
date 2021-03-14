@@ -3,92 +3,53 @@
 namespace App\Service;
 
 use App\Entity\Application;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\User;
 use Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class UserService
  * @package App\Service
  */
-class UserService
+class UserService extends Service
 {
-    private $entityManager;
-    protected $request;
-
     /**
-     * AdminService constructor.
+     * Register user form
      *
-     * @param RequestStack $requestStack
-     * @param EntityManagerInterface $entityManager
+     * @param Request $request
+     *
+     * @return array
+     * @throws Exception
      */
-    public function __construct(RequestStack $requestStack, EntityManagerInterface $entityManager)
+    public function userRegistration(Request $request): array
     {
-        $this->request = $requestStack->getCurrentRequest();
-        $this->entityManager = $entityManager;
-    }
-
-    public function userRegistration()
-    {
-        $authenticator = new AuthenticatorService($this->request, $this->entityManager);
-        $application = $authenticator->getApplicationByToken($this->request->query->get('realtAuthToken'));
-
-        if (!empty($application)) {
-            $isAdmin = $authenticator->applicationHaveAdminRights($application);
+        if ($request->get('isAdmin')) {
+            $roles = ["ROLE_USER", "ROLE_ADMIN"];
+        } else {
+            $roles = ["ROLE_USER"];
         }
 
-        if (!($application Instanceof Application) || !$isAdmin) {
-            return [];
+        $user = $this->checkUserExistence($request->get('email'));
+        
+        if (!$user) {
+            $user = new User();
+            $user->setEmail($request->get('email'));
+            $user->setRoles($roles);
+            $user->setPassword($this->generatePassword());
+            $user->setUsername($request->get('username'));
+            $user->setEthereumAddress($request->get('ethereumAddress'));
+            $this->em->persist($user);
         }
 
-        $em = $this->entityManager;
-        $user = $application = "";
+        $application = new Application();
+        $application->setUser($user);
+        $application->setName($request->get('appName'));
+        $application->setApiToken($this->generateToken());
 
-//        $user = new User();
-//        $form = $this->createForm(UserRegistrationForm::class, $user);
-//        $form->handleRequest($request);
+        $this->em->persist($application);
+        $this->em->flush();
 
-//        if ($form->isSubmitted() && $form->isValid()) {
-        if ($this->request->getMethod() == 'POST') {
-            $adminToken = $this->request->get('adminToken');
-            $isAdmin = $this->isAdmin($adminToken);
-
-            if (!$isAdmin) {
-                $response = new JsonResponse();
-
-                $response->setData(["status" => "error", "message" => "User is not granted"])
-                    ->setStatusCode(Response::HTTP_UNAUTHORIZED);
-                return $response;
-            }
-
-            if ($this->request->get('isAdmin')) {
-                $roles = ["ROLE_USER", "ROLE_ADMIN"];
-            } else {
-                $roles = ["ROLE_USER"];
-            }
-
-//            $user = $form->getData();
-
-//            $user = new User();
-//            $user->setEmail($rqt->get('email'));
-//            $user->setRoles($roles);
-//            $user->setPassword($this->generatePassword());
-//            $user->setUsername($rqt->get('username'));
-//            $user->setEthereumAddress($rqt->get('ethereumAddress'));
-//            $em->persist($user);
-
-            $application = new Application();
-            $application->setUser($user);
-            $application->setName($this->request->get('appName'));
-            $application->setApiToken($this->generateToken());
-            $em->persist($application);
-
-            $em->flush();
-        }
-
-        return $response = ['user' => $user, 'application' => $application];
+        return ['user' => $user, 'application' => $application];
     }
 
     /**
@@ -97,7 +58,7 @@ class UserService
      * @return string
      * @throws Exception
      */
-    private function generateToken()
+    private function generateToken(): string
     {
         return $this->generateUuid(8).'-preprod-1'.$this->generateUuid(3).'-'.$this->generateUuid(4).'-'.$this->generateUuid(12);
     }
@@ -110,7 +71,7 @@ class UserService
      * @return string
      * @throws Exception
      */
-    private function generateUuid(int $length)
+    private function generateUuid(int $length): string
     {
         return substr(bin2hex(random_bytes(15)), 0, $length);
     }
@@ -122,7 +83,7 @@ class UserService
      *
      * @return string
      */
-    private function generatePassword($length = 12)
+    private function generatePassword($length = 12): string
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*?';
         $charactersLength = strlen($characters);
@@ -131,5 +92,23 @@ class UserService
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return $randomString;
+    }
+
+    /**
+     * Check user existence.
+     *
+     * @param string $email
+     * @return User|null
+     */
+    private function checkUserExistence(string $email): ?User
+    {
+        $userRepository = $this->em->getRepository(User::class);
+        $user = $userRepository->findOneBy(['email' => $email]);
+
+        if (!$user instanceof User) {
+            return null;
+        }
+        
+        return $user;
     }
 }

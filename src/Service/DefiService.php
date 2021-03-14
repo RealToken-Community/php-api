@@ -2,57 +2,38 @@
 
 namespace App\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DefiService
  * @package App\Service
  */
-class DefiService
+class DefiService extends Service
 {
-    private $entityManager;
-    protected $request;
-
-    /**
-     * DefiService constructor.
-     *
-     * @param RequestStack $requestStack
-     * @param EntityManagerInterface $entityManager
-     */
-    public function __construct(RequestStack $requestStack, EntityManagerInterface $entityManager)
-    {
-        $this->request = $requestStack->getCurrentRequest();
-        $this->entityManager = $entityManager;
-    }
-
     /**
      * Generate token list for AMM.
      *
+     * @param string|null $refer
+     *
      * @return JsonResponse
      */
-    public function getTokenListForAMM()
+    public function getTokenListForAMM(?string $refer): JsonResponse
     {
-        $response = new JsonResponse();
+        $ammList = $this->getCommunityList($refer);
 
-        $ammList = $this->getCommunityList();
-
-        $response->setData($ammList)
-            ->setStatusCode(Response::HTTP_OK);
-        return $response;
+        return new JsonResponse($ammList, Response::HTTP_OK);
     }
 
     /**
      * Get AMM community list DOM.
      *
-     * @return false|mixed
+     * @param string|null $refer
+     *
+     * @return array
      */
-    public function getCommunityList()
+    public function getCommunityList(?string $refer): array
     {
-        $refer = $this->request->headers->get('referer');
-
         $curl = curl_init();
 
         curl_setopt_array($curl, array(

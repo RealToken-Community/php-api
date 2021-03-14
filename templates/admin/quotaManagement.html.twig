@@ -1,0 +1,71 @@
+{% extends "base.html.twig" %}
+
+{% block title %}[ADMIN] Manage Quotas{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="col-md-12">
+        <h3>Quota</h3>
+        <div class="row">
+            {% for quota in quotas %}
+                <form id="{{ quota.id }}" action="{{ path('admin_manage_quota', {realtAuthToken: apiKey, method: 'update', id: quota.id}) }}" method="POST">
+                    <div class="row">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="id"
+                                   placeholder="Id" value="{{ quota.id }}" disabled="disabled" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="name"
+                                   placeholder="Name" value="{{ quota.name }}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="form-control" name="limitation"
+                                   placeholder="Limitation" value="{{ quota.limitation }}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="form-control" name="intervalNumber"
+                                   placeholder="IntervalNumber" value="{{ quota.intervalNumber }}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="intervalType"
+                                   placeholder="IntervalType" value="{{ quota.intervalType }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-success mb-4">Update</button>
+                        <a href="{{ path('admin_manage_quota', {realtAuthToken: apiKey, method: 'delete', id: quota.id}) }}"
+                           class="btn btn-danger mb-4">
+                            <button type="button" class="close" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </a>
+                    </div>
+                </form>
+            {% endfor %}
+            <form action="{{ path('admin_manage_quota', {realtAuthToken: apiKey, method: 'create'}) }}" method="POST">
+                <div class="row">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="formGroupId"
+                               name="id" placeholder="id" disabled="disabled">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="formGroupName"
+                               name="name" placeholder="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="formGroupLimitation"
+                               name="limitation" placeholder="Limitation" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="formGroupIntervalNumber"
+                               name="intervalNumber" placeholder="IntervalNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="formGroupIntervalType"
+                               name="intervalType" placeholder="IntervalType" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-4">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
