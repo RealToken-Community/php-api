@@ -53,3 +53,4 @@
 /config/packages/dev/
 /config/packages/test/
 /config/routes/dev/
+/public/phpinfo.php
