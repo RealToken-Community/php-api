@@ -370,6 +370,7 @@ class TokenService extends Service
         $token->setSection8paid($dataJson['section8paid'] ?? null);
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?? null);
         $token->setSecondaryMarketplace($dataJson['secondaryMarketPlace'] ?? null);
+        $token->setSecondaryMarketplaces($dataJson['secondaryMarketPlaces'] ?? null);
         $token->setBlockchainAddresses($dataJson['blockchainAddresses'] ?? null);
         $token->setUnderlyingAssetPrice((float)$dataJson['underlyingAssetPrice'] ?? null);
         $token->setRenovationReserve((float)$dataJson['renovationReserve'] ?? null);
