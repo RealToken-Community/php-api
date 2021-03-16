@@ -240,6 +240,11 @@ class Token
     private $secondaryMarketplace = [];
 
     /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $secondaryMarketplaces = [];
+
+    /**
      * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $symbol;
@@ -911,6 +916,18 @@ class Token
         return $this;
     }
 
+    public function getSecondaryMarketplaces(): ?array
+    {
+        return $this->secondaryMarketplaces;
+    }
+
+    public function setSecondaryMarketplaces(?array $secondaryMarketplaces): self
+    {
+        $this->secondaryMarketplaces = $secondaryMarketplaces;
+
+        return $this;
+    }
+
     public function getSymbol(): ?string
     {
         return $this->symbol;
@@ -1030,6 +1047,7 @@ class Token
                 'section8paid' => $this->section8paid,
                 'sellPropertyTo' => $this->sellPropertyTo,
                 'secondaryMarketplace' => $this->secondaryMarketplace,
+                'secondaryMarketplaces' => $this->secondaryMarketplaces,
                 'blockchainAddresses' => $this->blockchainAddresses,
                 'underlyingAssetPrice' => $this->underlyingAssetPrice,
                 'renovationReserve' => $this->renovationReserve,
