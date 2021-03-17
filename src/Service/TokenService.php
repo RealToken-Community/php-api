@@ -68,6 +68,7 @@ class TokenService extends Service
      */
     public function createToken(array $dataJson = []): JsonResponse
     {
+        $count["create"] = $count["update"] = 0;
         $parsedJson = $this->checkAndParseDataJson($dataJson);
 
         if (!$parsedJson) {
@@ -78,48 +79,25 @@ class TokenService extends Service
 
         // Check if unique value or multiple are push
         if (!isset($parsedJson[0])) { // Single
-            $actualToken = $tokenRepository->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
-
-            if ($actualToken instanceof Token) { // UPDATE
-                $token = $this->tokenMapping($parsedJson);
-                $this->updateToken($token->getEthereumContract(), $parsedJson);
-            } else { // CREATE
-                $token = $this->tokenMapping($parsedJson);
-                $symbol = $this->getRealtokenSymbol($token->getEthereumContract());
-
-                if ($symbol) {
-                    $token->setSymbol($symbol);
-                }
-
-                $this->em->persist($token);
-            }
+            /** @var Token $token */
+            $token = $tokenRepository->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
+            $this->createOrUpdateToken($token, $parsedJson, $count);
         } else { // Multiple
             foreach ($parsedJson as $item) {
                 if (empty($item['ethereumContract'])) continue;
                 if (!$this->haveValidChannel($item['canal'])) continue;
 
-                $actualToken = $tokenRepository->findOneBy(['ethereumContract' => $item['ethereumContract']]);
-
-                if ($actualToken instanceof Token) { // UPDATE
-                    $token = $this->tokenMapping($item);
-                    $this->updateToken($token->getEthereumContract(), $item);
-                } else { // CREATE
-                    $token = $this->tokenMapping($item);
-                    $symbol = $this->getRealtokenSymbol($token->getEthereumContract());
-
-                    if ($symbol) {
-                        $token->setSymbol($symbol);
-                    }
-
-                    $this->em->persist($token);
-                }
+                /** @var Token $token */
+                $token = $tokenRepository->findOneBy(['ethereumContract' => $item['ethereumContract']]);
+                $this->createOrUpdateToken($token, $item, $count);
             }
         }
 
         $this->em->flush();
 
+        $message = $count["create"] . " tokens created & ". $count["update"] ." updated successfully";
         return new JsonResponse(
-            ["status" => "success", "message" => "Token created successfully"],
+            ["status" => "success", "message" => $message],
             Response::HTTP_CREATED
         );
     }
@@ -148,8 +126,7 @@ class TokenService extends Service
         }
 
         if (empty($token->getSymbol())) {
-            $symbol = $this->getRealtokenSymbol($token->getEthereumContract());
-            if ($symbol) {
+            if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
                 $token->setSymbol($symbol);
             }
         }
@@ -236,6 +213,32 @@ class TokenService extends Service
             return $newData;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * @param Token|null $actualToken
+     * @param array $parsedJson
+     * @param array $count
+     * @throws Exception
+     */
+    private function createOrUpdateToken(?Token $actualToken, array $parsedJson, array &$count)
+    {
+        // UPDATE
+        if ($actualToken instanceof Token) {
+            $token = $this->tokenMapping($parsedJson);
+            $this->updateToken($token->getEthereumContract(), $parsedJson);
+            $count['update'] += 1;
+        } // CREATE
+        else {
+            $token = $this->tokenMapping($parsedJson);
+
+            if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
+                $token->setSymbol($symbol);
+            }
+
+            $this->em->persist($token);
+            $count['create'] += 1;
         }
     }
 
@@ -370,7 +373,7 @@ class TokenService extends Service
         $token->setSection8paid($dataJson['section8paid'] ?? null);
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?? null);
         $token->setSecondaryMarketplace($dataJson['secondaryMarketPlace'] ?? null);
-        $token->setSecondaryMarketplaces($dataJson['secondaryMarketPlaces'] ?? null);
+        $token->setSecondaryMarketplaces(!empty($dataJson['secondaryMarketPlaces']) ?$dataJson['secondaryMarketPlaces'] : null);
         $token->setBlockchainAddresses($dataJson['blockchainAddresses'] ?? null);
         $token->setUnderlyingAssetPrice((float)$dataJson['underlyingAssetPrice'] ?? null);
         $token->setRenovationReserve((float)$dataJson['renovationReserve'] ?? null);
