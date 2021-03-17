@@ -263,9 +263,9 @@ class TokenService extends Service
      *
      * @param $ethereumContract
      *
-     * @return false|mixed
+     * @return false|string
      */
-    private function getRealtokenSymbol($ethereumContract): bool
+    private function getRealtokenSymbol($ethereumContract)
     {
         $curl = curl_init();
 
