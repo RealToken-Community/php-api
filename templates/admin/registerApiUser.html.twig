@@ -1,0 +1,87 @@
+{% extends "base.html.twig" %}
+
+{% block title %}[ADMIN] Register new User{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="col-md-6">
+        <form action="{{ path('register_api_user', {'realtAuthToken': apiKey}) }}" method="POST">
+            <h3>User</h3>
+            <div class="form-group">
+                <input type="email" class="form-control" id="formGroupEmail" name="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="isUser" name="isUser" id="isUser" checked disabled>
+                    <label class="form-check-label" for="isUser">
+                        User
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="isAdmin" name="isAdmin" id="isAdmin">
+                    <label class="form-check-label" for="isAdmin">
+                        Admin
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="isFreemium" name="isFreemium" id="isFreemium">
+                    <label class="form-check-label" for="isFreemium">
+                        Freemium
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="isPremium" name="isPremium" id="isPremium">
+                    <label class="form-check-label" for="isPremium">
+                        Premium
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="isExternal" name="isExternal" id="isExternal">
+                    <label class="form-check-label" for="isExternal">
+                        External
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="isVip" name="isVip" id="isVip">
+                    <label class="form-check-label" for="isVip">
+                        VIP
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="formGroupUsername" name="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="formGroupEthereumAddress" name="ethereumAddress" placeholder="EthereumAddress" required>
+            </div>
+
+            <h3>Application</h3>
+            <div class="form-group">
+                <input type="text" class="form-control" id="formGroupAppName" name="appName" placeholder="AppName" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    {% if form %}
+        <div class="col-md-6">
+            <h3>User created :</h3>
+            <div class="alert alert-success" role="alert">
+                <pre>
+                Id : {{ form.user.id }}
+                AppId : {{ form.application.id }}
+                Email : {{ form.user.email }}
+                Username : {{ form.user.username }}
+                Rôles : {% for role in form.user.roles %} {{ role|e }} {% endfor %}
+
+                EthereumAddress : {{ form.user.ethereumAddress }}
+                Password : {{ form.user.password }}
+                Token : {{ form.application.apiToken }}
+                AppName : {{ form.application.name }}
+                </pre>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

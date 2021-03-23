@@ -9,6 +9,7 @@ services:
 
     App\:
         resource: '../src/'
+        autowire: true
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
