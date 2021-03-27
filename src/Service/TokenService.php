@@ -295,7 +295,11 @@ class TokenService extends Service
         }
 
         preg_match("/\((.*)\)/", $title, $symbol);
-        $name = $symbol[1];
+
+        $name = null;
+        if (!empty($symbol[1])) {
+            $name = $symbol[1];
+        }
 
         $validSymbol = strpos($name, "REALTOKEN-");
 
@@ -396,7 +400,7 @@ class TokenService extends Service
             !empty($dataJson['secondaryMarketPlaces'])
             || strlen($dataJson['secondaryMarketPlaces']) > 5
             ? $dataJson['secondaryMarketPlaces']
-            : null);
+            : []);
         $token->setBlockchainAddresses(
             !empty($dataJson['blockchainAddresses'])
             || strlen($dataJson['blockchainAddresses']) > 5
