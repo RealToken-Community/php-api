@@ -5,11 +5,11 @@
 {% block body %}
 <div class="container">
     <h3>Token mapping</h3>
-    <div class="col-md-12">
+    <div class="col-12">
         <div class="row">
-            <div class="col-2">Id</div>
-            <div class="col-2">RealT name</div>
-            <div class="col-2">API name</div>
+            <div class="col">Id</div>
+            <div class="col">RealT name</div>
+            <div class="col">API name</div>
         </div>
         {% for token in tokens %}
             <form id="{{ token.id }}" action="{{ path('admin_manage_token_mapping', {realtAuthToken: apiKey, method: 'update', id: token.id}) }}" method="POST">
