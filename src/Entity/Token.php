@@ -918,7 +918,7 @@ class Token
 
     public function getSecondaryMarketplaces(): ?array
     {
-        return $this->secondaryMarketplaces;
+        return $this->secondaryMarketplaces ?: [];
     }
 
     public function setSecondaryMarketplaces(?array $secondaryMarketplaces): self

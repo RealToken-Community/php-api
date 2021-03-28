@@ -140,4 +140,16 @@ class QuotaLimitations
 
         return $this;
     }
+
+    public function __toArray(): array
+    {
+        return [
+            'limitPerMinute' => $this->limitPerMinute,
+            'limitPerHour' => $this->limitPerHour,
+            'limitPerDay' => $this->limitPerDay,
+            'limitPerWeek' => $this->limitPerWeek,
+            'limitPerMonth' => $this->limitPerMonth,
+            'limitPerYear' => $this->limitPerYear,
+        ];
+    }
 }

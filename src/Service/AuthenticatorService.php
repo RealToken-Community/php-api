@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Application;
 use App\Entity\Quota;
 use App\Entity\QuotaHistory;
+use App\Entity\QuotaLimitations;
 use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -21,13 +22,15 @@ class AuthenticatorService extends Service
     /**
      * Check admin rights.
      *
-     * @param string $apiKey
+     * @param string|null $apiKey
      */
-    public function checkAdminRights(string $apiKey)
+    public function checkAdminRights(?string $apiKey)
     {
-        $application = $this->getApplicationByToken($apiKey);
+        if (!empty($apiKey)) {
+            $application = $this->getApplicationByToken($apiKey);
+        }
 
-        if (!$this->applicationHaveAdminRights($application)) {
+        if (empty($apiKey) || !$this->applicationHaveAdminRights($application)) {
             throw new HttpException(Response::HTTP_FORBIDDEN, "Unauthorized");
         }
     }
@@ -49,6 +52,8 @@ class AuthenticatorService extends Service
         if (is_null($application)) {
             throw new HttpException(Response::HTTP_NOT_FOUND, "Api token not found");
         }
+
+        $this->checkUserQuota($application->getQuota(), $application);
 
         $this->consumeQuota($application, $apiKey);
 
@@ -72,7 +77,7 @@ class AuthenticatorService extends Service
      *
      * @param string|null $apiKey
      *
-     * @return bool[]
+     * @return array
      */
     public function checkCredentials(string $apiKey = null): array
     {
@@ -128,7 +133,7 @@ class AuthenticatorService extends Service
         // Tmp rate limiter
         $this->addQuotaHistory($application);
 
-        // Sf Rate Limiter Quota
+        // TODO : Sf Rate Limiter Quota
         $user = $application->getUser();
         $roles = $user->getRoles();
         $this->getUserLimiter($roles, $apiKey);
@@ -212,6 +217,34 @@ class AuthenticatorService extends Service
     }
 
     /**
+     * Get last quota history.
+     *
+     * @param Quota $quotaHistory
+     * @param Application $application
+     */
+    private function checkUserQuota(Quota $quotaHistory, Application $application)
+    {
+        $quotaHistoryRepository = $this->em->getRepository(QuotaHistory::class);
+        $nbRequest = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("60 minutes ago"));
+
+        $quotaLimitationsRepository = $this->em->getRepository(QuotaLimitations::class);
+        $roles = $application->getUser()->getRoles();
+
+        /** @var QuotaLimitations $quotaLimitation */
+        $quotaLimitation = $quotaLimitationsRepository->findOneBy(['role' => $roles]);
+
+        switch (true) {
+            case $nbRequest > $quotaLimitation->getLimitPerYear():
+            case $nbRequest > $quotaLimitation->getLimitPerMonth():
+            case $nbRequest > $quotaLimitation->getLimitPerWeek():
+            case $nbRequest > $quotaLimitation->getLimitPerDay():
+            case $nbRequest > $quotaLimitation->getLimitPerHour():
+            case $nbRequest > $quotaLimitation->getLimitPerMinute():
+                throw new HttpException(Response::HTTP_TOO_MANY_REQUESTS, 'API quota exceeded');
+        }
+    }
+
+    /**
      * Define limiter factory.
      *
      * @param array $roles
@@ -224,7 +257,7 @@ class AuthenticatorService extends Service
         }
 
         if (empty(array_values($roles))) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, "Not admin user.");
+            throw new HttpException(Response::HTTP_FORBIDDEN, "Not admin user");
         }
 
         $role = array_values($roles)[0];

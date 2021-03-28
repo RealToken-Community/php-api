@@ -51,12 +51,46 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Manage quotas.
+     * Manage quota (V1).
      *
      * @param Request $request
      *
      * @return Response
-     * @Route("/manageQuotas", name="admin_manage_quota", methods={"GET", "POST"})
+     * @Route("/manageQuota", name="admin_manage_quota", methods={"GET", "POST"})
+     */
+    public function manageQuota(Request $request): Response
+    {
+        // Check admin rights
+        $apiKey = $this->getApiToken($request);
+        $this->authenticatorService->checkAdminRights($apiKey);
+
+        switch ($request->get('method')) {
+            case 'create':
+                $this->adminService->createQuotaLimitations($request);
+                break;
+            case 'update':
+                $this->adminService->updateQuotaLimitations($request);
+                break;
+            case 'delete':
+                $this->adminService->deleteQuotaLimitations($request);
+                break;
+        }
+
+        return $this->render(
+            "admin/quotaLimitations.html.twig", [
+                'apiKey' => $apiKey,
+                'quotas' => $this->adminService->getQuotaLimitations(),
+            ]
+        );
+    }
+
+    /**
+     * Manage quotas (V2).
+     *
+     * @param Request $request
+     *
+     * @return Response
+     * @Route("/manageQuotas", name="admin_manage_quotas", methods={"GET", "POST"})
      */
     public function manageQuotas(Request $request): Response
     {

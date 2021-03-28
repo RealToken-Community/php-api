@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/v1")
+ * @Route("/v1/token")
  */
 class TokenController
 {
@@ -33,6 +33,29 @@ class TokenController
     }
 
     /**
+     * List all tokens deprecated.
+     *
+     * @OA\Response(
+     *     response=301,
+     *     description="Get deprecated",
+     * )
+     * @OA\Tag(name="Tokens")
+     * @Security(name="api_key")
+     * @param Request $request
+     *
+     * @deprecated
+     *
+     * @return JsonResponse
+     * @Route("s", name="tokens_show_deprecated", methods={"GET"})
+     */
+    public function showTokensDeprecated(Request $request): JsonResponse
+    {
+        $credentials = $this->authenticatorService->checkCredentials($this->getApiToken($request));
+
+        return $this->tokenService->getTokens($credentials, true);
+    }
+
+    /**
      * List all tokens.
      *
      * @OA\Response(
@@ -44,7 +67,7 @@ class TokenController
      * @param Request $request
      *
      * @return JsonResponse
-     * @Route("/tokens", name="tokens_show", methods={"GET"})
+     * @Route("/", name="tokens_show", methods={"GET"})
      */
     public function showTokens(Request $request): JsonResponse
     {
@@ -66,7 +89,7 @@ class TokenController
      * @param string $uuid
      *
      * @return JsonResponse
-     * @Route("/token/{uuid}", name="token_show", methods={"GET"})
+     * @Route("/{uuid}", name="token_show", methods={"GET"})
      */
     public function showToken(Request $request, string $uuid) : JsonResponse
     {
@@ -98,7 +121,7 @@ class TokenController
      *
      * @return JsonResponse
      * @throws Exception
-     * @Route("/token/{uuid}", name="token_update", methods={"PUT"})
+     * @Route("/{uuid}", name="token_update", methods={"PUT"})
      */
     public function updateToken(Request $request, string $uuid) : JsonResponse
     {
@@ -120,13 +143,46 @@ class TokenController
      * @param string $uuid
      *
      * @return JsonResponse
-     * @Route("/token/{uuid}", name="token_delete", methods={"DELETE"})
+     * @Route("/{uuid}", name="token_delete", methods={"DELETE"})
      */
     public function deleteToken(Request $request, string $uuid): JsonResponse
     {
         $this->authenticatorService->checkAdminRights($this->getApiToken($request));
 
         return $this->tokenService->deleteToken($uuid);
+    }
+
+    /**
+     * Create token data deprecated.
+     *
+     * @OA\Response(
+     *     response=301,
+     *     description="Create deprecated",
+     * )
+     * @OA\RequestBody(
+     *     request="token",
+     *     description="JSON data token",
+     *     @OA\JsonContent(
+     *         @OA\MediaType(
+     *             mediaType="application/json"
+     *         )
+     *     )
+     * )
+     * @OA\Tag(name="Tokens")
+     * @Security(name="api_key")
+     * @param Request $request
+     *
+     * @deprecated
+     *
+     * @return JsonResponse
+     * @throws Exception
+     * @Route("s", name="token_create_deprecated", methods={"POST"})
+     */
+    public function createTokenDeprecated(Request $request): JsonResponse
+    {
+        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+
+        return $this->tokenService->createToken($this->getDataJson($request), true);
     }
 
     /**
@@ -151,7 +207,7 @@ class TokenController
      *
      * @return JsonResponse
      * @throws Exception
-     * @Route("/tokens", name="token_create", methods={"POST"})
+     * @Route("/", name="token_create", methods={"POST"})
      */
     public function createToken(Request $request): JsonResponse
     {
