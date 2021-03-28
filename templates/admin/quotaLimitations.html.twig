@@ -1,0 +1,95 @@
+{% extends "base.html.twig" %}
+
+{% block title %}[ADMIN] Manage Quotas (V1){% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="col-12">
+            <h3>Quota</h3>
+            <div class="row">
+                {% for quota in quotas %}
+                    <form id="{{ quota.id }}" action="{{ path('admin_manage_quota', {realtAuthToken: apiKey, method: 'update', id: quota.id}) }}" method="POST">
+                        <div class="row">
+                            <div class="col form-group">
+                                <input type="text" class="form-control" name="id"
+                                       placeholder="Id" value="{{ quota.id }}" disabled="disabled" required>
+                            </div>
+                            <div class="col-2 form-group">
+                                <input type="text" class="form-control" name="role"
+                                       placeholder="Role" value="{{ quota.role }}" required>
+                            </div>
+                            <div class="col form-group">
+                                <input type="text" class="form-control" name="limitPerMinute"
+                                       placeholder="LimitPerMinute" value="{{ quota.limitPerMinute }}" required>
+                            </div>
+                            <div class="col form-group">
+                                <input type="number" class="form-control" name="limitPerHour"
+                                       placeholder="LimitPerHour" value="{{ quota.limitPerHour }}" required>
+                            </div>
+                            <div class="col form-group">
+                                <input type="number" class="form-control" name="limitPerDay"
+                                       placeholder="LimitPerDay" value="{{ quota.limitPerDay }}" required>
+                            </div>
+                            <div class="col form-group">
+                                <input type="number" class="form-control" name="limitPerWeek"
+                                       placeholder="LimitPerWeek" value="{{ quota.limitPerWeek }}" required>
+                            </div>
+                            <div class="col form-group">
+                                <input type="number" class="form-control" name="limitPerMonth"
+                                       placeholder="LimitPerMonth" value="{{ quota.limitPerMonth }}" required>
+                            </div>
+                            <div class="col form-group">
+                                <input type="number" class="form-control" name="limitPerYear"
+                                       placeholder="LimitPerYear" value="{{ quota.limitPerYear }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-success mb-4">Update</button>
+                            <a href="{{ path('admin_manage_quota', {realtAuthToken: apiKey, method: 'delete', id: quota.id}) }}"
+                               class="btn btn-danger mb-4">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                    </form>
+                {% endfor %}
+                <form action="{{ path('admin_manage_quota', {realtAuthToken: apiKey, method: 'create'}) }}" method="POST">
+                    <div class="row">
+                        <div class="col form-group">
+                            <input type="text" class="form-control" id="formGroupId"
+                                   name="id" placeholder="id" disabled="disabled">
+                        </div>
+                        <div class="col form-group">
+                            <input type="text" class="form-control" id="formGroupRole"
+                                   name="role" placeholder="Role" required>
+                        </div>
+                        <div class="col form-group">
+                            <input type="number" class="form-control" id="formGroupLimitPerMinute"
+                                   name="limitPerMinute" placeholder="Minute" required>
+                        </div>
+                        <div class="col form-group">
+                            <input type="number" class="form-control" id="formGroupLimitPerHour"
+                                   name="limitPerHour" placeholder="Hour" required>
+                        </div>
+                        <div class="col form-group">
+                            <input type="number" class="form-control" id="formGroupLimitPerDay"
+                                   name="limitPerDay" placeholder="Day" required>
+                        </div>
+                        <div class="col form-group">
+                            <input type="number" class="form-control" id="formGroupLimitPerWeek"
+                                   name="limitPerWeek" placeholder="Week" required>
+                        </div>
+                        <div class="col form-group">
+                            <input type="number" class="form-control" id="formGroupLimitPerMonth"
+                                   name="limitPerMonth" placeholder="Month" required>
+                        </div>
+                        <div class="col form-group">
+                            <input type="number" class="form-control" id="formGroupLimitPerYear"
+                                   name="limitPerYear" placeholder="Year" required>
+                        </div>
+                        <button type="submit" class="col btn btn-primary mb-4">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

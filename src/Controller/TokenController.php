@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/v1")
+ * @Route("/v1/token")
  */
 class TokenController
 {
@@ -44,7 +44,7 @@ class TokenController
      * @param Request $request
      *
      * @return JsonResponse
-     * @Route("/tokens", name="tokens_show", methods={"GET"})
+     * @Route("/", name="tokens_show", methods={"GET"})
      */
     public function showTokens(Request $request): JsonResponse
     {
@@ -66,7 +66,7 @@ class TokenController
      * @param string $uuid
      *
      * @return JsonResponse
-     * @Route("/token/{uuid}", name="token_show", methods={"GET"})
+     * @Route("/{uuid}", name="token_show", methods={"GET"})
      */
     public function showToken(Request $request, string $uuid) : JsonResponse
     {
@@ -98,7 +98,7 @@ class TokenController
      *
      * @return JsonResponse
      * @throws Exception
-     * @Route("/token/{uuid}", name="token_update", methods={"PUT"})
+     * @Route("/{uuid}", name="token_update", methods={"PUT"})
      */
     public function updateToken(Request $request, string $uuid) : JsonResponse
     {
@@ -120,7 +120,7 @@ class TokenController
      * @param string $uuid
      *
      * @return JsonResponse
-     * @Route("/token/{uuid}", name="token_delete", methods={"DELETE"})
+     * @Route("/{uuid}", name="token_delete", methods={"DELETE"})
      */
     public function deleteToken(Request $request, string $uuid): JsonResponse
     {
@@ -151,7 +151,7 @@ class TokenController
      *
      * @return JsonResponse
      * @throws Exception
-     * @Route("/tokens", name="token_create", methods={"POST"})
+     * @Route("/", name="token_create", methods={"POST"})
      */
     public function createToken(Request $request): JsonResponse
     {

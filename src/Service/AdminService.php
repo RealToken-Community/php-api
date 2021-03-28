@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Application;
 use App\Entity\Quota;
 use App\Entity\QuotaConfiguration;
+use App\Entity\QuotaLimitations;
 use App\Entity\TokenMapping;
 use App\Entity\User;
 use DateTime;
@@ -28,6 +29,80 @@ class AdminService extends Service
 
         return $this->doAppQuotaMapping($applicationsQuota);
     }
+
+    /**
+     * V1
+     */
+
+    /**
+     * Get quota limitations.
+     *
+     * @return array
+     */
+    public function getQuotaLimitations(): array
+    {
+        $quotaLimitationsRepository = $this->em->getRepository(QuotaLimitations::class);
+        return $quotaLimitationsRepository->findAll();
+    }
+
+    /**
+     * Create quota limitations.
+     *
+     * @param Request $request
+     */
+    public function createQuotaLimitations(Request $request)
+    {
+        $quotaLimitation = new QuotaLimitations();
+        $quotaLimitation->setRole($request->get('role'));
+        $quotaLimitation->setLimitPerMinute($request->get('limitPerMinute'));
+        $quotaLimitation->setLimitPerHour($request->get('limitPerHour'));
+        $quotaLimitation->setLimitPerDay($request->get('limitPerDay'));
+        $quotaLimitation->setLimitPerWeek($request->get('limitPerWeek'));
+        $quotaLimitation->setLimitPerMonth($request->get('limitPerMonth'));
+        $quotaLimitation->setLimitPerYear($request->get('limitPerYear'));
+        $this->em->persist($quotaLimitation);
+        $this->em->flush();
+    }
+
+    /**
+     * Update quota limitations.
+     *
+     * @param Request $request
+     */
+    public function updateQuotaLimitations(Request $request)
+    {
+        $id = $request->get('id');
+        $quotaLimitationsRepository = $this->em->getRepository(QuotaLimitations::class);
+        $quotaLimitation = $quotaLimitationsRepository->findOneBy(['id' => $id]);
+        $quotaLimitation->setRole($request->get('role'));
+        $quotaLimitation->setLimitPerMinute($request->get('limitPerMinute'));
+        $quotaLimitation->setLimitPerHour($request->get('limitPerHour'));
+        $quotaLimitation->setLimitPerDay($request->get('limitPerDay'));
+        $quotaLimitation->setLimitPerWeek($request->get('limitPerWeek'));
+        $quotaLimitation->setLimitPerMonth($request->get('limitPerMonth'));
+        $quotaLimitation->setLimitPerYear($request->get('limitPerYear'));
+        $this->em->persist($quotaLimitation);
+        $this->em->flush();
+    }
+
+    /**
+     * Delete quota limitations.
+     *
+     * @param Request $request
+     */
+    public function deleteQuotaLimitations(Request $request)
+    {
+        $id = $request->get('id');
+        $quotaLimitationsRepository = $this->em->getRepository(QuotaLimitations::class);
+        $quotaLimitation = $quotaLimitationsRepository->findOneBy(['id' => $id]);
+
+        $this->em->remove($quotaLimitation);
+        $this->em->flush();
+    }
+
+    /**
+     * V2
+     */
 
     /**
      * Get quota management.
@@ -157,8 +232,9 @@ class AdminService extends Service
         $routes = [];
         $urls = [
             '/v1/tokenList',
-            '/v1/tokens',
+            '/v1/token',
             '/v1/token/0xe5f7ef61443fc36ae040650aa585b0395aef77c8',
+            '/v1/quota',
         ];
 
         foreach ($urls as $url) {

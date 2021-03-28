@@ -2,9 +2,15 @@
 
 namespace App\Repository;
 
+use App\Entity\Quota;
 use App\Entity\QuotaHistory;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Exception;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * @method QuotaHistory|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,32 +25,31 @@ class QuotaHistoryRepository extends ServiceEntityRepository
         parent::__construct($registry, QuotaHistory::class);
     }
 
-    // /**
-    //  * @return QuotaHistory[] Returns an array of QuotaHistory objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Find last usage from quota id.
+     *
+     * @param Quota $quota
+     * @param DateTime|null $datetime
+     *
+     * @return int
+     * @throws \Exception
+     */
+    public function findLastUsage(Quota $quota, DateTime $datetime = null): int
     {
-        return $this->createQueryBuilder('q')
-            ->andWhere('q.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('q.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        try {
+            $query = $this->createQueryBuilder('qh')
+                ->select('COUNT(qh.id)')
+                ->where('qh.quota = :quota')
+                ->andWhere('qh.accessTime > :accessTime')
+                ->setParameter('quota', $quota)
+                ->setParameter('accessTime', $datetime)
+                ->orderBy('qh.id', 'DESC')
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NoResultException | NonUniqueResultException $e) {
+            throw new \Exception($e);
+        }
 
-    /*
-    public function findOneBySomeField($value): ?QuotaHistory
-    {
-        return $this->createQueryBuilder('q')
-            ->andWhere('q.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        return (int)$query;
     }
-    */
 }
