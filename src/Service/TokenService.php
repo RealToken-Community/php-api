@@ -20,10 +20,11 @@ class TokenService extends Service
      * Get list of tokens.
      *
      * @param array $credentials
+     * @param bool $deprecated
      *
      * @return JsonResponse
      */
-    public function getTokens(array $credentials): JsonResponse
+    public function getTokens(array $credentials, bool $deprecated = false): JsonResponse
     {
         $tokens = $this->em->getRepository(Token::class)->findAll();
 
@@ -36,7 +37,13 @@ class TokenService extends Service
             $result[] = $token->__toArray($credentials);
         }
 
-        return new JsonResponse($result,Response::HTTP_OK);
+        $response = Response::HTTP_OK;
+
+        if ($deprecated) {
+            $response = Response::HTTP_MOVED_PERMANENTLY;
+        }
+
+        return new JsonResponse($result, $response);
     }
 
     /**
@@ -66,7 +73,7 @@ class TokenService extends Service
      * @return JsonResponse
      * @throws Exception
      */
-    public function createToken(array $dataJson = []): JsonResponse
+    public function createToken(array $dataJson = [], $deprecated = false): JsonResponse
     {
         $count["create"] = $count["update"] = 0;
         $parsedJson = $this->checkAndParseDataJson($dataJson);
@@ -95,10 +102,16 @@ class TokenService extends Service
 
         $this->em->flush();
 
-        $message = $count["create"] . " tokens created & ". $count["update"] ." updated successfully";
+        $response = Response::HTTP_CREATED;
+
+        if ($deprecated) {
+            $response = Response::HTTP_MOVED_PERMANENTLY;
+        }
+
+        $message = $count["create"] . " tokens created & " . $count["update"] . " updated successfully";
         return new JsonResponse(
             ["status" => "success", "message" => $message],
-            Response::HTTP_CREATED
+            $response
         );
     }
 

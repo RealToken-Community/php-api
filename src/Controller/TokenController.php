@@ -33,6 +33,29 @@ class TokenController
     }
 
     /**
+     * List all tokens deprecated.
+     *
+     * @OA\Response(
+     *     response=301,
+     *     description="Get deprecated",
+     * )
+     * @OA\Tag(name="Tokens")
+     * @Security(name="api_key")
+     * @param Request $request
+     *
+     * @deprecated
+     *
+     * @return JsonResponse
+     * @Route("s", name="tokens_show_deprecated", methods={"GET"})
+     */
+    public function showTokensDeprecated(Request $request): JsonResponse
+    {
+        $credentials = $this->authenticatorService->checkCredentials($this->getApiToken($request));
+
+        return $this->tokenService->getTokens($credentials, true);
+    }
+
+    /**
      * List all tokens.
      *
      * @OA\Response(
@@ -127,6 +150,39 @@ class TokenController
         $this->authenticatorService->checkAdminRights($this->getApiToken($request));
 
         return $this->tokenService->deleteToken($uuid);
+    }
+
+    /**
+     * Create token data deprecated.
+     *
+     * @OA\Response(
+     *     response=301,
+     *     description="Create deprecated",
+     * )
+     * @OA\RequestBody(
+     *     request="token",
+     *     description="JSON data token",
+     *     @OA\JsonContent(
+     *         @OA\MediaType(
+     *             mediaType="application/json"
+     *         )
+     *     )
+     * )
+     * @OA\Tag(name="Tokens")
+     * @Security(name="api_key")
+     * @param Request $request
+     *
+     * @deprecated
+     *
+     * @return JsonResponse
+     * @throws Exception
+     * @Route("s", name="token_create_deprecated", methods={"POST"})
+     */
+    public function createTokenDeprecated(Request $request): JsonResponse
+    {
+        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+
+        return $this->tokenService->createToken($this->getDataJson($request), true);
     }
 
     /**
