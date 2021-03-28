@@ -42,7 +42,7 @@ class QuotaController
      * @param Request $request
      *
      * @return JsonResponse
-     * @Route("/", name="user_quota", methods={"GET"})
+     * @Route("", name="user_quota", methods={"GET"})
      */
     public function showTokens(Request $request): JsonResponse
     {

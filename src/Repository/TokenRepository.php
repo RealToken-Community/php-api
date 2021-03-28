@@ -16,4 +16,16 @@ class TokenRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Token::class);
     }
+
+    /**
+     * Drop all tokens.
+     *
+     */
+    public function dropTokens(): void
+    {
+        $this->createQueryBuilder('t')
+            ->delete(Token::class)
+            ->getQuery()
+            ->execute();
+    }
 }

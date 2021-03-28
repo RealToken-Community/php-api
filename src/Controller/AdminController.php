@@ -174,4 +174,29 @@ class AdminController extends AbstractController
             ]
         );
     }
+
+    /**
+     * Drop tokens.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     * @Route("/dropTokens", name="admin_drop_tokens", methods={"GET", "POST"})
+     */
+    public function dropTokens(Request $request): Response
+    {
+        // Check admin rights
+        $apiKey = $this->getApiToken($request);
+        $this->authenticatorService->checkAdminRights($apiKey);
+
+        if ($request->get('method') === 'delete') {
+            $this->adminService->dropTokens($request);
+        }
+
+        return $this->render(
+            "admin/dropTokens.html.twig", [
+                'apiKey' => $apiKey
+            ]
+        );
+    }
 }
