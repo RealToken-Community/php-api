@@ -6,6 +6,7 @@ use App\Entity\Application;
 use App\Entity\Quota;
 use App\Entity\QuotaConfiguration;
 use App\Entity\QuotaLimitations;
+use App\Entity\Token;
 use App\Entity\TokenMapping;
 use App\Entity\User;
 use DateTime;
@@ -251,6 +252,15 @@ class AdminService extends Service
         }
 
         return $routes;
+    }
+
+    /**
+     * Drop all tokens.
+     *
+     */
+    public function dropTokens() {
+        $tokenRepository = $this->em->getRepository(Token::class);
+        $tokenRepository->dropTokens();
     }
 
     /**

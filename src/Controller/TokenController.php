@@ -67,7 +67,7 @@ class TokenController
      * @param Request $request
      *
      * @return JsonResponse
-     * @Route("/", name="tokens_show", methods={"GET"})
+     * @Route("", name="tokens_show", methods={"GET"})
      */
     public function showTokens(Request $request): JsonResponse
     {
@@ -207,7 +207,7 @@ class TokenController
      *
      * @return JsonResponse
      * @throws Exception
-     * @Route("/", name="token_create", methods={"POST"})
+     * @Route("", name="token_create", methods={"POST"})
      */
     public function createToken(Request $request): JsonResponse
     {

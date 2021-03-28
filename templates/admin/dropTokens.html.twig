@@ -1,0 +1,22 @@
+{% extends "base.html.twig" %}
+
+{% block title %}[ADMIN] Drop tokens{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h3>Routes</h3>
+        <div class="col-12">
+            <div class="row">
+                <div class="d-flex justify-content-center">
+                    <a href="{{ path('admin_drop_tokens', {realtAuthToken: apiKey, method: 'delete'}) }}"
+                       class="btn btn-danger mb-4">
+                        <button type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">Drop all tokens</span>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
