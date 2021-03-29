@@ -347,20 +347,20 @@ class TokenService extends Service
         $token->setMaticContract($dataJson['maticContract'] ?? null);
         $token->setXDaiContract(!empty($dataJson['xDaiContract']) ?? null);
         $token->setTotalInvestment((float)$dataJson['totalInvestment'] ?? null);
-        $token->setGrossRentMonth(round((float)$dataJson['grossRent'], 2) ?? null);
+        $token->setGrossRentMonth((float)$dataJson['grossRent'] ?? null);
         $token->setGrossRentYear($token->getGrossRentMonth() * 12 ?? null);
         $token->setPropertyManagementPercent((float)$dataJson['propertyManagementPercent'] ?? null);
         $token->setPropertyManagement(
-            round($token->getGrossRentMonth() * $token->getPropertyManagementPercent(), 2)
+            $token->getGrossRentMonth() * $token->getPropertyManagementPercent()
             ?? null
         );
         $token->setRealtPlatformPercent((float)$dataJson['realTPlatformPercent'] ?? null);
         $token->setRealtPlatform(
-            round($token->getGrossRentMonth() * $token->getRealtPlatformPercent(), 2)
+            $token->getGrossRentMonth() * $token->getRealtPlatformPercent()
             ?? null
         );
-        $token->setInsurance(round((float)$dataJson['insurance'], 2) ?? null);
-        $token->setPropertyTaxes(round((float)$dataJson['propertyTaxes'], 2) ?? null);
+        $token->setInsurance((float)$dataJson['insurance'] ?? null);
+        $token->setPropertyTaxes((float)$dataJson['propertyTaxes'] ?? null);
         $token->setUtilities((float)$dataJson['utilities'] ?? null);
         $token->setNetRentMonth(round(
             $token->getGrossRentMonth()
@@ -370,22 +370,22 @@ class TokenService extends Service
             - $token->getInsurance()
             - $token->getUtilities()
             - $token->getPropertyMaintenanceMonthly(), 2) ?? null);
-        $token->setNetRentYear(round($token->getNetRentMonth() * 12, 2) ?? null);
+        $token->setNetRentYear($token->getNetRentMonth() * 12 ?? null);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?? null);
         $token->setNetRentYearPerToken(
-            round($token->getNetRentYear() / $token->getTotalTokens(), 2)
+            $token->getNetRentYear() / $token->getTotalTokens()
             ?? null
         );
         $token->setNetRentMonthPerToken(
-            round($token->getNetRentYearPerToken() / 12, 2)
+            $token->getNetRentYearPerToken() / 12
             ?? null
         );
         $token->setNetRentDayPerToken(
-            round($token->getNetRentYearPerToken() / 365, 2)
+            $token->getNetRentYearPerToken() / 365
             ?? null
         );
         $token->setAnnualPercentageYield($token->getTotalInvestment()
-            ? round($token->getNetRentYear() / $token->getTotalInvestment() * 100, 2)
+            ? $token->getNetRentYear() / $token->getTotalInvestment() * 100
             : null
         );
         $token->setCoordinate([
