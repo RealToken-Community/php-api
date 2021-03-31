@@ -16,7 +16,7 @@ services:
       - ./logs/nginx:/var/log/nginx:cached
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sf-realt-api-prod.rule=Host(`api.realt.ch`)"
+      - "traefik.http.routers.sf-realt-api-prod.rule=Host(`api.realt.community`)"
       - "traefik.http.routers.sf-realt-api-prod.entrypoints=websecure"
     restart: always
 
