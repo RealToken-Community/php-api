@@ -14,7 +14,15 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class QuotaService extends Service
 {
-    public function getUserQuotas(string $apiKey) {
+    /**
+     * Get user quotas.
+     *
+     * @param string $apiKey
+     *
+     * @return JsonResponse
+     */
+    public function getUserQuotas(string $apiKey): JsonResponse
+    {
         $applicationRepository = $this->em->getRepository(Application::class);
         $application = $applicationRepository->findOneBy(['apiToken' => $apiKey]);
 

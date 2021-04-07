@@ -12,6 +12,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TokenRepository extends ServiceEntityRepository
 {
+    /**
+     * TokenRepository constructor.
+     *
+     * @param ManagerRegistry $registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Token::class);
