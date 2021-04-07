@@ -99,6 +99,8 @@ class AuthenticatorService extends Service
             }
 
             $credentials['isAuth'] = true;
+
+            $this->consumeQuota($application, $apiKey);
         }
 
         return $credentials;
