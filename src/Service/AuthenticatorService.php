@@ -53,9 +53,9 @@ class AuthenticatorService extends Service
             throw new HttpException(Response::HTTP_NOT_FOUND, "Api token not found");
         }
 
-        $this->checkUserQuota($application->getQuota(), $application);
-
         $this->consumeQuota($application, $apiKey);
+
+        $this->checkUserQuota($application->getQuota(), $application);
 
         return $application;
     }
@@ -136,9 +136,9 @@ class AuthenticatorService extends Service
         $this->addQuotaHistory($application);
 
         // TODO : Sf Rate Limiter Quota
-        $user = $application->getUser();
-        $roles = $user->getRoles();
-        $this->getUserLimiter($roles, $apiKey);
+//        $user = $application->getUser();
+//        $roles = $user->getRoles();
+//        $this->getUserLimiter($roles, $apiKey);
     }
 
     /**
@@ -227,7 +227,13 @@ class AuthenticatorService extends Service
     private function checkUserQuota(Quota $quotaHistory, Application $application)
     {
         $quotaHistoryRepository = $this->em->getRepository(QuotaHistory::class);
-        $nbRequest = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("60 minutes ago"));
+        // TODO : Optimize request
+        $nbRequest1i = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 minute ago"));
+        $nbRequest1h = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 hour ago"));
+        $nbRequest1d = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 day ago"));
+        $nbRequest1w = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 week ago"));
+        $nbRequest1m = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 month ago"));
+        $nbRequest1y = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 year ago"));
 
         $quotaLimitationsRepository = $this->em->getRepository(QuotaLimitations::class);
         $roles = $application->getUser()->getRoles();
@@ -236,12 +242,12 @@ class AuthenticatorService extends Service
         $quotaLimitation = $quotaLimitationsRepository->findOneBy(['role' => $roles]);
 
         switch (true) {
-            case $nbRequest > $quotaLimitation->getLimitPerYear():
-            case $nbRequest > $quotaLimitation->getLimitPerMonth():
-            case $nbRequest > $quotaLimitation->getLimitPerWeek():
-            case $nbRequest > $quotaLimitation->getLimitPerDay():
-            case $nbRequest > $quotaLimitation->getLimitPerHour():
-            case $nbRequest > $quotaLimitation->getLimitPerMinute():
+            case $nbRequest1y > $quotaLimitation->getLimitPerYear():
+            case $nbRequest1m > $quotaLimitation->getLimitPerMonth():
+            case $nbRequest1w > $quotaLimitation->getLimitPerWeek():
+            case $nbRequest1d > $quotaLimitation->getLimitPerDay():
+            case $nbRequest1h > $quotaLimitation->getLimitPerHour():
+            case $nbRequest1i> $quotaLimitation->getLimitPerMinute():
                 throw new HttpException(Response::HTTP_TOO_MANY_REQUESTS, 'API quota exceeded');
         }
     }
