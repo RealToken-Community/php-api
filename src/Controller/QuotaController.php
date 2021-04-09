@@ -44,7 +44,7 @@ class QuotaController
      * @return JsonResponse
      * @Route("", name="user_quota", methods={"GET"})
      */
-    public function showTokens(Request $request): JsonResponse
+    public function showQuotas(Request $request): JsonResponse
     {
         $apiKey = $this->getApiToken($request);
         $this->authenticatorService->checkAdminRights($apiKey);
