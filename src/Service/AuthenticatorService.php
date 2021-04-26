@@ -227,21 +227,20 @@ class AuthenticatorService extends Service
     {
         $quotaHistoryRepository = $this->em->getRepository(QuotaHistory::class);
 
-        $nbRequest = $quotaHistoryRepository->findLastUsage2($quotaHistory);
+        $quotaLimitationsRepository = $this->em->getRepository(QuotaLimitations::class);
+        $roles = $application->getUser()->getRoles();
 
+        /** @var QuotaLimitations $quotaLimitation */
+        $quotaLimitation = $quotaLimitationsRepository->findOneBy(['role' => $roles]);
+        
 //        // TODO : Optimize request
+//        /* Query usage V1 */
 //        $nbRequest1i = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 minute ago"));
 //        $nbRequest1h = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 hour ago"));
 //        $nbRequest1d = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 day ago"));
 //        $nbRequest1w = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 week ago"));
 //        $nbRequest1m = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 month ago"));
 //        $nbRequest1y = $quotaHistoryRepository->findLastUsage($quotaHistory, new DateTime("1 year ago"));
-
-        $quotaLimitationsRepository = $this->em->getRepository(QuotaLimitations::class);
-        $roles = $application->getUser()->getRoles();
-
-        /** @var QuotaLimitations $quotaLimitation */
-        $quotaLimitation = $quotaLimitationsRepository->findOneBy(['role' => $roles]);
 //
 //        switch (true) {
 //            case $nbRequest1y > $quotaLimitation->getLimitPerYear():
@@ -253,6 +252,8 @@ class AuthenticatorService extends Service
 //                throw new HttpException(Response::HTTP_TOO_MANY_REQUESTS, 'API quota exceeded');
 //        }
 
+        /* Query usage V2 */
+        $nbRequest = $quotaHistoryRepository->findLastUsage2($quotaHistory);
         switch (true) {
             case $nbRequest['year'] > $quotaLimitation->getLimitPerYear():
             case $nbRequest['month'] > $quotaLimitation->getLimitPerMonth():
