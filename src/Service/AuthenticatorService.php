@@ -259,7 +259,7 @@ class AuthenticatorService extends Service
             case $nbRequest['week'] > $quotaLimitation->getLimitPerWeek():
             case $nbRequest['day'] > $quotaLimitation->getLimitPerDay():
             case $nbRequest['hour'] > $quotaLimitation->getLimitPerHour():
-            case $nbRequest['minute']> $quotaLimitation->getLimitPerMinute():
+            case $nbRequest['minute'] > $quotaLimitation->getLimitPerMinute():
                 throw new HttpException(Response::HTTP_TOO_MANY_REQUESTS, 'API quota exceeded');
         }
     }
