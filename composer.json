@@ -1,4 +1,6 @@
 {
+    "name": "realtcommunity/realtapi",
+    "description": "RealT API Community",
     "type": "project",
     "license": "proprietary",
     "require": {
