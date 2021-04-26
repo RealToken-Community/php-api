@@ -150,6 +150,86 @@ class DefiService extends Service
                     "description"   => "House tokenizer and put up for sale by RealT in 2021"
                 ]
             ],
+            "tokens" => [
+                [
+                    "address" => "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                    "chainId" => 1,
+                    "name" => "USD Coin",
+                    "symbol" => "USDC",
+                    "decimals" => 6,
+                    "tags" => [
+                        "stablecoin"
+                    ]
+                ],
+                [
+                    "address" => "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+                    "chainId" => 1,
+                    "name" => "Dai Stablecoin",
+                    "symbol" => "DAI",
+                    "decimals" => 18,
+                    "tags" => [
+                        "stablecoin"
+                    ]
+                ],
+                [
+                    "address" => "0x0000000000085d4780B73119b644AE5ecd22b376",
+                    "chainId" => 1,
+                    "name" => "TrueUSD",
+                    "symbol" => "TUSD",
+                    "decimals" => 18,
+                    "tags" => [
+                        "stablecoin"
+                    ]
+                ],
+                [
+                    "address" => "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+                    "chainId" => 1,
+                    "name" => "Tether USD",
+                    "symbol" => "USDT",
+                    "decimals" => 6,
+                    "tags" => [
+                        "stablecoin"
+                    ]
+                ],
+                [
+                    "address" => "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+                    "chainId" => 1,
+                    "name" => "Synth sUSD",
+                    "symbol" => "sUSD",
+                    "decimals" => 18,
+                    "tags" => [
+                        "stablecoin"
+                    ]
+                ],
+                [
+                    "address" => "0xdB25f211AB05b1c97D595516F45794528a807ad8",
+                    "chainId" => 1,
+                    "name" => "STASIS EURO",
+                    "symbol" => "EURS",
+                    "decimals" => 2,
+                    "tags" => [
+                        "stablecoin"
+                    ]
+                ],
+                [
+                    "address" => "0xB4272071eCAdd69d933AdcD19cA99fe80664fc08",
+                    "chainId" => 1,
+                    "name" => "CryptoFranc",
+                    "symbol" => "XCHF",
+                    "decimals" => 18,
+                    "tags" => [
+                        "stablecoin"
+                    ]
+                ],
+                [
+                    "address" => "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                    "chainId" => 1,
+                    "name" => "Warpped ETH",
+                    "symbol" => "WETH",
+                    "decimals" => 18,
+                    "tags" => []
+                ]
+            ]
         ];
     }
 }
