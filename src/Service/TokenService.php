@@ -69,6 +69,7 @@ class TokenService extends Service
      * Global token creation.
      *
      * @param array $dataJson
+     * @param bool $deprecated
      *
      * @return JsonResponse
      * @throws Exception
@@ -238,14 +239,12 @@ class TokenService extends Service
     private function createOrUpdateToken(?Token $actualToken, array $parsedJson, array &$count)
     {
         // UPDATE
+        $token = $this->tokenMapping($parsedJson);
         if ($actualToken instanceof Token) {
-            $token = $this->tokenMapping($parsedJson);
             $this->updateToken($token->getEthereumContract(), $parsedJson);
             $count['update'] += 1;
         } // CREATE
         else {
-            $token = $this->tokenMapping($parsedJson);
-
             if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
                 $token->setSymbol($symbol);
             }
@@ -344,7 +343,7 @@ class TokenService extends Service
         $token->setCurrency($dataJson['currency'] ?: null);
         $token->setTotalTokens($dataJson['totalTokens'] ?: null);
         $token->setEthereumContract($dataJson['ethereumContract']);
-        $token->setMaticContract(isset($dataJson['maticContract']) ?$dataJson['maticContract'] : null);
+        $token->setMaticContract(isset($dataJson['maticContract']) ? $dataJson['maticContract'] : null);
         $token->setXDaiContract($dataJson['xDaiContract'] ?: null);
         $token->setTotalInvestment((float)$dataJson['totalInvestment'] ?: null);
         $token->setGrossRentMonth((float)$dataJson['grossRent'] ?: null);
