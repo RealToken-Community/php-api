@@ -190,12 +190,46 @@ class AdminController extends AbstractController
         $this->authenticatorService->checkAdminRights($apiKey);
 
         if ($request->get('method') === 'delete') {
-            $this->adminService->dropTokens($request);
+            $this->adminService->dropTokens();
         }
 
         return $this->render(
             "admin/dropTokens.html.twig", [
                 'apiKey' => $apiKey
+            ]
+        );
+    }
+
+    /**
+     * Manage token list.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     * @Route("/manageTokenList", name="admin_manage_token_list", methods={"GET", "POST"})
+     */
+    public function manageTokenList(Request $request): Response
+    {
+        // Check admin rights
+        $apiKey = $this->getApiToken($request);
+        $this->authenticatorService->checkAdminRights($apiKey);
+
+        switch ($request->get('method')) {
+            case 'create':
+                $this->adminService->createTokenList($request, $request->get('type'));
+                break;
+            case 'update':
+                $this->adminService->updateTokenList($request, $request->get('type'));
+                break;
+            case 'delete':
+                $this->adminService->deleteTokenList($request, $request->get('type'));
+                break;
+        }
+
+        return $this->render(
+            "admin/tokenList.html.twig", [
+                'apiKey' => $apiKey,
+                'tokenList' => $this->adminService->getTokenList(),
             ]
         );
     }

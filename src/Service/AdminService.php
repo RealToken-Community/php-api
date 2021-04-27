@@ -7,6 +7,10 @@ use App\Entity\Quota;
 use App\Entity\QuotaConfiguration;
 use App\Entity\QuotaLimitations;
 use App\Entity\Token;
+use App\Entity\TokenlistNetwork;
+use App\Entity\TokenlistRefer;
+use App\Entity\TokenlistTag;
+use App\Entity\TokenlistToken;
 use App\Entity\TokenMapping;
 use App\Entity\User;
 use DateTime;
@@ -261,6 +265,151 @@ class AdminService extends Service
     public function dropTokens() {
         $tokenRepository = $this->em->getRepository(Token::class);
         $tokenRepository->dropTokens();
+    }
+
+    /**
+     * Get token list.
+     *
+     * @return array
+     */
+    public function getTokenList(): array
+    {
+        $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
+        $tokenListNetwork = $tokenListNetworkRepository->findAll();
+
+        $tokenListReferRepository = $this->em->getRepository(TokenlistRefer::class);
+        $tokenListRefer = $tokenListReferRepository->findAll();
+
+        $tokenListTagRepository = $this->em->getRepository(TokenlistTag::class);
+        $tokenListTag = $tokenListTagRepository->findAll();
+
+        $tokenListTokenRepository = $this->em->getRepository(TokenlistToken::class);
+        $tokenListToken = $tokenListTokenRepository->findAll();
+
+        return ['chains' => $tokenListNetwork, 'refers' => $tokenListRefer, 'tags' => $tokenListTag, 'tokens' => $tokenListToken];
+    }
+
+    /**
+     * Create token list.
+     *
+     * @param Request $request
+     * @param string $type
+     */
+    public function createTokenList(Request $request, string $type)
+    {
+        switch ($type) {
+            case 'chain':
+                $tokenListNetwork = new TokenlistNetwork();
+                $tokenListNetwork->setChainId($request->get('chainId'));
+                $tokenListNetwork->setName($request->get('name'));
+                $this->em->persist($tokenListNetwork);
+                break;
+            case 'refer':
+                $tokenListRefer = new TokenlistRefer();
+                $tokenListRefer->setName($request->get('name'));
+                $tokenListRefer->setUrl($request->get('url'));
+                $this->em->persist($tokenListRefer);
+                break;
+            case 'tag':
+                $tokenListTag = new TokenlistTag();
+                $tokenListTag->setTagKey($request->get('key'));
+                $tokenListTag->setName($request->get('name'));
+                $tokenListTag->setDescription($request->get('description'));
+                $this->em->persist($tokenListTag);
+                break;
+            case 'token':
+                $tokenListToken = new TokenlistToken();
+                $tokenListToken->setAddress($request->get('address'));
+                $tokenListToken->setChain($request->get('chain'));
+                $tokenListToken->setName($request->get('name'));
+                $tokenListToken->setSymbol($request->get('symbol'));
+                $tokenListToken->setDecimals($request->get('decimals'));
+                $tokenListToken->setTags($request->get('tags'));
+                $this->em->persist($tokenListToken);
+                break;
+        }
+        $this->em->flush();
+    }
+
+    /**
+     * Update token list.
+     *
+     * @param Request $request
+     * @param string $type
+     */
+    public function updateTokenList(Request $request, string $type)
+    {
+        $id = $request->get('id');
+
+        switch ($type) {
+            case 'chain':
+                $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
+                $tokenList = $tokenListNetworkRepository->findOneBy(['id' => $id]);
+                $tokenList->setChainId($request->get('chainId'));
+                $tokenList->setName($request->get('name'));
+                $this->em->persist($tokenList);
+                break;
+            case 'refer':
+                $tokenListReferRepository = $this->em->getRepository(TokenlistRefer::class);
+                $tokenList = $tokenListReferRepository->findOneBy(['id' => $id]);
+                $tokenList->setName($request->get('name'));
+                $tokenList->setUrl($request->get('url'));
+                $this->em->persist($tokenList);
+                break;
+            case 'tag':
+                $tokenListTagRepository = $this->em->getRepository(TokenlistTag::class);
+                $tokenList = $tokenListTagRepository->findOneBy(['id' => $id]);
+                $tokenList->setTagKey($request->get('key'));
+                $tokenList->setName($request->get('name'));
+                $tokenList->setDescription($request->get('description'));
+                $this->em->persist($tokenList);
+                break;
+            case 'token':
+                $tokenListTokenRepository = $this->em->getRepository(TokenlistTag::class);
+                $tokenList = $tokenListTokenRepository->findOneBy(['id' => $id]);
+                $tokenList->setAddress($request->get('address'));
+                $tokenList->setChain($request->get('chain'));
+                $tokenList->setName($request->get('name'));
+                $tokenList->setSymbol($request->get('symbol'));
+                $tokenList->setDecimals($request->get('decimals'));
+                $tokenList->setTags($request->get('tags'));
+                $this->em->persist($tokenList);
+                break;
+        }
+        $this->em->flush();
+    }
+
+    /**
+     * Delete token list.
+     *
+     * @param Request $request
+     * @param string $type
+     */
+    public function deleteTokenList(Request $request, string $type)
+    {
+        $id = $request->get('id');
+
+        switch ($type) {
+            case 'chain':
+                $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
+                $tokenList = $tokenListNetworkRepository->findOneBy(['id' => $id]);
+                break;
+            case 'refer':
+                $tokenListReferRepository = $this->em->getRepository(TokenlistRefer::class);
+                $tokenList = $tokenListReferRepository->findOneBy(['id' => $id]);
+                break;
+            case 'tag':
+                $tokenListTagRepository = $this->em->getRepository(TokenlistTag::class);
+                $tokenList = $tokenListTagRepository->findOneBy(['id' => $id]);
+                break;
+            case 'token':
+                $tokenListTokenRepository = $this->em->getRepository(TokenlistToken::class);
+                $tokenList = $tokenListTokenRepository->findOneBy(['id' => $id]);
+                break;
+        }
+
+        $this->em->remove($tokenList);
+        $this->em->flush();
     }
 
     /**
