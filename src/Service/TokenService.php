@@ -384,7 +384,7 @@ class TokenService extends Service
         $token->setPropertyType($dataJson['propertyType'] ?: null);
         $token->setSquareFeet($dataJson['squareFeet'] ?: null);
         $token->setLotSize($dataJson['lotSize'] ?: null);
-        $token->setBedroomBath(!empty($dataJson['bedroom/bath']) ?: null);
+        $token->setBedroomBath(!empty($dataJson['bedroom/bath']) ? $dataJson['bedroom/bath'] : null);
         $token->setHasTenants($dataJson['hasTenants'] ?: null);
         $token->setRentedUnits($dataJson['rentedUnits'] ?: null);
         $token->setTotalUnits($dataJson['totalUnits'] ?: null);
