@@ -342,7 +342,7 @@ class TokenService extends Service
         $token->setTokenPrice((float)$dataJson['tokenPrice'] ?: null);
         $token->setCanal($dataJson['canal'] ?: null);
         $token->setCurrency($dataJson['currency'] ?: null);
-        $token->setTotalTokens($dataJson['totalTokens'] ?: null);
+        $token->setTotalTokens($dataJson['totalTokens'] ?: 0);
         $token->setEthereumContract($dataJson['ethereumContract']);
         $token->setMaticContract(isset($dataJson['maticContract']) ?$dataJson['maticContract'] : null);
         $token->setXDaiContract($dataJson['xDaiContract'] ?: null);
