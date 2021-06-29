@@ -27,7 +27,7 @@ class TokenlistNetwork
     /**
      * @ORM\Column(type="string", length=100)
      */
-    private $Name;
+    private $name;
 
     /**
      * @ORM\OneToMany(targetEntity=TokenlistToken::class, mappedBy="chain", orphanRemoval=true)
@@ -58,12 +58,12 @@ class TokenlistNetwork
 
     public function getName(): ?string
     {
-        return $this->Name;
+        return $this->name;
     }
 
-    public function setName(string $Name): self
+    public function setName(string $name): self
     {
-        $this->Name = $Name;
+        $this->name = $name;
 
         return $this;
     }

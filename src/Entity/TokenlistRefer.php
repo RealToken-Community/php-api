@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TokenlistReferRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,6 +28,11 @@ class TokenlistRefer
      * @ORM\Column(type="string", length=150)
      */
     private $url;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=TokenlistIntegrity::class, inversedBy="tokenlistRefer")
+     */
+    private $integrityTypes;
 
     public function getId(): ?int
     {
@@ -52,6 +59,18 @@ class TokenlistRefer
     public function setUrl(string $url): self
     {
         $this->url = $url;
+
+        return $this;
+    }
+
+    public function getIntegrityTypes(): ?TokenlistIntegrity
+    {
+        return $this->integrityTypes;
+    }
+
+    public function setIntegrityTypes(?TokenlistIntegrity $integrityTypes): self
+    {
+        $this->integrityTypes = $integrityTypes;
 
         return $this;
     }

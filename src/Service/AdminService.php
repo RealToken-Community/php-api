@@ -7,6 +7,7 @@ use App\Entity\Quota;
 use App\Entity\QuotaConfiguration;
 use App\Entity\QuotaLimitations;
 use App\Entity\Token;
+use App\Entity\TokenlistIntegrity;
 use App\Entity\TokenlistNetwork;
 use App\Entity\TokenlistRefer;
 use App\Entity\TokenlistTag;
@@ -277,6 +278,9 @@ class AdminService extends Service
         $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
         $tokenListNetwork = $tokenListNetworkRepository->findAll();
 
+        $tokenListIntegrityTypes = $this->em->getRepository(TokenlistIntegrity::class);
+        $tokenListTypes = $tokenListIntegrityTypes->findAll();
+
         $tokenListReferRepository = $this->em->getRepository(TokenlistRefer::class);
         $tokenListRefer = $tokenListReferRepository->findAll();
 
@@ -286,7 +290,13 @@ class AdminService extends Service
         $tokenListTokenRepository = $this->em->getRepository(TokenlistToken::class);
         $tokenListToken = $tokenListTokenRepository->findAll();
 
-        return ['chains' => $tokenListNetwork, 'refers' => $tokenListRefer, 'tags' => $tokenListTag, 'tokens' => $tokenListToken];
+        return [
+            'chains' => $tokenListNetwork,
+            'types' => $tokenListTypes,
+            'refers' => $tokenListRefer,
+            'tags' => $tokenListTag,
+            'tokens' => $tokenListToken,
+        ];
     }
 
     /**
@@ -304,27 +314,54 @@ class AdminService extends Service
                 $tokenListNetwork->setName($request->get('name'));
                 $this->em->persist($tokenListNetwork);
                 break;
+            case 'type':
+                $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
+                /** @var TokenlistNetwork $chain */
+                $chain = $tokenListNetworkRepository->findOneBy(['id' => $request->get('chain')]);
+
+                $tokenListIntegrity = new TokenlistIntegrity();
+                $tokenListIntegrity->setTimestamp(new DateTime('1970-01-01'));
+                $tokenListIntegrity->setNetwork($chain);
+                $tokenListIntegrity->setVersionMajor($request->get('major'));
+                $tokenListIntegrity->setVersionMinor($request->get('minor'));
+                $tokenListIntegrity->setVersionPatch($request->get('patch'));
+                $tokenListIntegrity->setHash('');
+                $tokenListIntegrity->setData([]);
+                $this->em->persist($tokenListIntegrity);
+                break;
             case 'refer':
+                $tokenListIntegrityRepository = $this->em->getRepository(TokenlistIntegrity::class);
+                /** @var TokenlistIntegrity $types */
+                $types = $tokenListIntegrityRepository->findOneBy(['id' => $request->get('types')]);
+
                 $tokenListRefer = new TokenlistRefer();
                 $tokenListRefer->setName($request->get('name'));
                 $tokenListRefer->setUrl($request->get('url'));
+                $tokenListRefer->setIntegrityTypes($types);
                 $this->em->persist($tokenListRefer);
                 break;
             case 'tag':
                 $tokenListTag = new TokenlistTag();
-                $tokenListTag->setTagKey($request->get('key'));
+                $tokenListTag->setTagKey($request->get('tagKey'));
                 $tokenListTag->setName($request->get('name'));
                 $tokenListTag->setDescription($request->get('description'));
                 $this->em->persist($tokenListTag);
                 break;
             case 'token':
+                $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
+                /** @var TokenlistNetwork $chain */
+                $chain = $tokenListNetworkRepository->findOneBy(['id' => $request->get('chain')]);
+
+                $tokenListTagRepository = $this->em->getRepository(TokenlistTag::class);
+                $tags = $tokenListTagRepository->findBy(['id' => $request->get('tags')]);
+
                 $tokenListToken = new TokenlistToken();
                 $tokenListToken->setAddress($request->get('address'));
-                $tokenListToken->setChain($request->get('chain'));
+                $tokenListToken->setChain($chain);
                 $tokenListToken->setName($request->get('name'));
                 $tokenListToken->setSymbol($request->get('symbol'));
                 $tokenListToken->setDecimals($request->get('decimals'));
-                $tokenListToken->setTags($request->get('tags'));
+                $tokenListToken->setTags($tags);
                 $this->em->persist($tokenListToken);
                 break;
         }
@@ -349,30 +386,65 @@ class AdminService extends Service
                 $tokenList->setName($request->get('name'));
                 $this->em->persist($tokenList);
                 break;
+            case 'type':
+                $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
+                /** @var TokenlistNetwork $chain */
+                $chain = $tokenListNetworkRepository->findOneBy(['id' => $request->get('chain')]);
+
+                $tokenListIntegrityRepository = $this->em->getRepository(TokenlistIntegrity::class);
+                $tokenList = $tokenListIntegrityRepository->findOneBy(['id' => $id]);
+                $tokenList->setNetwork($chain);
+                $tokenList->setVersionMajor($request->get('major'));
+                $tokenList->setVersionMinor($request->get('minor'));
+                $tokenList->setVersionPatch($request->get('patch'));
+                $tokenList->setHash($request->get('hash'));
+                $this->em->persist($tokenList);
+                break;
             case 'refer':
+                $tokenListIntegrityRepository = $this->em->getRepository(TokenlistIntegrity::class);
+                $types = $tokenListIntegrityRepository->findOneBy(['id' => $request->get('types')]);
+
+                // TODO : Fix unique type response
+//                var_dump($request->get('types'));
+//                echo('<br>');
+//                var_dump($types);die();
+
                 $tokenListReferRepository = $this->em->getRepository(TokenlistRefer::class);
                 $tokenList = $tokenListReferRepository->findOneBy(['id' => $id]);
                 $tokenList->setName($request->get('name'));
                 $tokenList->setUrl($request->get('url'));
+                $tokenList->setIntegrityTypes($types);
                 $this->em->persist($tokenList);
                 break;
             case 'tag':
                 $tokenListTagRepository = $this->em->getRepository(TokenlistTag::class);
                 $tokenList = $tokenListTagRepository->findOneBy(['id' => $id]);
-                $tokenList->setTagKey($request->get('key'));
+                $tokenList->setTagKey($request->get('tagKey'));
                 $tokenList->setName($request->get('name'));
                 $tokenList->setDescription($request->get('description'));
                 $this->em->persist($tokenList);
                 break;
             case 'token':
-                $tokenListTokenRepository = $this->em->getRepository(TokenlistTag::class);
+                $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
+                /** @var TokenlistNetwork $chain */
+                $chain = $tokenListNetworkRepository->findOneBy(['id' => $request->get('chain')]);
+
+                $tokenListTagRepository = $this->em->getRepository(TokenlistTag::class);
+                $tags = $tokenListTagRepository->findAllWithIds([$request->get('tags')]);
+
+                // TODO : Fix unique tag response
+//                var_dump($request->get('tags'));
+//                echo('<br>');
+//                var_dump($tags);die();
+
+                $tokenListTokenRepository = $this->em->getRepository(TokenlistToken::class);
                 $tokenList = $tokenListTokenRepository->findOneBy(['id' => $id]);
                 $tokenList->setAddress($request->get('address'));
-                $tokenList->setChain($request->get('chain'));
+                $tokenList->setChain($chain);
                 $tokenList->setName($request->get('name'));
                 $tokenList->setSymbol($request->get('symbol'));
                 $tokenList->setDecimals($request->get('decimals'));
-                $tokenList->setTags($request->get('tags'));
+                $tokenList->setTags($tags);
                 $this->em->persist($tokenList);
                 break;
         }
@@ -393,6 +465,10 @@ class AdminService extends Service
             case 'chain':
                 $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
                 $tokenList = $tokenListNetworkRepository->findOneBy(['id' => $id]);
+                break;
+            case 'type':
+                $tokenListIntegrityRepository = $this->em->getRepository(TokenListIntegrity::class);
+                $tokenList = $tokenListIntegrityRepository->findOneBy(['id' => $id]);
                 break;
             case 'refer':
                 $tokenListReferRepository = $this->em->getRepository(TokenlistRefer::class);

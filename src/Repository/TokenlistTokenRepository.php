@@ -19,32 +19,17 @@ class TokenlistTokenRepository extends ServiceEntityRepository
         parent::__construct($registry, TokenlistToken::class);
     }
 
-    // /**
-    //  * @return TokenlistToken[] Returns an array of TokenlistToken objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Get findAll() in array.
+     *
+     * @return array
+     */
+    public function findAllArrayResponse(): array
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $query = $this->_em
+            ->getRepository(TokenlistToken::class)
+            ->createQueryBuilder('t')
+            ->getQuery();
+        return $query->getArrayResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?TokenlistToken
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

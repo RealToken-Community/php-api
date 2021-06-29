@@ -42,4 +42,23 @@ class DefiController
     {
         return $this->defiService->getTokenListForAMM($this->getRefer($request));
     }
+
+    /**
+     * RealToken list for AMM (beta).
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Return list of RealToken for Automatic Market Maker (beta)",
+     * )
+     * @OA\Tag(name="DeFi")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @Route("/tokenListBeta", name="amm_list_beta", methods={"GET"})
+     */
+    public function getTokenListBeta(Request $request): JsonResponse
+    {
+        return $this->defiService->getTokenListForAMMBeta($this->getRefer($request));
+    }
 }

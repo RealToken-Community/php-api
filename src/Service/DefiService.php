@@ -2,12 +2,15 @@
 
 namespace App\Service;
 
+use App\Entity\Token;
+use App\Entity\TokenlistIntegrity;
 use App\Entity\TokenlistNetwork;
 use App\Entity\TokenlistRefer;
 use App\Entity\TokenlistTag;
 use App\Entity\TokenlistToken;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class DefiService
@@ -15,6 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class DefiService extends Service
 {
+    const URI_THEGRAPH = "https://api.thegraph.com/subgraphs/name";
+
     /**
      * Generate token list for AMM.
      *
@@ -30,6 +35,32 @@ class DefiService extends Service
 //        $ammList = $this->tokenListMapping();
 
         return new JsonResponse($ammList, Response::HTTP_OK);
+    }
+
+    /**
+     * Generate token list for AMM (beta).
+     *
+     * @param string|null $refer
+     *
+     * @return JsonResponse
+     */
+    public function getTokenListForAMMBeta(?string $refer): JsonResponse
+    {
+        $ammList = $this->createCommunityList($refer);
+
+        return new JsonResponse($ammList, Response::HTTP_OK);
+    }
+
+    /**
+     * Create AMM community list.
+     *
+     *
+     */
+    public function createCommunityList(?string $refer): array
+    {
+        $ammList = $this->tokenListMapping($refer);
+
+        return $ammList;
     }
 
     /**
@@ -64,188 +95,222 @@ class DefiService extends Service
     /**
      * Token list mapping.
      *
+     * @param string|null $refer
+     *
      * @return array
      */
-    private function tokenListMapping()
+    private function tokenListMapping(?string $refer): array
     {
-        $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
-        $tokenListNetwork = $tokenListNetworkRepository->findAll();
+        // TODO : REMOVE DATA
+        $refer = "https://tokenlists.org/";
+
+        $response = [];
+
+        $tokenRepository = $this->em->getRepository(Token::class);
+        $tokens = $tokenRepository->findAll();
 
         $tokenListReferRepository = $this->em->getRepository(TokenlistRefer::class);
-        $tokenListRefer = $tokenListReferRepository->findAll();
+        /** @var TokenlistRefer $tokenListRefer */
+        $tokenListRefer = $tokenListReferRepository->findOneBy(["url" => $refer]);
+
+        if (!empty($refer) || !empty($tokenListRefer)) {
+            /** @var TokenlistIntegrity $integrityType */
+            $integrityType = $tokenListRefer->getIntegrityTypes();
+        }
+
+        if (!empty($integrityType)) {
+            $hashIntegrity = $integrityType->getHash();
+            $hashToken = md5(serialize($tokens));
+
+            if (!hash_equals($hashToken, $hashIntegrity)) {
+                $version = $this->checkAndUpdateTokenListVersion($integrityType);
+
+                $data = $this->generateTokenList($tokens, $version, $integrityType->getNetwork());
+                array_push($response, $data);
+                $integrityType->setTimestamp(new \DateTime());
+                $integrityType->setHash($hashToken);
+                $integrityType->setData($data);
+                $this->em->persist($integrityType);
+            } else {
+                array_push($response, $integrityType->getData());
+            }
+        } else {
+            $integrityTypeRepository = $this->em->getRepository(TokenlistIntegrity::class);
+            /** @var TokenlistIntegrity $integrityType */
+            $integrityType = $integrityTypeRepository->findOneBy(["network" => "all"]);
+
+            $hashIntegrity = $integrityType->getHash();
+            $hashToken = md5(serialize($tokens));
+
+            if (!hash_equals($hashToken, $hashIntegrity)) {
+                $version = $this->checkAndUpdateTokenListVersion($integrityType);
+
+                $response = $this->generateTokenList($tokens, $version, $integrityType->getNetwork());
+                $integrityType->setTimestamp(new \DateTime());
+                $integrityType->setHash($hashToken);
+                $integrityType->setData($response);
+                $this->em->persist($integrityType);
+            } else {
+                $response = $integrityType->getData();
+            }
+        }
+
+        $this->em->flush();
+        return $response;
+    }
+
+    /**
+     * Generate TokenList.
+     *
+     * @param array $tokens
+     * @param array $version
+     * @param TokenlistNetwork $network
+     * @return array
+     */
+    private function generateTokenList(array $tokens, array $version, TokenlistNetwork $network): array
+    {
+        $tagsList = $tokenListTokens['tokens'] = [];
 
         $tokenListTagRepository = $this->em->getRepository(TokenlistTag::class);
-        $tokenListTag = $tokenListTagRepository->findAll();
+        $tokenListTags = $tokenListTagRepository->findAllArrayResponse();
 
-        $tokenListTokenRepository = $this->em->getRepository(TokenlistToken::class);
-        $tokenListToken = $tokenListTokenRepository->findAll();
+        $dateTime = new \DateTime();
 
-        return [
+        $keywords = [
+            0 => "Uniswap",
+            1 => "DeFi",
+            2 => "RealT",
+            3 => "Ethereum",
+            4 => "xDai chain",
+        ];
+
+        foreach ($tokenListTags as $tokenListTag) {
+            $tagsList[$tokenListTag["tagKey"]] = ["name" => $tokenListTag["name"], "description" => $tokenListTag["description"]];
+        }
+
+        $data = [
             "name"      =>	"RealToken",
             "logoURI"   =>	"https://realt.co/wp-content/uploads/2019/01/cropped-RealToken_Favicon.png",
-            "timestamp" =>	new \DateTime(), // With version
+            "timestamp" =>	$dateTime->format("Y-m-d\TH:i:sP"),
             "version"   => [
-                "major" => 2,
-                "minor" => 0,
-                "patch" => 0
+                "major" => $version["major"],
+                "minor" => $version["minor"],
+                "patch" => $version["patch"]
             ],
-            "keywords" => [ // ?????????
-                0 => "Uniswap",
-                1 => "DeFi",
-                2 => "RealT",
-                3 => "Ethereum",
-                4 => "xDai chain",
-            ],
+            "keywords" => $keywords,
             // REGEX to have autorized char : https://github.com/Uniswap/token-lists#authoring-token-lists
-            "tags" => $tokenListTag
-//                "ETH" => [
-//                    "name"          => "Ethereum",
-//                    "description"   => "RealToken on Ethereum mainnet, chainID 1"
-//                ],
-//                "MATIC" => [
-//                    "name"          => "Matic network",
-//                    "description"   => "RealToken on Matic mainnet, chainID 137"
-//                ],
-//                "mumbai" => [
-//                    "name"          => "Mumbai Testnet",
-//                    "description"   => "RealToken on Mumbai Testnet, chainID 80001"
-//                ],
-//                "xDai" => [
-//                    "name"          => "xDai chain",
-//                    "description"   => "RealToken on xDai mainnet, chainID 100"
-//                ],
-//                "sokol" => [
-//                    "name"          => "Sokol Testnet",
-//                    "description"   => "RealToken on Sokol Testnet, chainID ....."
-//                ],
-//                "gorli" => [
-//                    "name"          => "Goerli TestNet",
-//                    "description"   => "RealToken on Goerli Testnet, chainID 5"
-//                ],
-//                "stablecoin" => [
-//                    "name"          => "Stable coin",
-//                    "description"   => "Stablecoin, crypto with a stable value often equivalent to US Dollars"
-//                ],
-//                "aave" => [
-//                    "name"          => "Stable coin Aave",
-//                    "description"   => "Stablecoin Aave, crypto with a stable value often equivalent to US dollars and which generates interest via the Aave platform"
-//                ],
-//                "uniV1" => [
-//                    "name"          => "Uniswap V1",
-//                    "description"   => "Available on Uniswap V1"
-//                ],
-//                "uniV2" => [
-//                    "name"          => "Uniswap V2",
-//                    "description"   => "Available on Uniswap V2"
-//                ],
-//                "honey" => [
-//                    "name"          => "HoneySwap",
-//                    "description"   => "Available on HoneySwap"
-//                ],
-//                "levin" => [
-//                    "name"          => "LevinSwap",
-//                    "description"   => "Available on LevinSwap"
-//                ],
-//                "pairLevin" => [
-//                    "name"          => "LEVIN pair",
-//                    "description"   => "The available peer for this pool is RealToken and LEVIN"
-//                ],
-//                "SF" => [
-//                    "name"          => "Single family",
-//                    "description"   => "RealT Single family property"
-//                ],
-//                "MF" => [
-//                    "name"          => "Multi family",
-//                    "description"   => "RealT Multi family property"
-//                ],
-//                "2020" => [
-//                    "name"          => "Sold in 2020",
-//                    "description"   => "House tokenizer and put up for sale by RealT in 2020"
-//                ],
-//                "2021" => [
-//                    "name"          => "Sold in 2021",
-//                    "description"   => "House tokenizer and put up for sale by RealT in 2021"
-//                ]
-            ,
-            "tokens" => $tokenListToken
-//                [
-//                    "address" => "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-//                    "chainId" => 1,
-//                    "name" => "USD Coin",
-//                    "symbol" => "USDC",
-//                    "decimals" => 6,
-//                    "tags" => [
-//                        "stablecoin"
-//                    ]
-//                ],
-//                [
-//                    "address" => "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-//                    "chainId" => 1,
-//                    "name" => "Dai Stablecoin",
-//                    "symbol" => "DAI",
-//                    "decimals" => 18,
-//                    "tags" => [
-//                        "stablecoin"
-//                    ]
-//                ],
-//                [
-//                    "address" => "0x0000000000085d4780B73119b644AE5ecd22b376",
-//                    "chainId" => 1,
-//                    "name" => "TrueUSD",
-//                    "symbol" => "TUSD",
-//                    "decimals" => 18,
-//                    "tags" => [
-//                        "stablecoin"
-//                    ]
-//                ],
-//                [
-//                    "address" => "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-//                    "chainId" => 1,
-//                    "name" => "Tether USD",
-//                    "symbol" => "USDT",
-//                    "decimals" => 6,
-//                    "tags" => [
-//                        "stablecoin"
-//                    ]
-//                ],
-//                [
-//                    "address" => "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
-//                    "chainId" => 1,
-//                    "name" => "Synth sUSD",
-//                    "symbol" => "sUSD",
-//                    "decimals" => 18,
-//                    "tags" => [
-//                        "stablecoin"
-//                    ]
-//                ],
-//                [
-//                    "address" => "0xdB25f211AB05b1c97D595516F45794528a807ad8",
-//                    "chainId" => 1,
-//                    "name" => "STASIS EURO",
-//                    "symbol" => "EURS",
-//                    "decimals" => 2,
-//                    "tags" => [
-//                        "stablecoin"
-//                    ]
-//                ],
-//                [
-//                    "address" => "0xB4272071eCAdd69d933AdcD19cA99fe80664fc08",
-//                    "chainId" => 1,
-//                    "name" => "CryptoFranc",
-//                    "symbol" => "XCHF",
-//                    "decimals" => 18,
-//                    "tags" => [
-//                        "stablecoin"
-//                    ]
-//                ],
-//                [
-//                    "address" => "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-//                    "chainId" => 1,
-//                    "name" => "Warpped ETH",
-//                    "symbol" => "WETH",
-//                    "decimals" => 18,
-//                    "tags" => []
-//                ]
+            "tags" => $tagsList
         ];
+
+        // TODO : Tmp remove Stablecoins - Integration soon
+//        $tokenListTokenRepository = $this->em->getRepository(TokenlistToken::class);
+//        $tokenListTokens['tokens'] = $tokenListTokenRepository->findAllArrayResponse();
+
+        /** @var Token $token */
+        foreach ($tokens as $token) {
+            $secondaryMarketplaces = $token->getSecondaryMarketplaces();
+            $blockchainsAddresses = $token->getBlockchainAddresses();
+
+            foreach ($secondaryMarketplaces as $secondaryMarketplace) {
+                $tags = [];
+
+                $chainName = strtolower($secondaryMarketplace["chainName"]);
+
+                // TODO : TMP FIX -> REMOVE !!!!
+//                $chainName = ($chainName === "xdaichain") ? "xDai" : $chainName;
+
+                if (isset($blockchainsAddresses[$chainName])
+                    || strtolower($network->getName()) === "All"
+                ) {
+                    if (!empty($blockchainsAddresses[$chainName]["contract"])
+                        || $network->getChainId() === 0
+                    ) {
+                        foreach ($tokenListTags as $tokenListTag) {
+                            if (strtolower($tokenListTag["name"]) === strtolower($secondaryMarketplace["dexName"])) {
+                                $tags = [$tokenListTag["tagKey"]];
+                            }
+                        }
+
+                        $tokenData = [
+                            "address" => $blockchainsAddresses[$chainName]["contract"],
+                            "chainId" => $secondaryMarketplace["chainId"],
+                            "name" => $token->getShortName(),
+                            "symbol" => strtoupper(str_replace(" ", "-", str_replace(".", "", $token->getShortName()))),
+                            "decimals" => 18,
+                            "logoURI" => "https://realt.co/wp-content/uploads/2019/01/cropped-RealToken_Favicon.png",
+                            "tags" => $tags,
+                        ];
+                        array_push($tokenListTokens['tokens'], $tokenData);
+                    }
+                }
+            }
+        }
+
+        $data['tokens'] = $tokenListTokens['tokens'];
+
+        // TODO : Make Service to get TheGraph data from SecondaryMarketplaces->Object !!
+//        $this->getLpPair();
+
+        return $data;
+    }
+
+    /**
+     * Check and update token list version.
+     *
+     * @param TokenlistIntegrity $integrityType
+     * @return array
+     */
+    private function checkAndUpdateTokenListVersion(TokenlistIntegrity $integrityType): array
+    {
+        // Autoincrement minor version
+        $integrityType->setVersionMajor($integrityType->getVersionMajor());
+        $integrityType->setVersionMinor($integrityType->getVersionMinor() + 1);
+        $integrityType->setVersionPatch($integrityType->getVersionPatch());
+
+        return [
+            "major" => $integrityType->getVersionMajor(),
+            "minor" => $integrityType->getVersionMinor(),
+            "patch" => $integrityType->getVersionPatch()
+        ];
+    }
+
+    /**
+     * Parse TheGraph API.
+     *
+     *
+     */
+    public function theGraphApi(string $uri, string $query): array
+    {
+        $ch = curl_init();
+        curl_setopt_array($ch, array(
+            CURLOPT_HEADER => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $query,
+            CURLOPT_URL => $uri,
+        ));
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($response);
+    }
+
+    /**
+     * Get Lp Pair from TheGraph.
+     *
+     * @param $poolContract
+     */
+    private function getLpPair($poolContract)
+    {
+        $poolContract = "0x83a7c8b6b3824ac02cf79d8219d1bc779e8086d7"; // TODO: REMOVE !!!!!
+        $uri = self::URI_THEGRAPH . '/levinswap/uniswap-v2'; // TODO : ADD DATA ON REFER COLUMN !!!
+        $query = '{"query":"{pairs(where: {id:\"'.$poolContract.'\"}) {id token0 {id symbol name} token1 {id symbol name}}}"}';
+
+        $data = $this->theGraphApi($uri, $query);
+
+        // TODO : Parse JSON + check tokenContact and get other*
+        // ...
     }
 }

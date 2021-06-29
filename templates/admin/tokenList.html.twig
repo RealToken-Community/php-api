@@ -15,7 +15,7 @@
         </div>
 
         <form action="{{
-            path('admin_manage_token_list',
+                path('admin_manage_token_list',
                 {realtAuthToken: apiKey, method: 'create', type: 'chain'})
             }}" method="POST">
             <div class="row">
@@ -67,18 +67,117 @@
             </form>
         {% endfor %}
 
+        <!-- Type -->
+        <h4>Type</h4>
+        <div class="row">
+            <div class="col">id</div>
+            <div class="col">Type</div>
+            <div class="col">Major</div>
+            <div class="col">Minor</div>
+            <div class="col">Patch</div>
+            <div class="col">Hash</div>
+        </div>
+
+        <form action="{{
+        path('admin_manage_token_list',
+            {realtAuthToken: apiKey, method: 'create', type: 'type'})
+        }}" method="POST">
+            <div class="row">
+                <div class="col form-group">
+                    <input type="text" class="form-control" id="formGroupTypeId"
+                           name="id" placeholder="id" disabled="disabled">
+                </div>
+                <div class="col form-group">
+                    <select class="form-control" id="formGroupTypeChain" name="chain">
+                        {% for chain in tokenList.chains %}
+                            <option value="{{ chain.id }}">{{ chain.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col form-group">
+                    <input type="number" class="form-control" id="formGroupTypeVersionMajor"
+                           name="major" placeholder="major" min="0" required>
+                </div>
+                <div class="col form-group">
+                    <input type="number" class="form-control" id="formGroupTypeVersionMinor"
+                           name="minor" placeholder="minor" min="0" required>
+                </div>
+                <div class="col form-group">
+                    <input type="number" class="form-control" id="formGroupTypeVersionPatch"
+                           name="patch" placeholder="patch" min="0" required>
+                </div>
+                <div class="col form-group">
+                    <input type="text" class="form-control" id="formGroupTypeHash"
+                           name="hash" placeholder="hash">
+                </div>
+
+                <button type="submit" class="btn btn-primary mb-4">Create</button>
+            </div>
+        </form>
+        {% for type in tokenList.types %}
+            <form id="{{ type.id }}" action="{{
+            path('admin_manage_token_list',
+                {realtAuthToken: apiKey, method: 'update', type: 'type', id: type.id})
+            }}" method="POST">
+                <div class="row">
+                    <div class="col form-group">
+                        <input type="text" class="form-control" name="id"
+                               placeholder="Id" value="{{ type.id }}" disabled="disabled" required>
+                    </div>
+                    <div class="col form-group">
+                        <select class="form-control" id="formGroupTypeChain" name="chain">
+                            {% for chain in tokenList.chains %}
+                                {% set selected = '' %}
+                                {% if type.network == chain %}
+                                    {% set selected = 'selected' %}
+                                {% endif %}
+                                <option value="{{ chain.id }}" {{ selected }}>{{ chain.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col form-group">
+                        <input type="number" class="form-control" name="major"
+                               placeholder="Major" value="{{ type.versionMajor }}" min="0" required>
+                    </div>
+                    <div class="col form-group">
+                        <input type="number" class="form-control" name="minor"
+                               placeholder="Minor" value="{{ type.versionMinor }}" min="0" required>
+                    </div>
+                    <div class="col form-group">
+                        <input type="number" class="form-control" name="patch"
+                               placeholder="Patch" value="{{ type.versionPatch }}" min="0" required>
+                    </div>
+                    <div class="col form-group">
+                        <input type="text" class="form-control" name="hash"
+                               placeholder="Hash" value="{{ type.hash }}">
+                    </div>
+                    <button type="submit" class="btn btn-success mb-4">Update</button>
+                    <a href="{{
+                    path('admin_manage_token_list',
+                        {realtAuthToken: apiKey, method: 'delete', type: 'type', id: type.id})
+                    }}"
+                       class="btn btn-danger mb-4">
+                        <button type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </a>
+                </div>
+            </form>
+        {% endfor %}
+
         <!-- Refer -->
         <h4>Refer</h4>
         <div class="row">
             <div class="col">id</div>
             <div class="col">Name</div>
             <div class="col">Url</div>
+            <div class="col">Types</div>
         </div>
 
         <form action="{{
-        path('admin_manage_token_list',
-            {realtAuthToken: apiKey, method: 'create', type: 'refer'})
-        }}" method="POST">
+                path('admin_manage_token_list',
+                {realtAuthToken: apiKey, method: 'create', type: 'refer'})
+            }}" method="POST">
             <div class="row">
                 <div class="col form-group">
                     <input type="text" class="form-control" id="formGroupReferId"
@@ -92,13 +191,19 @@
                     <input type="text" class="form-control" id="formGroupReferUrl"
                            name="url" placeholder="url" required>
                 </div>
-
+                <div class="col form-group">
+                    <select multiple class="form-control" id="formGroupTokenTypes" name="types">
+                        {% for type in tokenList.types %}
+                            <option value="{{ type.id }}">{{ type.network.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <button type="submit" class="btn btn-primary mb-4">Create</button>
             </div>
         </form>
         {% for refer in tokenList.refers %}
             <form id="{{ refer.id }}" action="{{
-            path('admin_manage_token_list',
+                path('admin_manage_token_list',
                 {realtAuthToken: apiKey, method: 'update', type: 'refer', id: refer.id})
             }}" method="POST">
                 <div class="row">
@@ -113,6 +218,17 @@
                     <div class="col form-group">
                         <input type="text" class="form-control" name="url"
                                placeholder="Url" value="{{ refer.url }}" required>
+                    </div>
+                    <div class="col form-group">
+                        <select multiple class="form-control" id="formGroupReferType" name="types">
+                            {% for type in tokenList.types %}
+                                {% set selected = '' %}
+                                {% if refer.integrityTypes == type %}
+                                    {% set selected = 'selected' %}
+                                {% endif %}
+                                <option value="{{ type.id }}" {{ selected }}>{{ type.network.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-success mb-4">Update</button>
                     <a href="{{
@@ -138,7 +254,7 @@
         </div>
 
         <form action="{{
-            path('admin_manage_token_list',
+                path('admin_manage_token_list',
                 {realtAuthToken: apiKey, method: 'create', type: 'tag'})
             }}" method="POST">
             <div class="row">
@@ -148,7 +264,7 @@
                 </div>
                 <div class="col form-group">
                     <input type="text" class="form-control" id="formGroupTagKey"
-                           name="key" placeholder="key" required>
+                           name="tagKey" placeholder="tagKey" required>
                 </div>
                 <div class="col form-group">
                     <input type="text" class="form-control" id="formGroupTagName"
@@ -173,8 +289,8 @@
                                placeholder="Id" value="{{ tag.id }}" disabled="disabled" required>
                     </div>
                     <div class="col form-group">
-                        <input type="text" class="form-control" name="key"
-                               placeholder="Key" value="{{ tag.key }}" required>
+                        <input type="text" class="form-control" name="tagKey"
+                               placeholder="TagKey" value="{{ tag.tagKey }}" required>
                     </div>
                     <div class="col form-group">
                         <input type="text" class="form-control" name="name"
@@ -211,7 +327,7 @@
         </div>
 
         <form action="{{
-            path('admin_manage_token_list',
+                path('admin_manage_token_list',
                 {realtAuthToken: apiKey, method: 'create', type: 'token'})
             }}" method="POST">
             <div class="row">
@@ -224,8 +340,11 @@
                            name="address" placeholder="address" required>
                 </div>
                 <div class="col form-group">
-                    <input type="text" class="form-control" id="formGroupTokenChain"
-                           name="chain" placeholder="chain" required>
+                    <select class="form-control" id="formGroupTokenChain" name="chain">
+                        {% for chain in tokenList.chains %}
+                            <option value="{{ chain.id }}">{{ chain.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="col form-group">
                     <input type="text" class="form-control" id="formGroupTokenName"
@@ -240,8 +359,11 @@
                            name="decimals" placeholder="decimals" required>
                 </div>
                 <div class="col form-group">
-                    <input type="text" class="form-control" id="formGroupTokenTags"
-                           name="tags" placeholder="tags" required>
+                    <select multiple class="form-control" id="formGroupTokenTags" name="tags">
+                        {% for tag in tokenList.tags %}
+                            <option value="{{ tag.id }}">{{ tag.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <button type="submit" class="btn btn-primary mb-4">Create</button>
@@ -262,8 +384,15 @@
                                placeholder="Address" value="{{ token.address }}" required>
                     </div>
                     <div class="col form-group">
-                        <input type="text" class="form-control" name="chain"
-                               placeholder="Key" value="{{ token.chain }}" required>
+                        <select class="form-control" id="formGroupTokenChain" name="chain">
+                            {% for chain in tokenList.chains %}
+                                {% set selected = '' %}
+                                {% if token.chain == chain %}
+                                    {% set selected = 'selected' %}
+                                {% endif %}
+                                <option value="{{ chain.id }}" {{ selected }}>{{ chain.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="col form-group">
                         <input type="text" class="form-control" name="name"
@@ -278,15 +407,23 @@
                                placeholder="Decimals" value="{{ token.decimals }}" required>
                     </div>
                     <div class="col form-group">
-                        <input type="text" class="form-control" name="tags"
-                               placeholder="Tags" value="{{ token.tags }}" required>
+                        <select multiple class="form-control" id="formGroupTokenTags" name="tags">
+                            {% for tag in tokenList.tags %}
+                                {% set selected = '' %}
+                                {% for tokenTag in token.tags %}
+                                    {% if tokenTag == tag %}
+                                        {% set selected = 'selected' %}
+                                    {% endif %}
+                                {% endfor %}
+                                <option value="{{ tag.id }}" {{ selected }}>{{ tag.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-success mb-4">Update</button>
                     <a href="{{
-                    path('admin_manage_token_list',
-                        {realtAuthToken: apiKey, method: 'delete', type: 'token', id: token.id})
-                    }}"
-                       class="btn btn-danger mb-4">
+                            path('admin_manage_token_list',
+                            {realtAuthToken: apiKey, method: 'delete', type: 'token', id: token.id})
+                        }}" class="btn btn-danger mb-4">
                         <button type="button" class="close" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -295,5 +432,25 @@
             </form>
         {% endfor %}
     </div>
+
+{#    {% block tokenlist_form_row %}#}
+{#        {% for child in form.children|filter(child => not child.rendered) %}#}
+{#            <div class="form-group">#}
+{#                {{ form_label(child) }}#}
+{#                {{ form_widget(child) }}#}
+{#                {{ form_help(child) }}#}
+{#                {{ form_errors(child) }}#}
+{#            </div>#}
+{#        {% endfor %}#}
+{#    {% endblock %}#}
+
+{#    {{ form(formNetwork) }}#}
+{#    {{ form(formRefer) }}#}
+{#    {{ form(formTag) }}#}
+{#    {{ form(formToken) }}#}
+
+{#    {{ form_label(form) }}#}
+
+{#    {{ form_errors(form) }}#}
 </div>
 {% endblock %}

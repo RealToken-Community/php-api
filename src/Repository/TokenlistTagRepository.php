@@ -19,32 +19,34 @@ class TokenlistTagRepository extends ServiceEntityRepository
         parent::__construct($registry, TokenlistTag::class);
     }
 
-    // /**
-    //  * @return TokenlistTag[] Returns an array of TokenlistTag objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Get tags from ids.
+     *
+     * @param array $ids
+     * @return array
+     */
+    public function findAllWithIds(array $ids): array
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
-            ->setMaxResults(10)
+        return $this->_em
+            ->getRepository(TokenlistTag::class)
+            ->createQueryBuilder('t')
+            ->where('t.id IN (:ids)')
+            ->setParameter('ids', $ids)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?TokenlistTag
+    /**
+     * Get findAll() in array.
+     *
+     * @return array
+     */
+    public function findAllArrayResponse(): array
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $query = $this->_em
+            ->getRepository(TokenlistTag::class)
+            ->createQueryBuilder('t')
+            ->getQuery();
+        return $query->getArrayResult();
     }
-    */
 }
