@@ -341,7 +341,7 @@ class TokenService extends Service
         $token->setTokenPrice((float)$dataJson['tokenPrice'] ?: null);
         $token->setCanal($dataJson['canal'] ?: null);
         $token->setCurrency($dataJson['currency'] ?: null);
-        $token->setTotalTokens($dataJson['totalTokens'] ?: null);
+        $token->setTotalTokens($dataJson['totalTokens'] ?: 0);
         $token->setEthereumContract($dataJson['ethereumContract']);
         $token->setMaticContract(isset($dataJson['maticContract']) ? $dataJson['maticContract'] : null);
         $token->setXDaiContract($dataJson['xDaiContract'] ?: null);
@@ -383,7 +383,7 @@ class TokenService extends Service
         $token->setPropertyType($dataJson['propertyType'] ?: null);
         $token->setSquareFeet($dataJson['squareFeet'] ?: null);
         $token->setLotSize($dataJson['lotSize'] ?: null);
-        $token->setBedroomBath(!empty($dataJson['bedroom/bath']) ?: null);
+        $token->setBedroomBath(!empty($dataJson['bedroom/bath']) ? $dataJson['bedroom/bath'] : null);
         $token->setHasTenants($dataJson['hasTenants'] ?: null);
         $token->setRentedUnits($dataJson['rentedUnits'] ?: null);
         $token->setTotalUnits($dataJson['totalUnits'] ?: null);
