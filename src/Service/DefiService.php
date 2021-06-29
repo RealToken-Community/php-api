@@ -156,7 +156,7 @@ class DefiService extends Service
         }
 
         $this->em->flush();
-        return $response;
+        return $response[0];
     }
 
     /**
