@@ -150,7 +150,7 @@ class DefiService extends Service
                 $response[0] = $this->generateTokenList($tokens, $version, $integrityType->getNetwork());
                 $integrityType->setTimestamp(new \DateTime());
                 $integrityType->setHash($hashToken);
-                $integrityType->setData($response);
+                $integrityType->setData($response[0]);
                 $this->em->persist($integrityType);
             } else {
                 $response[0] = $integrityType->getData();
@@ -224,8 +224,13 @@ class DefiService extends Service
 
                 $chainName = strtolower($secondaryMarketplace["chainName"]);
 
+                // Tmp xDaiChain fix
+                if (strtolower($chainName) === "xdaichain") {
+                    $chainName = "xDai";
+                }
+
                 if (isset($blockchainsAddresses[$chainName])
-                    || strtolower($network->getName()) === "All"
+                    || strtolower($network->getName()) === "all"
                 ) {
                     if (!empty($blockchainsAddresses[$chainName]["contract"])
                         || $network->getChainId() === 0
