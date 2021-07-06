@@ -101,10 +101,8 @@ class DefiService extends Service
      */
     private function tokenListMapping(?string $refer): array
     {
-        // TODO : REMOVE DATA
-        $refer = "https://tokenlists.org/";
-
         $response = [];
+        $integrityType = null;
 
         $tokenRepository = $this->em->getRepository(Token::class);
         $tokens = $tokenRepository->findAll();
@@ -135,9 +133,13 @@ class DefiService extends Service
                 array_push($response, $integrityType->getData());
             }
         } else {
+            $tokenListNetworkRepository = $this->em->getRepository(TokenlistNetwork::class);
+            /** @var TokenlistNetwork $tokenListNetwork */
+            $tokenListNetwork = $tokenListNetworkRepository->findOneBy(['chainId' => 0]);
+
             $integrityTypeRepository = $this->em->getRepository(TokenlistIntegrity::class);
             /** @var TokenlistIntegrity $integrityType */
-            $integrityType = $integrityTypeRepository->findOneBy(["network" => "all"]);
+            $integrityType = $integrityTypeRepository->findOneBy(["network" => $tokenListNetwork]);
 
             $hashIntegrity = $integrityType->getHash();
             $hashToken = md5(serialize($tokens));
@@ -145,13 +147,13 @@ class DefiService extends Service
             if (!hash_equals($hashToken, $hashIntegrity)) {
                 $version = $this->checkAndUpdateTokenListVersion($integrityType);
 
-                $response = $this->generateTokenList($tokens, $version, $integrityType->getNetwork());
+                $response[0] = $this->generateTokenList($tokens, $version, $integrityType->getNetwork());
                 $integrityType->setTimestamp(new \DateTime());
                 $integrityType->setHash($hashToken);
                 $integrityType->setData($response);
                 $this->em->persist($integrityType);
             } else {
-                $response = $integrityType->getData();
+                $response[0] = $integrityType->getData();
             }
         }
 
@@ -188,8 +190,14 @@ class DefiService extends Service
             $tagsList[$tokenListTag["tagKey"]] = ["name" => $tokenListTag["name"], "description" => $tokenListTag["description"]];
         }
 
+        if ($_ENV['APP_ENV'] === "prod") {
+            $name = "RealToken";
+        } else {
+            $name = "RealToken Dev";
+        }
+
         $data = [
-            "name"      =>	"RealToken",
+            "name"      =>	$name,
             "logoURI"   =>	"https://realt.co/wp-content/uploads/2019/01/cropped-RealToken_Favicon.png",
             "timestamp" =>	$dateTime->format("Y-m-d\TH:i:sP"),
             "version"   => [
@@ -216,9 +224,6 @@ class DefiService extends Service
 
                 $chainName = strtolower($secondaryMarketplace["chainName"]);
 
-                // TODO : TMP FIX -> REMOVE !!!!
-//                $chainName = ($chainName === "xdaichain") ? "xDai" : $chainName;
-
                 if (isset($blockchainsAddresses[$chainName])
                     || strtolower($network->getName()) === "All"
                 ) {
@@ -231,11 +236,23 @@ class DefiService extends Service
                             }
                         }
 
+                        // Regex to format long shortname
+                        $shortname = $token->getShortName();
+                        if (strlen($shortname) > 20) {
+                            $pattern = "/((.*-)(.*[0-9])-(.*[0-9]) (.*))|((.*[0-9])-(.*[0-9]) (.*))/";
+                            preg_match($pattern, $shortname, $matches);
+                            if (!empty($matches[1])) {
+                                $shortname = $matches[2] . $matches[3] . " " . $matches[5];
+                            } else {
+                                $shortname = $matches[7] . " " . $matches[9];
+                            }
+                        }
+
                         $tokenData = [
                             "address" => $blockchainsAddresses[$chainName]["contract"],
                             "chainId" => $secondaryMarketplace["chainId"],
-                            "name" => $token->getShortName(),
-                            "symbol" => strtoupper(str_replace(" ", "-", str_replace(".", "", $token->getShortName()))),
+                            "name" => $shortname,
+                            "symbol" => strtoupper(str_replace(" ", "-", str_replace(".", "", $shortname))),
                             "decimals" => 18,
                             "logoURI" => "https://realt.co/wp-content/uploads/2019/01/cropped-RealToken_Favicon.png",
                             "tags" => $tags,
