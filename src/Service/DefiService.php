@@ -27,7 +27,7 @@ class DefiService extends Service
      *
      * @return JsonResponse
      */
-    public function getTokenListForAMM(?string $refer): JsonResponse
+    public function getTokenListForAMMDeprecated(?string $refer): JsonResponse
     {
         $ammList = $this->getCommunityList($refer);
 
@@ -44,7 +44,7 @@ class DefiService extends Service
      *
      * @return JsonResponse
      */
-    public function getTokenListForAMMBeta(?string $refer): JsonResponse
+    public function getTokenListForAMM(?string $refer): JsonResponse
     {
         $ammList = $this->createCommunityList($refer);
 
