@@ -179,7 +179,8 @@ class AdminController extends AbstractController
         return $this->render(
             "admin/routeIntegrity.html.twig", [
                 'apiKey' => $apiKey,
-                'routes' => $this->adminService->getRouteIntegrity()
+                'routes' => $this->adminService->getRouteIntegrity(),
+                'totalTokens' => $this->adminService->getTotalTokens(),
             ]
         );
     }

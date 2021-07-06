@@ -259,11 +259,18 @@ class AdminService extends Service
         return $routes;
     }
 
+    public function getTotalTokens()
+    {
+        $tokenRepository = $this->em->getRepository(Token::class);
+        return $tokenRepository->countAllTokens();
+    }
+
     /**
      * Drop all tokens.
      *
      */
-    public function dropTokens() {
+    public function dropTokens()
+    {
         $tokenRepository = $this->em->getRepository(Token::class);
         $tokenRepository->dropTokens();
     }
