@@ -25,6 +25,27 @@ class DefiController
     }
 
     /**
+     * RealToken list for AMM (deprecated).
+     *
+     * @OA\Response(
+     *     response=301,
+     *     description="Get deprecated",
+     * )
+     * @OA\Tag(name="DeFi")
+     *
+     * @param Request $request
+     *
+     * @deprecated
+     *
+     * @return JsonResponse
+     * @Route("/tokenListOld", name="amm_list_deprecated", methods={"GET"})
+     */
+    public function getTokenListDeprecated(Request $request): JsonResponse
+    {
+        return $this->defiService->getTokenListForAMMDeprecated($this->getRefer($request));
+    }
+
+    /**
      * RealToken list for AMM.
      *
      * @OA\Response(

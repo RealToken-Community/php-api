@@ -33,7 +33,7 @@ class TokenController
     }
 
     /**
-     * List all tokens deprecated.
+     * List all tokens (deprecated).
      *
      * @OA\Response(
      *     response=301,
@@ -153,7 +153,7 @@ class TokenController
     }
 
     /**
-     * Create token data deprecated.
+     * Create token data (deprecated).
      *
      * @OA\Response(
      *     response=301,

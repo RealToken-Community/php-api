@@ -1,8 +1,10 @@
 {
+    "name": "realtcommunity/realtapi",
+    "description": "RealT API Community",
     "type": "project",
     "license": "proprietary",
     "require": {
-        "php": ">=7.4",
+        "php": "^7.4 || ^8.0",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-dom": "*",
