@@ -392,7 +392,7 @@ class TokenService extends Service
         if ($renewalDate instanceof DateTime) {
             $token->setRenewalDate($renewalDate);
         }
-        $token->setSection8paid($dataJson['section8paid'] ?: null);
+        $token->setSection8paid(isset($dataJson['section8paid']) ? $dataJson['section8paid'] : null);
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?: null);
         $token->setSecondaryMarketplace($dataJson['secondaryMarketPlace'] ?: null);
         $token->setSecondaryMarketplaces(
