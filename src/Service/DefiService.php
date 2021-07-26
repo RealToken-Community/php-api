@@ -111,7 +111,7 @@ class DefiService extends Service
         /** @var TokenlistRefer $tokenListRefer */
         $tokenListRefer = $tokenListReferRepository->findOneBy(["url" => $refer]);
 
-        if (!empty($refer) || !empty($tokenListRefer)) {
+        if (!empty($tokenListRefer)) {
             /** @var TokenlistIntegrity $integrityType */
             $integrityType = $tokenListRefer->getIntegrityTypes();
         }
