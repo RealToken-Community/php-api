@@ -274,98 +274,10 @@ class Token
      */
     private $rentStartDate;
 
-//    /**
-//     * Token constructor.
-//     * @param $id
-//     * @param $fullName
-//     * @param $shortName
-//     * @param $tokenPrice
-//     * @param $publicSale
-//     * @param $canal
-//     * @param $currency
-//     * @param $totalTokens
-//     * @param $ethereumContract
-//     * @param $ethereumDistributor
-//     * @param $ethereumMaintenance
-//     * @param $assetPrice
-//     * @param $grossRentMonth
-//     * @param $annualPercentageYield
-//     * @param $propertyManagementPercent
-//     * @param $realtPlatformPercent
-//     * @param $insurance
-//     * @param $propertyTaxes
-//     * @param $utilities
-//     * @param $propertyMaintenance
-//     * @param array $coordinate
-//     * @param $marketplaceLink
-//     * @param array $imageLink
-//     * @param $propertyType
-//     * @param $squareFeet
-//     * @param $lotSize
-//     * @param $bedroomBath
-//     * @param $hasTenants
-//     * @param $termOfLease
-//     * @param $renewalDate
-//     * @param $section8paid
-//     * @param $sellPropertyTo
-//     * @param $onUniswap
-//     * @param $grossRentYear
-//     * @param $propertyManagement
-//     * @param $realtPlatform
-//     * @param $netRentMonth
-//     * @param $netRentYear
-//     * @param $netRentYearPerToken
-//     * @param $netRentMonthPerToken
-//     * @param $lastUpdate
-//     * @param $netRentDay
-//     * @param $netRentDayPerToken
-//     */
-//    public function __construct($id, $fullName, $shortName, $tokenPrice, $publicSale, $canal, $currency, $totalTokens, $ethereumContract, $ethereumDistributor, $ethereumMaintenance, $assetPrice, $grossRentMonth, $annualPercentageYield, $propertyManagementPercent, $realtPlatformPercent, $insurance, $propertyTaxes, $utilities, $propertyMaintenance, array $coordinate, $marketplaceLink, array $imageLink, $propertyType, $squareFeet, $lotSize, $bedroomBath, $hasTenants, $termOfLease, $renewalDate, $section8paid, $sellPropertyTo, $onUniswap, $grossRentYear, $propertyManagement, $realtPlatform, $netRentMonth, $netRentYear, $netRentYearPerToken, $netRentMonthPerToken, $lastUpdate, $netRentDay, $netRentDayPerToken)
-//    {
-//        $this->id = $id;
-//        $this->fullName = $fullName;
-//        $this->shortName = $shortName;
-//        $this->tokenPrice = $tokenPrice;
-//        $this->publicSale = $publicSale;
-//        $this->canal = $canal;
-//        $this->currency = $currency;
-//        $this->totalTokens = $totalTokens;
-//        $this->ethereumContract = $ethereumContract;
-//        $this->ethereumDistributor = $ethereumDistributor;
-//        $this->ethereumMaintenance = $ethereumMaintenance;
-//        $this->assetPrice = $assetPrice;
-//        $this->grossRentMonth = $grossRentMonth;
-//        $this->annualPercentageYield = $annualPercentageYield;
-//        $this->propertyManagementPercent = $propertyManagementPercent;
-//        $this->realtPlatformPercent = $realtPlatformPercent;
-//        $this->insurance = $insurance;
-//        $this->propertyTaxes = $propertyTaxes;
-//        $this->utilities = $utilities;
-//        $this->propertyMaintenance = $propertyMaintenance;
-//        $this->coordinate = $coordinate;
-//        $this->marketplaceLink = $marketplaceLink;
-//        $this->imageLink = $imageLink;
-//        $this->propertyType = $propertyType;
-//        $this->squareFeet = $squareFeet;
-//        $this->lotSize = $lotSize;
-//        $this->bedroomBath = $bedroomBath;
-//        $this->hasTenants = $hasTenants;
-//        $this->termOfLease = $termOfLease;
-//        $this->renewalDate = $renewalDate;
-//        $this->section8paid = $section8paid;
-//        $this->sellPropertyTo = $sellPropertyTo;
-//        $this->onUniswap = $onUniswap;
-//        $this->grossRentYear = $grossRentYear;
-//        $this->propertyManagement = $propertyManagement;
-//        $this->realtPlatform = $realtPlatform;
-//        $this->netRentMonth = $netRentMonth;
-//        $this->netRentYear = $netRentYear;
-//        $this->netRentYearPerToken = $netRentYearPerToken;
-//        $this->netRentMonthPerToken = $netRentMonthPerToken;
-//        $this->lastUpdate = $lastUpdate;
-//        $this->netRentDay = $netRentDay;
-//        $this->netRentDayPerToken = $netRentDayPerToken;
-//    }
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $originSecondaryMarketplaces = [];
 
     public function getId(): ?int
     {
@@ -1074,5 +986,17 @@ class Token
         }
 
         return $response;
+    }
+
+    public function getOriginSecondaryMarketplaces(): ?array
+    {
+        return $this->originSecondaryMarketplaces;
+    }
+
+    public function setOriginSecondaryMarketplaces(?array $originSecondaryMarketplaces): self
+    {
+        $this->originSecondaryMarketplaces = $originSecondaryMarketplaces;
+
+        return $this;
     }
 }
