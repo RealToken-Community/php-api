@@ -983,6 +983,7 @@ class Token
 
         if ($credentials['isAdmin']) {
             $response['maticContract'] = $this->maticContract;
+            $response['originSecondaryMarketplaces'] = $this->originSecondaryMarketplaces;
         }
 
         return $response;
