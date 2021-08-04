@@ -145,7 +145,31 @@ class TokenService extends Service
             }
         }
 
+        // Check if secondaryMarketplaces is different
+        $hasMpModified = $this->checkMarketplacesDifference($token, $dataJson);
+
         $this->tokenMapping($parsedJson, $token);
+
+        if ($hasMpModified) {
+            // Get xDai Contract
+            $secondaryMarketplaces = $token->getOriginSecondaryMarketplaces();
+
+            foreach ($secondaryMarketplaces as $key => $secondaryMarketplace) {
+                if (array_key_exists("pair", $secondaryMarketplace)) {
+                    continue;
+                }
+                $chainName = strtolower($secondaryMarketplace["chainName"]);
+
+                // Tmp xDaiChain fix
+                // TODO : Add enum and chainId behind chainName
+                if (strtolower($chainName) === "xdaichain") {
+                    $pairToken = $this->getLpPairToken($secondaryMarketplace["contractPool"], $token->getSymbol());
+                    $secondaryMarketplaces[$key]["pair"] = $pairToken;
+                    $token->setSecondaryMarketplaces($secondaryMarketplaces);
+                }
+            }
+        }
+
         $this->em->flush();
 
         return new JsonResponse(
@@ -194,6 +218,27 @@ class TokenService extends Service
     }
 
     /**
+     * Check difference from Json secondaryMarketplaces and token data.
+     *
+     * @param $token
+     * @param $json
+     *
+     * @return bool
+     */
+    private function checkMarketplacesDifference($token, $json): bool
+    {
+        $hashSource = md5(serialize($json['secondaryMarketPlaces']));
+        $hashOrigin = md5(serialize($token->getOriginSecondaryMarketplaces()));
+        $hashWithPair = md5(serialize($token->getSecondaryMarketplaces()));
+
+        if (!hash_equals($hashSource, $hashOrigin) || hash_equals($hashOrigin, $hashWithPair)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Check and parse body data.
      *
      * @param array $dataJson
@@ -238,13 +283,14 @@ class TokenService extends Service
      */
     private function createOrUpdateToken(?Token $actualToken, array $parsedJson, array &$count)
     {
-        // UPDATE
-        $token = $this->tokenMapping($parsedJson);
-        if ($actualToken instanceof Token) {
-            $this->updateToken($token->getEthereumContract(), $parsedJson);
+        if ($actualToken instanceof Token) { // UPDATE
+            $this->updateToken($actualToken->getEthereumContract(), $parsedJson);
             $count['update'] += 1;
-        } // CREATE
-        else {
+        } else { // CREATE
+            $token = $this->tokenMapping($parsedJson);
+
+            $token->setSecondaryMarketplaces($token->getOriginSecondaryMarketplaces());
+
             if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
                 $token->setSymbol($symbol);
             }
@@ -279,22 +325,8 @@ class TokenService extends Service
      */
     private function getRealtokenSymbol($ethereumContract)
     {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://etherscan.io/token/".$ethereumContract,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
+        $uri = "https://etherscan.io/token/".$ethereumContract;
+        $response = $this->curlRequest($uri);
 
         $doc = new DOMDocument();
         @$doc->loadHTML($response);
@@ -320,6 +352,63 @@ class TokenService extends Service
         }
 
         return $name;
+    }
+
+    /**
+     * Get LP pair tokens from Blockscout.
+     *
+     * @param $xdaiContract
+     * @param $tokenSymbol
+     *
+     * @return array
+     */
+    private function getLpPairToken($xdaiContract, $tokenSymbol): array
+    {
+        $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$xdaiContract."&sort=asc";
+        $json = $this->curlRequest($uri);
+
+        $response = json_decode($json, true);
+
+        if ($response["result"][0]["tokenSymbol"] !== $tokenSymbol) {
+            $index = 0;
+        } else {
+            $index = 1;
+        }
+
+        $lpPair["contract"] = $response["result"][$index]["contractAddress"];
+        $lpPair["symbol"] = $response["result"][$index]["tokenSymbol"];
+        $lpPair["name"] = $response["result"][$index]["tokenName"];
+
+        return $lpPair;
+    }
+
+    /**
+     * Make cURL request.
+     *
+     * @param $uri
+     *
+     * @return bool|string
+     */
+    private function curlRequest($uri)
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $uri,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        return $response;
     }
 
     /**
@@ -392,10 +481,10 @@ class TokenService extends Service
         if ($renewalDate instanceof DateTime) {
             $token->setRenewalDate($renewalDate);
         }
-        $token->setSection8paid($dataJson['section8paid'] ?: null);
+        $token->setSection8paid(isset($dataJson['section8paid']) ? $dataJson['section8paid'] : null);
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?: null);
         $token->setSecondaryMarketplace($dataJson['secondaryMarketPlace'] ?: null);
-        $token->setSecondaryMarketplaces(
+        $token->setOriginSecondaryMarketplaces(
             !empty($dataJson['secondaryMarketPlaces'])
             || strlen($dataJson['secondaryMarketPlaces']) > 5
             ? $dataJson['secondaryMarketPlaces']
