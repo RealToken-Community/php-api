@@ -235,8 +235,10 @@ class DefiService extends Service
                     if (!empty($blockchainsAddresses[$chainName]["contract"])
                         || $network->getChainId() === 0
                     ) {
+                        // Add tag from secondaryMarketplaces pair
+                        $pairSymbol = strtolower($secondaryMarketplace["pair"]["symbol"]);
                         foreach ($tokenListTags as $tokenListTag) {
-                            if (strtolower($tokenListTag["name"]) === strtolower($secondaryMarketplace["dexName"])) {
+                            if (strpos(strtolower($tokenListTag["tagKey"]), $pairSymbol) !== false) {
                                 $tags = [$tokenListTag["tagKey"]];
                             }
                         }
