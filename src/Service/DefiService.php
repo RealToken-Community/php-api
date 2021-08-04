@@ -236,10 +236,12 @@ class DefiService extends Service
                         || $network->getChainId() === 0
                     ) {
                         // Add tag from secondaryMarketplaces pair
-                        $pairSymbol = strtolower($secondaryMarketplace["pair"]["symbol"]);
-                        foreach ($tokenListTags as $tokenListTag) {
-                            if (strpos(strtolower($tokenListTag["tagKey"]), $pairSymbol) !== false) {
-                                $tags = [$tokenListTag["tagKey"]];
+                        if (isset($secondaryMarketplace["pair"])) {
+                            $pairSymbol = strtolower($secondaryMarketplace["pair"]["symbol"]);
+                            foreach ($tokenListTags as $tokenListTag) {
+                                if (strpos(strtolower($tokenListTag["tagKey"]), $pairSymbol) !== false) {
+                                    $tags = [$tokenListTag["tagKey"]];
+                                }
                             }
                         }
 
