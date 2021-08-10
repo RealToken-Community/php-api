@@ -223,6 +223,7 @@ class DefiService extends Service
                 $tags = [];
 
                 $chainName = strtolower($secondaryMarketplace["chainName"]);
+                $dexName = strtolower($secondaryMarketplace["dexName"]);
 
                 // Tmp xDaiChain fix
                 if (strtolower($chainName) === "xdaichain") {
@@ -240,8 +241,15 @@ class DefiService extends Service
                             $pairSymbol = strtolower($secondaryMarketplace["pair"]["symbol"]);
                             foreach ($tokenListTags as $tokenListTag) {
                                 if (strpos(strtolower($tokenListTag["tagKey"]), $pairSymbol) !== false) {
-                                    $tags = [$tokenListTag["tagKey"]];
+                                    array_push($tags, $tokenListTag["tagKey"]);
                                 }
+                            }
+                        }
+
+                        // Add dex tag
+                        foreach ($tokenListTags as $tokenListTag) {
+                            if ($dexName === strtolower($tokenListTag["name"])) {
+                                array_push($tags, $tokenListTag["tagKey"]);
                             }
                         }
 
