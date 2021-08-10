@@ -162,10 +162,13 @@ class TokenService extends Service
 
                 // Tmp xDaiChain fix
                 // TODO : Add enum and chainId behind chainName
-                if (strtolower($chainName) === "xdaichain") {
-                    $pairToken = $this->getLpPairToken($secondaryMarketplace["contractPool"], $token->getSymbol());
-                    $secondaryMarketplaces[$key]["pair"] = $pairToken;
-                    $token->setSecondaryMarketplaces($secondaryMarketplaces);
+                if ($chainName === "xdaichain"
+                    || $chainName === "ethereum") {
+                    $pairToken = $this->getLpPairToken($chainName, $secondaryMarketplace["contractPool"], $token->getSymbol());
+                    if (!empty($pairToken)) {
+                        $secondaryMarketplaces[$key]["pair"] = $pairToken;
+                        $token->setSecondaryMarketplaces($secondaryMarketplaces);
+                    }
                 }
             }
         }
@@ -357,17 +360,28 @@ class TokenService extends Service
     /**
      * Get LP pair tokens from Blockscout.
      *
-     * @param $xdaiContract
+     * @param $network
+     * @param $contractAddress
      * @param $tokenSymbol
      *
      * @return array
      */
-    private function getLpPairToken($xdaiContract, $tokenSymbol): array
+    private function getLpPairToken($network, $contractAddress, $tokenSymbol): array
     {
-        $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$xdaiContract."&sort=asc";
+        if ($network === "ethereum") {
+            $uri = "https://api.etherscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
+        } else {
+            $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
+        }
         $json = $this->curlRequest($uri);
 
         $response = json_decode($json, true);
+
+        // Ignore error & UniswapV1
+        if ($response["status"] === "0"
+            || $response["result"][0]["hash"] != $response["result"][1]["hash"]) {
+            return [];
+        }
 
         if ($response["result"][0]["tokenSymbol"] !== $tokenSymbol) {
             $index = 0;
