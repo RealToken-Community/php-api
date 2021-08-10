@@ -240,7 +240,8 @@ class DefiService extends Service
                         if (isset($secondaryMarketplace["pair"])) {
                             $pairSymbol = strtolower($secondaryMarketplace["pair"]["symbol"]);
                             foreach ($tokenListTags as $tokenListTag) {
-                                if (strpos(strtolower($tokenListTag["tagKey"]), $pairSymbol) !== false) {
+                                if (strpos(strtolower($tokenListTag["tagKey"]), $pairSymbol) !== false
+                                    && strpos(strtolower($tokenListTag["tagKey"]), "pair") !== false) {
                                     array_push($tags, $tokenListTag["tagKey"]);
                                 }
                             }
