@@ -111,7 +111,7 @@ class DefiService extends Service
         /** @var TokenlistRefer $tokenListRefer */
         $tokenListRefer = $tokenListReferRepository->findOneBy(["url" => $refer]);
 
-        if (!empty($refer) || !empty($tokenListRefer)) {
+        if (!empty($tokenListRefer)) {
             /** @var TokenlistIntegrity $integrityType */
             $integrityType = $tokenListRefer->getIntegrityTypes();
         }
@@ -223,6 +223,7 @@ class DefiService extends Service
                 $tags = [];
 
                 $chainName = strtolower($secondaryMarketplace["chainName"]);
+                $dexName = strtolower($secondaryMarketplace["dexName"]);
 
                 // Tmp xDaiChain fix
                 if (strtolower($chainName) === "xdaichain") {
@@ -235,9 +236,21 @@ class DefiService extends Service
                     if (!empty($blockchainsAddresses[$chainName]["contract"])
                         || $network->getChainId() === 0
                     ) {
+                        // Add tag from secondaryMarketplaces pair
+                        if (isset($secondaryMarketplace["pair"])) {
+                            $pairSymbol = strtolower($secondaryMarketplace["pair"]["symbol"]);
+                            foreach ($tokenListTags as $tokenListTag) {
+                                if (strpos(strtolower($tokenListTag["tagKey"]), $pairSymbol) !== false
+                                    && strpos(strtolower($tokenListTag["tagKey"]), "pair") !== false) {
+                                    array_push($tags, $tokenListTag["tagKey"]);
+                                }
+                            }
+                        }
+
+                        // Add dex tag
                         foreach ($tokenListTags as $tokenListTag) {
-                            if (strtolower($tokenListTag["name"]) === strtolower($secondaryMarketplace["dexName"])) {
-                                $tags = [$tokenListTag["tagKey"]];
+                            if ($dexName === strtolower($tokenListTag["name"])) {
+                                array_push($tags, $tokenListTag["tagKey"]);
                             }
                         }
 
