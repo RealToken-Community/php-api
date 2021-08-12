@@ -30,7 +30,7 @@ class TokenlistRefer
     private $url;
 
     /**
-     * @ORM\ManyToOne(targetEntity=TokenlistIntegrity::class, inversedBy="tokenlistRefer")
+     * @ORM\ManyToOne(targetEntity=TokenlistIntegrity::class)
      */
     private $integrityTypes;
 
