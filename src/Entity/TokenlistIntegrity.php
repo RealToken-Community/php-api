@@ -23,7 +23,7 @@ class TokenlistIntegrity
     private $timestamp;
 
     /**
-     * @ORM\ManyToOne(targetEntity=TokenlistNetwork::class, inversedBy="tokenlistIntegrity")
+     * @ORM\ManyToOne(targetEntity=TokenlistNetwork::class)
      */
     private $network;
 
