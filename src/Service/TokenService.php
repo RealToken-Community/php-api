@@ -378,7 +378,8 @@ class TokenService extends Service
         $response = json_decode($json, true);
 
         // Ignore error & UniswapV1
-        if ($response["status"] === "0"
+        if (empty($response)
+            || $response["status"] === "0"
             || $response["result"][0]["hash"] != $response["result"][1]["hash"]) {
             return [];
         }
