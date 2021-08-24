@@ -461,6 +461,7 @@ class TokenService extends Service
         $token->setInsurance((float)$dataJson['insurance'] ?: null);
         $token->setPropertyTaxes((float)$dataJson['propertyTaxes'] ?: null);
         $token->setUtilities((float)$dataJson['utilities'] ?: null);
+        $token->setPropertyMaintenanceMonthly((float)$dataJson['propertyMaintenanceMonthly'] ?: null);
         $token->setNetRentMonth(
             ($token->getGrossRentMonth()
             - $token->getPropertyManagement()
@@ -511,8 +512,8 @@ class TokenService extends Service
             : null);
         $token->setUnderlyingAssetPrice((float)$dataJson['underlyingAssetPrice'] ?: null);
         $token->setRenovationReserve((float)$dataJson['renovationReserve'] ?: null);
-        $token->setPropertyMaintenanceMonthly((float)$dataJson['propertyMaintenanceMonthly'] ?: null);
         $token->setRentStartDate($dataJson['rentStartDate'] ? new DateTime($dataJson['rentStartDate']) : null);
+        $token->setInitialMaintenanceReserve($dataJson['initialMaintenanceReserve'] ?: null);
         $token->setLastUpdate(new DateTime());
 
         return $token;
