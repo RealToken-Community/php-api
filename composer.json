@@ -32,6 +32,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
+        "phpstan/phpstan": "^0.12.96",
         "symfony/maker-bundle": "^1.21",
         "symfony/stopwatch": "^5.2",
         "symfony/web-profiler-bundle": "^5.2"

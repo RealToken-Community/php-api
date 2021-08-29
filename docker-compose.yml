@@ -1,0 +1,47 @@
+version: '3.2'
+
+services:
+#  symfony:
+#    image: realt-api:dev
+#    container_name: realtapi_dev-sf
+#    build:
+#      context: ./
+#    ports:
+#      - "9081:80"
+#    networks:
+#      - realtapidev
+#      - traefik-realt
+#    volumes:
+#      - ./logs/symfony:/var/www/html/var/log:cached
+#      - ./logs/nginx:/var/log/nginx:cached
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.sf-realt-api-dev.rule=Host(`localhost`)"
+#      - "traefik.http.routers.sf-realt-api-dev.entrypoints=websecure"
+#    restart: always
+
+  db:
+    image: mysql:5.7
+    container_name: realtapi_dev-db
+    ports:
+      - "3307:3306"
+    networks:
+      - realtapidev
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+    restart: always
+
+#  adminer:
+#    image: adminer
+#    container_name: realtapi_dev-adminer
+#    ports:
+#      - "18081:8080"
+#    networks:
+#      - realtapidev
+#    restart: always
+
+networks:
+  realtapidev:
