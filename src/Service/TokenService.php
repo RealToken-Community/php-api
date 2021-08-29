@@ -91,28 +91,45 @@ class TokenService extends Service
             $token = $tokenRepository->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
             $this->createOrUpdateToken($token, $parsedJson, $count);
         } else { // Multiple
-            foreach ($parsedJson as $item) {
-                if (empty($item['ethereumContract'])) continue;
-                if (!$this->haveValidChannel($item['canal'])) continue;
+            $tokens = $tokenRepository->findBy(['ethereumContract' => array_column($parsedJson, 'ethereumContract')]);
+            $this->em->getConnection()->beginTransaction();
+            $batchSize = 50;
+            $i = 1;
+            foreach ($tokens as $token) {
+                $item = array_filter($parsedJson, static function ($currentItem) use ($token) {
+                    if ($token->getEthereumContract() === $currentItem['ethereumContract']) {
+                        return true;
+                    }
+                });
+                if (1 === \count($item)) {
+                    $item = $item[array_key_first($item)];
 
-                /** @var Token $token */
-                $token = $tokenRepository->findOneBy(['ethereumContract' => $item['ethereumContract']]);
-                $this->createOrUpdateToken($token, $item, $count);
+                    $this->createOrUpdateToken($token, $item, $count);
+
+                    ++$i;
+                    if ($i % $batchSize === 0) {
+                        $this->em->flush();
+                        $this->em->getConnection()->commit();
+                        $this->em->getConnection()->beginTransaction();
+                    }
+                }
             }
+
+            $this->em->flush();
+            $this->em->getConnection()->commit();
         }
 
-        $this->em->flush();
-
-        $response = Response::HTTP_CREATED;
+        $responseCode = Response::HTTP_CREATED;
 
         if ($deprecated) {
-            $response = Response::HTTP_MOVED_PERMANENTLY;
+            $responseCode = Response::HTTP_MOVED_PERMANENTLY;
         }
 
         $message = $count["create"] . " tokens created & " . $count["update"] . " updated successfully";
+
         return new JsonResponse(
             ["status" => "success", "message" => $message],
-            $response
+            $responseCode
         );
     }
 
@@ -256,26 +273,30 @@ class TokenService extends Service
                 $newData = $dataJson;
             }
             return $newData;
-        } elseif (array_keys($dataJson)[0] === "tokens") {
+        }
+
+        if (array_keys($dataJson)[0] === "tokens") {
             $newData = [];
             $data = $dataJson['tokens'];
-            foreach ($data as $key => $value) {
+            foreach ($data as $value) {
                 if ($this->haveValidChannel($value['canal'])) {
                     $newData[] = $value;
                 }
             }
             return $newData;
-        } elseif (array_key_first($dataJson[0]) === "fullName") {
-            $newData = [];
-            foreach ($dataJson as $key => $value) {
-                if ($this->haveValidChannel($value['canal'])) {
-                    $newData[] = $value;
-                }
-            }
-            return $newData;
-        } else {
-            return false;
         }
+
+        if (array_key_first($dataJson[0]) === "fullName") {
+            $newData = [];
+            foreach ($dataJson as $value) {
+                if ($this->haveValidChannel($value['canal'])) {
+                    $newData[] = $value;
+                }
+            }
+            return $newData;
+        }
+
+        return false;
     }
 
     /**
