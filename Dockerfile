@@ -11,6 +11,7 @@ ENV HTTPS false
 
 # Nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/blockips.conf /etc/nginx/blockips.conf
 
 RUN mkdir -p var/cache/prod
 RUN chmod -R 777 var/cache/prod
