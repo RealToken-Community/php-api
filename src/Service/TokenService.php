@@ -247,7 +247,7 @@ class TokenService extends Service
      */
     private function checkMarketplacesDifference($token, $json): bool
     {
-        $hashSource = md5(serialize($json['secondaryMarketPlaces']));
+        $hashSource = md5(serialize($json['secondaryMarketplaces']));
         $hashOrigin = md5(serialize($token->getOriginSecondaryMarketplaces()));
         $hashWithPair = md5(serialize($token->getSecondaryMarketplaces()));
 
@@ -471,13 +471,13 @@ class TokenService extends Service
         $token->setMaticContract(isset($dataJson['maticContract']) ? $dataJson['maticContract'] : null);
         $token->setXDaiContract($dataJson['xDaiContract'] ?: null);
         $token->setTotalInvestment((float)$dataJson['totalInvestment'] ?: null);
-        $token->setGrossRentMonth((float)$dataJson['grossRent'] ?: null);
+        $token->setGrossRentMonth(isset($dataJson['grossRent']) ? (float)$dataJson['grossRent'] : $dataJson['grossRentMonth']);
         $token->setGrossRentYear($token->getGrossRentMonth() * 12?: null);
         $token->setPropertyManagementPercent((float)$dataJson['propertyManagementPercent'] ?: null);
         $token->setPropertyManagement(
             $token->getGrossRentMonth() * $token->getPropertyManagementPercent() ?: null
         );
-        $token->setRealtPlatformPercent((float)$dataJson['realTPlatformPercent'] ?: null);
+        $token->setRealtPlatformPercent(isset($dataJson['realtPlatformPercent']) ? (float)$dataJson['realtPlatformPercent'] : null);
         $token->setRealtPlatform($token->getGrossRentMonth() * $token->getRealtPlatformPercent() ?: null);
         $token->setInsurance((float)$dataJson['insurance'] ?: null);
         $token->setPropertyTaxes((float)$dataJson['propertyTaxes'] ?: null);
@@ -504,7 +504,7 @@ class TokenService extends Service
             'lat' => number_format(floatval($dataJson['coordinate']['lat']), 6),
             'lng' => number_format(floatval($dataJson['coordinate']['lng']), 6)
         ] );
-        $token->setMarketplaceLink($dataJson['marketplace'] ?: null);
+        $token->setMarketplaceLink($dataJson['marketplaceLink'] ?? null);
         $token->setImageLink($dataJson['imageLink']);
         $token->setPropertyType($dataJson['propertyType'] ?: null);
         $token->setSquareFeet($dataJson['squareFeet'] ?: null);
@@ -514,26 +514,27 @@ class TokenService extends Service
         $token->setRentedUnits($dataJson['rentedUnits'] ?: null);
         $token->setTotalUnits($dataJson['totalUnits'] ?: null);
         $token->setTermOfLease($dataJson['termOfLease'] ?: null);
-        $renewalDate = date_create_from_format('d\/m\/Y', $dataJson['renewalDate']);
-        if ($renewalDate instanceof DateTime) {
-            $token->setRenewalDate($renewalDate);
+        $token->setRenewalDate(null);
+        if (!is_array($dataJson['renewalDate'])) {
+            $renewalDate = date_create_from_format('d\/m\/Y', $dataJson['renewalDate']);
+            if ($renewalDate instanceof DateTime) {
+                $token->setRenewalDate($renewalDate);
+            }
         }
         $token->setSection8paid(isset($dataJson['section8paid']) ? $dataJson['section8paid'] : null);
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?: null);
-        $token->setSecondaryMarketplace($dataJson['secondaryMarketPlace'] ?: null);
+        $token->setSecondaryMarketplace($dataJson['secondaryMarketplace'] ?: null);
         $token->setOriginSecondaryMarketplaces(
-            !empty($dataJson['secondaryMarketPlaces'])
-            || strlen($dataJson['secondaryMarketPlaces']) > 5
-            ? $dataJson['secondaryMarketPlaces']
+            !empty($dataJson['secondaryMarketplaces'])
+            ? $dataJson['secondaryMarketplaces']
             : []);
         $token->setBlockchainAddresses(
             !empty($dataJson['blockchainAddresses'])
-            || strlen($dataJson['blockchainAddresses']) > 5
             ? $dataJson['blockchainAddresses']
             : null);
         $token->setUnderlyingAssetPrice((float)$dataJson['underlyingAssetPrice'] ?: null);
         $token->setRenovationReserve((float)$dataJson['renovationReserve'] ?: null);
-        $token->setRentStartDate($dataJson['rentStartDate'] ? new DateTime($dataJson['rentStartDate']) : null);
+        $token->setRentStartDate(!is_array($dataJson['rentStartDate']) ? new DateTime($dataJson['rentStartDate']) : null);
         $token->setInitialMaintenanceReserve($dataJson['initialMaintenanceReserve'] ?: null);
         $token->setLastUpdate(new DateTime());
 
