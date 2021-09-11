@@ -4,11 +4,14 @@ namespace App\Service;
 
 use App\Entity\Token;
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use DOMDocument;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Class TokenService
@@ -16,6 +19,15 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class TokenService extends Service
 {
+    private CacheInterface $cache;
+
+    public function __construct(EntityManagerInterface $entityManager, CacheInterface $cache)
+    {
+        $this->cache = $cache;
+
+        parent::__construct($entityManager);
+    }
+
     /**
      * Get list of tokens.
      *
@@ -349,33 +361,38 @@ class TokenService extends Service
      */
     private function getRealtokenSymbol($ethereumContract)
     {
-        $uri = "https://etherscan.io/token/".$ethereumContract;
-        $response = $this->curlRequest($uri);
+        return $this->cache->get($ethereumContract.'-token-name', function (ItemInterface $item) use ($ethereumContract) {
+            // cache value for 1 day
+            $item->expiresAfter(86400);
 
-        $doc = new DOMDocument();
-        @$doc->loadHTML($response);
+            $uri = "https://etherscan.io/token/".$ethereumContract;
+            $response = $this->curlRequest($uri);
 
-        $title = $doc->getElementsByTagName('title');
-        $title = $title->item(0)->textContent;
+            $doc = new DOMDocument();
+            @$doc->loadHTML($response);
 
-        if ($title === "Etherscan Error Page") {
-            return false;
-        }
+            $title = $doc->getElementsByTagName('title');
+            $title = $title->item(0)->textContent;
 
-        preg_match("/\((.*)\)/", $title, $symbol);
+            if ($title === "Etherscan Error Page") {
+                return false;
+            }
 
-        $name = null;
-        if (!empty($symbol[1])) {
-            $name = $symbol[1];
-        }
+            preg_match("/\((.*)\)/", $title, $symbol);
 
-        $validSymbol = strpos($name, "REALTOKEN-");
+            $name = null;
+            if (!empty($symbol[1])) {
+                $name = $symbol[1];
+            }
 
-        if (!$name || $validSymbol !== 0) {
-            return false;
-        }
+            $validSymbol = strpos($name, "REALTOKEN-");
 
-        return $name;
+            if (!$name || $validSymbol !== 0) {
+                return false;
+            }
+
+            return $name;
+        });
     }
 
     /**
@@ -389,33 +406,41 @@ class TokenService extends Service
      */
     private function getLpPairToken($network, $contractAddress, $tokenSymbol): array
     {
-        if ($network === "ethereum") {
-            $uri = "https://api.etherscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
-        } else {
-            $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
-        }
-        $json = $this->curlRequest($uri);
+        return $this->cache->get(
+            $network.'-'.$contractAddress.'-'.$tokenSymbol,
+            function (ItemInterface $item) use ($network, $contractAddress, $tokenSymbol) {
+                // cache value for 1 day
+                $item->expiresAfter(86400);
 
-        $response = json_decode($json, true);
+                if ($network === "ethereum") {
+                    $uri = "https://api.etherscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
+                } else {
+                    $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
+                }
+                $json = $this->curlRequest($uri);
 
-        // Ignore error & UniswapV1
-        if (empty($response)
-            || $response["status"] === "0"
-            || $response["result"][0]["hash"] != $response["result"][1]["hash"]) {
-            return [];
-        }
+                $response = json_decode($json, true);
 
-        if ($response["result"][0]["tokenSymbol"] !== $tokenSymbol) {
-            $index = 0;
-        } else {
-            $index = 1;
-        }
+                // Ignore error & UniswapV1
+                if (empty($response)
+                    || $response["status"] === "0"
+                    || $response["result"][0]["hash"] != $response["result"][1]["hash"]) {
+                    return [];
+                }
 
-        $lpPair["contract"] = $response["result"][$index]["contractAddress"];
-        $lpPair["symbol"] = $response["result"][$index]["tokenSymbol"];
-        $lpPair["name"] = $response["result"][$index]["tokenName"];
+                if ($response["result"][0]["tokenSymbol"] !== $tokenSymbol) {
+                    $index = 0;
+                } else {
+                    $index = 1;
+                }
 
-        return $lpPair;
+                $lpPair["contract"] = $response["result"][$index]["contractAddress"];
+                $lpPair["symbol"] = $response["result"][$index]["tokenSymbol"];
+                $lpPair["name"] = $response["result"][$index]["tokenName"];
+
+                return $lpPair;
+            }
+        );
     }
 
     /**
