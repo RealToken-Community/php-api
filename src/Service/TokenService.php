@@ -74,7 +74,7 @@ class TokenService extends Service
      * @return JsonResponse
      * @throws Exception
      */
-    public function createToken(array $dataJson = [], $deprecated = false): JsonResponse
+    public function createToken(array $dataJson = [], bool $deprecated = false): JsonResponse
     {
         $count["create"] = $count["update"] = 0;
         $parsedJson = $this->checkAndParseDataJson($dataJson);
@@ -90,28 +90,35 @@ class TokenService extends Service
             /** @var Token $token */
             $token = $tokenRepository->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
             $this->createOrUpdateToken($token, $parsedJson, $count);
+            $this->em->flush();
         } else { // Multiple
             $tokens = $tokenRepository->findBy(['ethereumContract' => array_column($parsedJson, 'ethereumContract')]);
+
             $this->em->getConnection()->beginTransaction();
+
             $batchSize = 50;
             $i = 1;
-            foreach ($tokens as $token) {
-                $item = array_filter($parsedJson, static function ($currentItem) use ($token) {
-                    if ($token->getEthereumContract() === $currentItem['ethereumContract']) {
+            foreach ($parsedJson as $item) {
+                if (empty($item['ethereumContract'])) {
+                    continue;
+                }
+                if (false === $this->haveValidChannel($item['canal'])) {
+                    continue;
+                }
+
+                $token = array_filter($tokens, static function ($currentToken) use ($item) {
+                    if ($currentToken->getEthereumContract() === $item['ethereumContract']) {
                         return true;
                     }
                 });
-                if (1 === \count($item)) {
-                    $item = $item[array_key_first($item)];
 
-                    $this->createOrUpdateToken($token, $item, $count);
+                $this->createOrUpdateToken($token[array_key_first($token)] ?? null, $item, $count);
 
-                    ++$i;
-                    if ($i % $batchSize === 0) {
-                        $this->em->flush();
-                        $this->em->getConnection()->commit();
-                        $this->em->getConnection()->beginTransaction();
-                    }
+                ++$i;
+                if ($i % $batchSize === 0) {
+                    $this->em->flush();
+                    $this->em->getConnection()->commit();
+                    $this->em->getConnection()->beginTransaction();
                 }
             }
 
@@ -133,25 +140,13 @@ class TokenService extends Service
         );
     }
 
-    /**
-     * Update token from uuid.
-     *
-     * @param string $uuid
-     * @param array|null $dataJson
-     *
-     * @return JsonResponse
-     * @throws Exception
-     */
-    public function updateToken(string $uuid, array $dataJson = []): JsonResponse
+    private function updateExistingToken(Token $token, array $parsedJson): void
     {
-        $token = $this->checkTokenExistence($uuid);
+        $this->updateTokenData($token, $parsedJson);
+    }
 
-        $parsedJson = $this->checkAndParseDataJson($dataJson);
-
-        if (!$parsedJson) {
-            throw new HttpException(Response::HTTP_NOT_ACCEPTABLE, 'Data is empty or not recognized');
-        }
-
+    private function updateTokenData(Token $token, array $parsedJson): void
+    {
         if (isset($parsedJson[0])) {
             $parsedJson = $parsedJson[0];
         }
@@ -163,7 +158,7 @@ class TokenService extends Service
         }
 
         // Check if secondaryMarketplaces is different
-        $hasMpModified = $this->checkMarketplacesDifference($token, $dataJson);
+        $hasMpModified = $this->checkMarketplacesDifference($token, $parsedJson);
 
         $this->tokenMapping($parsedJson, $token);
 
@@ -189,7 +184,30 @@ class TokenService extends Service
                 }
             }
         }
+    }
 
+    /**
+     * Update token from uuid.
+     *
+     * @param string $uuid
+     * @param array|null $dataJson
+     *
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function updateToken(string $uuid, array $dataJson = []): JsonResponse
+    {
+        $token = $this->checkTokenExistence($uuid);
+
+        $parsedJson = $this->checkAndParseDataJson($dataJson);
+
+        if (!$parsedJson) {
+            throw new HttpException(Response::HTTP_NOT_ACCEPTABLE, 'Data is empty or not recognized');
+        }
+
+        $this->updateTokenData($token, $parsedJson);
+
+        $this->em->persist($token);
         $this->em->flush();
 
         return new JsonResponse(
@@ -305,11 +323,12 @@ class TokenService extends Service
      * @param array $count
      * @throws Exception
      */
-    private function createOrUpdateToken(?Token $actualToken, array $parsedJson, array &$count)
+    private function createOrUpdateToken(?Token $actualToken, array $parsedJson, array &$count): void
     {
-        if ($actualToken instanceof Token) { // UPDATE
-            $this->updateToken($actualToken->getEthereumContract(), $parsedJson);
-            $count['update'] += 1;
+        if ($actualToken) { // UPDATE
+            $this->updateExistingToken($actualToken, $parsedJson);
+            $this->em->persist($actualToken);
+            ++$count['update'];
         } else { // CREATE
             $token = $this->tokenMapping($parsedJson);
 
@@ -320,7 +339,7 @@ class TokenService extends Service
             }
 
             $this->em->persist($token);
-            $count['create'] += 1;
+            ++$count['create'];
         }
     }
 
@@ -333,11 +352,7 @@ class TokenService extends Service
      */
     private function haveValidChannel($channel): bool
     {
-        if ($channel === Token::CANAL_RELEASE || $channel === Token::CANAL_COMING_SOON) {
-            return true;
-        } else {
-            return false;
-        }
+        return $channel === Token::CANAL_RELEASE || $channel === Token::CANAL_COMING_SOON;
     }
 
     /**
@@ -523,7 +538,7 @@ class TokenService extends Service
         }
         $token->setSection8paid(isset($dataJson['section8paid']) ? $dataJson['section8paid'] : null);
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?: null);
-        $token->setSecondaryMarketplace($dataJson['secondaryMarketplace'] ?: null);
+        $token->setSecondaryMarketplace($dataJson['secondaryMarketplace'] ?? null);
         $token->setOriginSecondaryMarketplaces(
             !empty($dataJson['secondaryMarketplaces'])
             ? $dataJson['secondaryMarketplaces']
