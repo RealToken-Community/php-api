@@ -8,6 +8,7 @@ use App\Entity\TokenlistNetwork;
 use App\Entity\TokenlistRefer;
 use App\Entity\TokenlistTag;
 use App\Entity\TokenlistToken;
+use DOMDocument;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -90,6 +91,120 @@ class DefiService extends Service
         curl_close($curl);
 
         return json_decode($response, true);
+    }
+
+    /**
+     * Parse TheGraph API.
+     *
+     * @param string $uri
+     * @param string $query
+     * @return array
+     */
+    public function theGraphApi(string $uri, string $query): array
+    {
+        $ch = curl_init();
+        curl_setopt_array($ch, array(
+            CURLOPT_HEADER => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $query,
+            CURLOPT_URL => $uri,
+        ));
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($response);
+    }
+
+    /**
+     * Get symbol from Etherscan.
+     *
+     * @param string $ethereumContract
+     * @return false|mixed
+     */
+    public function getEtherscanSymbol(string $ethereumContract)
+    {
+        $uri = "https://etherscan.io/token/".$ethereumContract;
+        $response = $this->curlRequest($uri);
+
+        $doc = new DOMDocument();
+        @$doc->loadHTML($response);
+
+        $title = $doc->getElementsByTagName('title');
+        $title = $title->item(0)->textContent;
+
+        if ($title === "Etherscan Error Page") {
+            return false;
+        }
+
+        preg_match("/\((.*)\)/", $title, $symbol);
+
+        $name = null;
+        if (!empty($symbol[1])) {
+            $name = $symbol[1];
+        }
+
+        $validSymbol = strpos($name, "REALTOKEN-");
+
+        if (!$name || $validSymbol !== 0) {
+            return false;
+        }
+
+        return $name;
+    }
+
+    /**
+     * Get symbol token from EtherscanDOM.
+     *
+     */
+    public function generateTokenSymbol(): JsonResponse
+    {
+        $count = 0;
+        $tokens = $this->em->getRepository(Token::class)->findAll();
+
+        /** @var Token $token */
+        foreach ($tokens as $token) {
+            if (empty($token->getSymbol())) {
+                if ($name = $this->getEtherscanSymbol($token->getEthereumContract())) {
+                    $token->setSymbol($name);
+                    $count++;
+                }
+            }
+        }
+
+        return new JsonResponse($count." tokens symbol created.", Response::HTTP_OK);
+    }
+
+    /**
+     * Make cURL request.
+     *
+     * @param $uri
+     *
+     * @return bool|string
+     */
+    // TODO : Fix same function from TokenService
+    private function curlRequest($uri)
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $uri,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        return $response;
     }
 
     /**
@@ -307,29 +422,6 @@ class DefiService extends Service
             "minor" => $integrityType->getVersionMinor(),
             "patch" => $integrityType->getVersionPatch()
         ];
-    }
-
-    /**
-     * Parse TheGraph API.
-     *
-     *
-     */
-    public function theGraphApi(string $uri, string $query): array
-    {
-        $ch = curl_init();
-        curl_setopt_array($ch, array(
-            CURLOPT_HEADER => false,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $query,
-            CURLOPT_URL => $uri,
-        ));
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        return json_decode($response);
     }
 
     /**

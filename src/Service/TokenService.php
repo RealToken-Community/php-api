@@ -151,11 +151,11 @@ class TokenService extends Service
             $parsedJson = $parsedJson[0];
         }
 
-        if (empty($token->getSymbol())) {
-            if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
-                $token->setSymbol($symbol);
-            }
-        }
+//        if (empty($token->getSymbol())) {
+//            if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
+//                $token->setSymbol($symbol);
+//            }
+//        }
 
         // Check if secondaryMarketplaces is different
         $hasMpModified = $this->checkMarketplacesDifference($token, $parsedJson);
@@ -334,9 +334,9 @@ class TokenService extends Service
 
             $token->setSecondaryMarketplaces($token->getOriginSecondaryMarketplaces());
 
-            if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
-                $token->setSymbol($symbol);
-            }
+//            if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
+//                $token->setSymbol($symbol);
+//            }
 
             $this->em->persist($token);
             ++$count['create'];
@@ -353,44 +353,6 @@ class TokenService extends Service
     private function haveValidChannel($channel): bool
     {
         return $channel === Token::CANAL_RELEASE || $channel === Token::CANAL_COMING_SOON;
-    }
-
-    /**
-     * Get symbol token from EtherscanDOM.
-     *
-     * @param $ethereumContract
-     *
-     * @return false|string
-     */
-    private function getRealtokenSymbol($ethereumContract)
-    {
-        $uri = "https://etherscan.io/token/".$ethereumContract;
-        $response = $this->curlRequest($uri);
-
-        $doc = new DOMDocument();
-        @$doc->loadHTML($response);
-
-        $title = $doc->getElementsByTagName('title');
-        $title = $title->item(0)->textContent;
-
-        if ($title === "Etherscan Error Page") {
-            return false;
-        }
-
-        preg_match("/\((.*)\)/", $title, $symbol);
-
-        $name = null;
-        if (!empty($symbol[1])) {
-            $name = $symbol[1];
-        }
-
-        $validSymbol = strpos($name, "REALTOKEN-");
-
-        if (!$name || $validSymbol !== 0) {
-            return false;
-        }
-
-        return $name;
     }
 
     /**
@@ -440,6 +402,7 @@ class TokenService extends Service
      *
      * @return bool|string
      */
+    // TODO : Fix same function from DefiService
     private function curlRequest($uri)
     {
         $curl = curl_init();
