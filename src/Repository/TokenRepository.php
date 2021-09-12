@@ -12,7 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * Class TokenRepository
  * @package App\Repository
  *
- * @method Token[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Token[] findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
  */
 class TokenRepository extends ServiceEntityRepository
 {
