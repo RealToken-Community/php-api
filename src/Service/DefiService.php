@@ -7,11 +7,11 @@ use App\Entity\TokenlistIntegrity;
 use App\Entity\TokenlistNetwork;
 use App\Entity\TokenlistRefer;
 use App\Entity\TokenlistTag;
-use App\Entity\TokenlistToken;
+use App\Traits\NetworkControllerTrait;
+use DateTime;
 use DOMDocument;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class DefiService
@@ -19,6 +19,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class DefiService extends Service
 {
+    use NetworkControllerTrait;
+    
     const URI_THEGRAPH = "https://api.thegraph.com/subgraphs/name";
 
     /**
@@ -59,9 +61,7 @@ class DefiService extends Service
      */
     public function createCommunityList(?string $refer): array
     {
-        $ammList = $this->tokenListMapping($refer);
-
-        return $ammList;
+        return $this->tokenListMapping($refer);
     }
 
     /**
@@ -178,36 +178,6 @@ class DefiService extends Service
     }
 
     /**
-     * Make cURL request.
-     *
-     * @param $uri
-     *
-     * @return bool|string
-     */
-    // TODO : Fix same function from TokenService
-    private function curlRequest($uri)
-    {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $uri,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-
-        return $response;
-    }
-
-    /**
      * Token list mapping.
      *
      * @param string|null $refer
@@ -240,7 +210,7 @@ class DefiService extends Service
 
                 $data = $this->generateTokenList($tokens, $version, $integrityType->getNetwork());
                 array_push($response, $data);
-                $integrityType->setTimestamp(new \DateTime());
+                $integrityType->setTimestamp(new DateTime());
                 $integrityType->setHash($hashToken);
                 $integrityType->setData($data);
                 $this->em->persist($integrityType);
@@ -263,7 +233,7 @@ class DefiService extends Service
                 $version = $this->checkAndUpdateTokenListVersion($integrityType);
 
                 $response[0] = $this->generateTokenList($tokens, $version, $integrityType->getNetwork());
-                $integrityType->setTimestamp(new \DateTime());
+                $integrityType->setTimestamp(new DateTime());
                 $integrityType->setHash($hashToken);
                 $integrityType->setData($response[0]);
                 $this->em->persist($integrityType);
@@ -291,7 +261,7 @@ class DefiService extends Service
         $tokenListTagRepository = $this->em->getRepository(TokenlistTag::class);
         $tokenListTags = $tokenListTagRepository->findAllArrayResponse();
 
-        $dateTime = new \DateTime();
+        $dateTime = new DateTime();
 
         $keywords = [
             0 => "Uniswap",

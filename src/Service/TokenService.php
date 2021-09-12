@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Token;
+use App\Traits\NetworkControllerTrait;
 use DateTime;
 use DOMDocument;
 use Exception;
@@ -16,6 +17,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class TokenService extends Service
 {
+    use NetworkControllerTrait;
+
     /**
      * Get list of tokens.
      *
@@ -150,12 +153,6 @@ class TokenService extends Service
         if (isset($parsedJson[0])) {
             $parsedJson = $parsedJson[0];
         }
-
-//        if (empty($token->getSymbol())) {
-//            if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
-//                $token->setSymbol($symbol);
-//            }
-//        }
 
         // Check if secondaryMarketplaces is different
         $hasMpModified = $this->checkMarketplacesDifference($token, $parsedJson);
@@ -334,10 +331,6 @@ class TokenService extends Service
 
             $token->setSecondaryMarketplaces($token->getOriginSecondaryMarketplaces());
 
-//            if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
-//                $token->setSymbol($symbol);
-//            }
-
             $this->em->persist($token);
             ++$count['create'];
         }
@@ -393,36 +386,6 @@ class TokenService extends Service
         $lpPair["name"] = $response["result"][$index]["tokenName"];
 
         return $lpPair;
-    }
-
-    /**
-     * Make cURL request.
-     *
-     * @param $uri
-     *
-     * @return bool|string
-     */
-    // TODO : Fix same function from DefiService
-    private function curlRequest($uri)
-    {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $uri,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-
-        return $response;
     }
 
     /**
