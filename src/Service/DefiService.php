@@ -9,9 +9,11 @@ use App\Entity\TokenlistRefer;
 use App\Entity\TokenlistTag;
 use App\Traits\NetworkControllerTrait;
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use DOMDocument;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * Class DefiService
@@ -20,8 +22,17 @@ use Symfony\Component\HttpFoundation\Response;
 class DefiService extends Service
 {
     use NetworkControllerTrait;
-    
+
     const URI_THEGRAPH = "https://api.thegraph.com/subgraphs/name";
+
+    private CacheInterface $cache;
+
+    public function __construct(EntityManagerInterface $entityManager, CacheInterface $cache)
+    {
+        $this->cache = $cache;
+
+        parent::__construct($entityManager);
+    }
 
     /**
      * Generate token list for AMM.
@@ -126,33 +137,38 @@ class DefiService extends Service
      */
     public function getEtherscanSymbol(string $ethereumContract)
     {
-        $uri = "https://etherscan.io/token/".$ethereumContract;
-        $response = $this->curlRequest($uri);
+        return $this->cache->get($ethereumContract.'-symbol', function () use ($ethereumContract) {
+            // no expire so we can always use cached data
+            // if cache needs to be flushed just go to the database and TRUNCATE the cache table
 
-        $doc = new DOMDocument();
-        @$doc->loadHTML($response);
+            $uri = "https://etherscan.io/token/".$ethereumContract;
+            $response = $this->curlRequest($uri);
 
-        $title = $doc->getElementsByTagName('title');
-        $title = $title->item(0)->textContent;
+            $doc = new DOMDocument();
+            @$doc->loadHTML($response);
 
-        if ($title === "Etherscan Error Page") {
-            return false;
-        }
+            $title = $doc->getElementsByTagName('title');
+            $title = $title->item(0)->textContent;
 
-        preg_match("/\((.*)\)/", $title, $symbol);
+            if ($title === "Etherscan Error Page") {
+                return false;
+            }
 
-        $name = null;
-        if (!empty($symbol[1])) {
-            $name = $symbol[1];
-        }
+            preg_match("/\((.*)\)/", $title, $symbol);
 
-        $validSymbol = strpos($name, "REALTOKEN-");
+            $name = null;
+            if (!empty($symbol[1])) {
+                $name = $symbol[1];
+            }
 
-        if (!$name || $validSymbol !== 0) {
-            return false;
-        }
+            $validSymbol = strpos($name, "REALTOKEN-");
 
-        return $name;
+            if (!$name || $validSymbol !== 0) {
+                return false;
+            }
+
+            return $name;
+        })
     }
 
     /**

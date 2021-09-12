@@ -5,11 +5,12 @@ namespace App\Service;
 use App\Entity\Token;
 use App\Traits\NetworkControllerTrait;
 use DateTime;
-use DOMDocument;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * Class TokenService
@@ -18,6 +19,15 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class TokenService extends Service
 {
     use NetworkControllerTrait;
+
+    private CacheInterface $cache;
+
+    public function __construct(EntityManagerInterface $entityManager, CacheInterface $cache)
+    {
+        $this->cache = $cache;
+
+        parent::__construct($entityManager);
+    }
 
     /**
      * Get list of tokens.
@@ -171,8 +181,10 @@ class TokenService extends Service
 
                 // Tmp xDaiChain fix
                 // TODO : Add enum and chainId behind chainName
-                if ($chainName === "xdaichain"
-                    || $chainName === "ethereum") {
+                if ((
+                    $chainName === "xdaichain" ||
+                    $chainName === "ethereum"
+                ) && $token->getSymbol()) {
                     $pairToken = $this->getLpPairToken($chainName, $secondaryMarketplace["contractPool"], $token->getSymbol());
                     if (!empty($pairToken)) {
                         $secondaryMarketplaces[$key]["pair"] = $pairToken;
@@ -359,33 +371,38 @@ class TokenService extends Service
      */
     private function getLpPairToken($network, $contractAddress, $tokenSymbol): array
     {
-        if ($network === "ethereum") {
-            $uri = "https://api.etherscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
-        } else {
-            $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
-        }
-        $json = $this->curlRequest($uri);
+        return $this->cache->get($network.'-'.$contractAddress.'-'.$tokenSymbol, function () use ($network, $contractAddress, $tokenSymbol) {
+            // no expire so we can always use cached data
+            // if cache needs to be flushed just go to the database and TRUNCATE the cache table
 
-        $response = json_decode($json, true);
+            if ($network === "ethereum") {
+                $uri = "https://api.etherscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
+            } else {
+                $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
+            }
+            $json = $this->curlRequest($uri);
 
-        // Ignore error & UniswapV1
-        if (empty($response)
-            || $response["status"] === "0"
-            || $response["result"][0]["hash"] != $response["result"][1]["hash"]) {
-            return [];
-        }
+            $response = json_decode($json, true);
 
-        if ($response["result"][0]["tokenSymbol"] !== $tokenSymbol) {
-            $index = 0;
-        } else {
-            $index = 1;
-        }
+            // Ignore error & UniswapV1
+            if (empty($response)
+                || $response["status"] === "0"
+                || $response["result"][0]["hash"] != $response["result"][1]["hash"]) {
+                return [];
+            }
 
-        $lpPair["contract"] = $response["result"][$index]["contractAddress"];
-        $lpPair["symbol"] = $response["result"][$index]["tokenSymbol"];
-        $lpPair["name"] = $response["result"][$index]["tokenName"];
+            if ($response["result"][0]["tokenSymbol"] !== $tokenSymbol) {
+                $index = 0;
+            } else {
+                $index = 1;
+            }
 
-        return $lpPair;
+            $lpPair["contract"] = $response["result"][$index]["contractAddress"];
+            $lpPair["symbol"] = $response["result"][$index]["tokenSymbol"];
+            $lpPair["name"] = $response["result"][$index]["tokenName"];
+
+            return $lpPair;
+        });
     }
 
     /**
