@@ -169,10 +169,13 @@ class DefiService extends Service
             if (empty($token->getSymbol())) {
                 if ($name = $this->getEtherscanSymbol($token->getEthereumContract())) {
                     $token->setSymbol($name);
+                    $this->em->persist($token);
                     $count++;
                 }
             }
         }
+
+        $this->em->flush();
 
         return new JsonResponse($count." tokens symbol created.", Response::HTTP_OK);
     }
