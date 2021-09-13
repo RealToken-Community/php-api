@@ -168,7 +168,7 @@ class DefiService extends Service
             }
 
             return $name;
-        })
+        });
     }
 
     /**
