@@ -15,6 +15,7 @@ use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Class DefiService
@@ -140,9 +141,10 @@ class DefiService extends Service
      */
     public function getEtherscanSymbol(string $ethereumContract)
     {
-        return $this->cache->get($ethereumContract.'-symbol', function () use ($ethereumContract) {
+        return $this->cache->get($ethereumContract.'-symbol', function (ItemInterface $item, bool &$save) use ($ethereumContract) {
             // no expire so we can always use cached data
             // if cache needs to be flushed just go to the database and TRUNCATE the cache table
+            $save = true;
 
             $uri = "https://etherscan.io/token/".$ethereumContract;
             $response = $this->curlRequest($uri);
@@ -154,7 +156,7 @@ class DefiService extends Service
             $title = $title->item(0)->textContent;
 
             if ($title === "Etherscan Error Page") {
-                return false;
+                $save = false;
             }
 
             preg_match("/\((.*)\)/", $title, $symbol);
@@ -167,7 +169,7 @@ class DefiService extends Service
             $validSymbol = strpos($name, "REALTOKEN-");
 
             if (!$name || $validSymbol !== 0) {
-                return false;
+                $save = false;
             }
 
             return $name;
@@ -181,23 +183,27 @@ class DefiService extends Service
      */
     public function generateTokenSymbol(): JsonResponse
     {
-        $count = 0;
+        $count = $emptySymbol = 0;
         $tokens = $this->em->getRepository(Token::class)->findAll();
 
         /** @var Token $token */
         foreach ($tokens as $token) {
             if (empty($token->getSymbol())) {
+                ++$emptySymbol;
                 if ($name = $this->getEtherscanSymbol($token->getEthereumContract())) {
                     $token->setSymbol($name);
                     $this->em->persist($token);
-                    $count++;
+                    ++$count;
                 }
             }
         }
 
         $this->em->flush();
 
-        return new JsonResponse($count." tokens symbol created.", Response::HTTP_OK);
+        return new JsonResponse([
+            'updated_tokens_with_symbol' => $count,
+            'tokens_to_update' => $emptySymbol,
+        ], $count !== $emptySymbol ? Response::HTTP_MULTI_STATUS : Response::HTTP_OK);
     }
 
     /**
@@ -208,7 +214,7 @@ class DefiService extends Service
      */
     public function generateLpPairToken(): JsonResponse
     {
-        $count = 0;
+        $count = $emptyLpPair = 0;
         $tokens = $this->em->getRepository(Token::class)->findAll();
 
         /** @var Token $token */
@@ -230,11 +236,12 @@ class DefiService extends Service
                         $chainName === "xdaichain" ||
                         $chainName === "ethereum"
                     ) && $token->getSymbol()) {
+                        ++$emptyLpPair;
                         $pairToken = $this->getLpPairToken($chainName, $secondaryMarketplace["contractPool"], $token->getSymbol());
                         if (!empty($pairToken)) {
                             $secondaryMarketplaces[$key]["pair"] = $pairToken;
                             $token->setSecondaryMarketplaces($secondaryMarketplaces);
-                            $count++;
+                            ++$count;
                         }
                     }
                 }
@@ -243,7 +250,10 @@ class DefiService extends Service
 
         $this->em->flush();
 
-        return new JsonResponse($count." LP pair token created.", Response::HTTP_OK);
+        return new JsonResponse([
+            'updated_tokens_with_lp_pair' => $count,
+            'tokens_to_update' => $emptyLpPair,
+        ], $count !== $emptyLpPair ? Response::HTTP_MULTI_STATUS : Response::HTTP_OK);
     }
 
     /**
@@ -437,9 +447,6 @@ class DefiService extends Service
 
         $data['tokens'] = $tokenListTokens['tokens'];
 
-        // TODO : Make Service to get TheGraph data from SecondaryMarketplaces->Object !!
-//        $this->getLpPair();
-
         return $data;
     }
 
@@ -462,23 +469,6 @@ class DefiService extends Service
             "patch" => $integrityType->getVersionPatch()
         ];
     }
-
-//    /**
-//     * Get Lp Pair from TheGraph.
-//     *
-//     * @param $poolContract
-//     */
-//    private function getLpPair($poolContract)
-//    {
-//        $poolContract = "0x83a7c8b6b3824ac02cf79d8219d1bc779e8086d7"; // TODO: REMOVE !!!!!
-//        $uri = self::URI_THEGRAPH . '/levinswap/uniswap-v2'; // TODO : ADD DATA ON REFER COLUMN !!!
-//        $query = '{"query":"{pairs(where: {id:\"'.$poolContract.'\"}) {id token0 {id symbol name} token1 {id symbol name}}}"}';
-//
-//        $data = $this->theGraphApi($uri, $query);
-//
-//        // TODO : Parse JSON + check tokenContact and get other*
-//        // ...
-//    }
 
     /**
      * Check difference from Json secondaryMarketplaces and token data.
@@ -513,9 +503,10 @@ class DefiService extends Service
      */
     private function getLpPairToken($network, $contractAddress, $tokenSymbol): array
     {
-        return $this->cache->get($network.'-'.$contractAddress.'-'.$tokenSymbol, function () use ($network, $contractAddress, $tokenSymbol) {
+        return $this->cache->get($network.'-'.$contractAddress.'-'.$tokenSymbol, function (ItemInterface $item, bool &$save) use ($network, $contractAddress, $tokenSymbol) {
             // no expire so we can always use cached data
             // if cache needs to be flushed just go to the database and TRUNCATE the cache table
+            $save = true;
 
             if ($network === "ethereum") {
                 $uri = "https://api.etherscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
@@ -530,6 +521,7 @@ class DefiService extends Service
             if (empty($response)
                 || $response["status"] === "0"
                 || $response["result"][0]["hash"] != $response["result"][1]["hash"]) {
+                $save = false;
                 return [];
             }
 
