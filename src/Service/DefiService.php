@@ -11,6 +11,7 @@ use App\Traits\NetworkControllerTrait;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use DOMDocument;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -104,36 +105,38 @@ class DefiService extends Service
         return json_decode($response, true);
     }
 
-    /**
-     * Parse TheGraph API.
-     *
-     * @param string $uri
-     * @param string $query
-     * @return array
-     */
-    public function theGraphApi(string $uri, string $query): array
-    {
-        $ch = curl_init();
-        curl_setopt_array($ch, array(
-            CURLOPT_HEADER => false,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $query,
-            CURLOPT_URL => $uri,
-        ));
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        return json_decode($response);
-    }
+//    /**
+//     * Parse TheGraph API.
+//     *
+//     * @param string $uri
+//     * @param string $query
+//     * @return array
+//     */
+//    public function theGraphApi(string $uri, string $query): array
+//    {
+//        $ch = curl_init();
+//        curl_setopt_array($ch, array(
+//            CURLOPT_HEADER => false,
+//            CURLOPT_RETURNTRANSFER => true,
+//            CURLOPT_SSL_VERIFYPEER => false,
+//            CURLOPT_POST => true,
+//            CURLOPT_POSTFIELDS => $query,
+//            CURLOPT_URL => $uri,
+//        ));
+//
+//        $response = curl_exec($ch);
+//        curl_close($ch);
+//
+//        return json_decode($response);
+//    }
 
     /**
      * Get symbol from Etherscan.
      *
      * @param string $ethereumContract
+     *
      * @return false|mixed
+     * @throws InvalidArgumentException
      */
     public function getEtherscanSymbol(string $ethereumContract)
     {
@@ -174,6 +177,7 @@ class DefiService extends Service
     /**
      * Get symbol token from EtherscanDOM.
      *
+     * @return JsonResponse
      */
     public function generateTokenSymbol(): JsonResponse
     {
@@ -194,6 +198,52 @@ class DefiService extends Service
         $this->em->flush();
 
         return new JsonResponse($count." tokens symbol created.", Response::HTTP_OK);
+    }
+
+    /**
+     * Generate LP pair token.
+     *
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     */
+    public function generateLpPairToken(): JsonResponse
+    {
+        $count = 0;
+        $tokens = $this->em->getRepository(Token::class)->findAll();
+
+        /** @var Token $token */
+        foreach ($tokens as $token) {
+            // Check if secondaryMarketplaces is different
+            if ($this->checkMarketplacesDifference($token)) {
+                // Get xDai Contract
+                $secondaryMarketplaces = $token->getOriginSecondaryMarketplaces();
+
+                foreach ($secondaryMarketplaces as $key => $secondaryMarketplace) {
+                    if (array_key_exists("pair", $secondaryMarketplace)) {
+                        continue;
+                    }
+                    $chainName = strtolower($secondaryMarketplace["chainName"]);
+
+                    // Tmp xDaiChain fix
+                    // TODO : Add enum and chainId behind chainName
+                    if ((
+                        $chainName === "xdaichain" ||
+                        $chainName === "ethereum"
+                    ) && $token->getSymbol()) {
+                        $pairToken = $this->getLpPairToken($chainName, $secondaryMarketplace["contractPool"], $token->getSymbol());
+                        if (!empty($pairToken)) {
+                            $secondaryMarketplaces[$key]["pair"] = $pairToken;
+                            $token->setSecondaryMarketplaces($secondaryMarketplaces);
+                            $count++;
+                        }
+                    }
+                }
+            }
+        }
+
+        $this->em->flush();
+
+        return new JsonResponse($count." LP pair token created.", Response::HTTP_OK);
     }
 
     /**
@@ -413,20 +463,87 @@ class DefiService extends Service
         ];
     }
 
+//    /**
+//     * Get Lp Pair from TheGraph.
+//     *
+//     * @param $poolContract
+//     */
+//    private function getLpPair($poolContract)
+//    {
+//        $poolContract = "0x83a7c8b6b3824ac02cf79d8219d1bc779e8086d7"; // TODO: REMOVE !!!!!
+//        $uri = self::URI_THEGRAPH . '/levinswap/uniswap-v2'; // TODO : ADD DATA ON REFER COLUMN !!!
+//        $query = '{"query":"{pairs(where: {id:\"'.$poolContract.'\"}) {id token0 {id symbol name} token1 {id symbol name}}}"}';
+//
+//        $data = $this->theGraphApi($uri, $query);
+//
+//        // TODO : Parse JSON + check tokenContact and get other*
+//        // ...
+//    }
+
     /**
-     * Get Lp Pair from TheGraph.
+     * Check difference from Json secondaryMarketplaces and token data.
      *
-     * @param $poolContract
+     * @param $token
+     *
+     * @return bool
      */
-    private function getLpPair($poolContract)
+    private function checkMarketplacesDifference($token): bool
     {
-        $poolContract = "0x83a7c8b6b3824ac02cf79d8219d1bc779e8086d7"; // TODO: REMOVE !!!!!
-        $uri = self::URI_THEGRAPH . '/levinswap/uniswap-v2'; // TODO : ADD DATA ON REFER COLUMN !!!
-        $query = '{"query":"{pairs(where: {id:\"'.$poolContract.'\"}) {id token0 {id symbol name} token1 {id symbol name}}}"}';
+//        $hashSource = md5(serialize($json['secondaryMarketplaces']));
+        $hashOrigin = md5(serialize($token->getOriginSecondaryMarketplaces()));
+        $hashWithPair = md5(serialize($token->getSecondaryMarketplaces()));
 
-        $data = $this->theGraphApi($uri, $query);
+//        if (!hash_equals($hashSource, $hashOrigin) || hash_equals($hashOrigin, $hashWithPair)) {
+        if (hash_equals($hashOrigin, $hashWithPair)) {
+            return true;
+        }
 
-        // TODO : Parse JSON + check tokenContact and get other*
-        // ...
+        return false;
+    }
+
+    /**
+     * Get LP pair tokens from Blockscout.
+     *
+     * @param $network
+     * @param $contractAddress
+     * @param $tokenSymbol
+     *
+     * @return array
+     * @throws InvalidArgumentException
+     */
+    private function getLpPairToken($network, $contractAddress, $tokenSymbol): array
+    {
+        return $this->cache->get($network.'-'.$contractAddress.'-'.$tokenSymbol, function () use ($network, $contractAddress, $tokenSymbol) {
+            // no expire so we can always use cached data
+            // if cache needs to be flushed just go to the database and TRUNCATE the cache table
+
+            if ($network === "ethereum") {
+                $uri = "https://api.etherscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
+            } else {
+                $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
+            }
+            $json = $this->curlRequest($uri);
+
+            $response = json_decode($json, true);
+
+            // Ignore error & UniswapV1
+            if (empty($response)
+                || $response["status"] === "0"
+                || $response["result"][0]["hash"] != $response["result"][1]["hash"]) {
+                return [];
+            }
+
+            if ($response["result"][0]["tokenSymbol"] !== $tokenSymbol) {
+                $index = 0;
+            } else {
+                $index = 1;
+            }
+
+            $lpPair["contract"] = $response["result"][$index]["contractAddress"];
+            $lpPair["symbol"] = $response["result"][$index]["tokenSymbol"];
+            $lpPair["name"] = $response["result"][$index]["tokenName"];
+
+            return $lpPair;
+        });
     }
 }

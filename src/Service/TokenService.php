@@ -153,48 +153,6 @@ class TokenService extends Service
         );
     }
 
-    private function updateExistingToken(Token $token, array $parsedJson): void
-    {
-        $this->updateTokenData($token, $parsedJson);
-    }
-
-    private function updateTokenData(Token $token, array $parsedJson): void
-    {
-        if (isset($parsedJson[0])) {
-            $parsedJson = $parsedJson[0];
-        }
-
-        // Check if secondaryMarketplaces is different
-        $hasMpModified = $this->checkMarketplacesDifference($token, $parsedJson);
-
-        $this->tokenMapping($parsedJson, $token);
-
-        if ($hasMpModified) {
-            // Get xDai Contract
-            $secondaryMarketplaces = $token->getOriginSecondaryMarketplaces();
-
-            foreach ($secondaryMarketplaces as $key => $secondaryMarketplace) {
-                if (array_key_exists("pair", $secondaryMarketplace)) {
-                    continue;
-                }
-                $chainName = strtolower($secondaryMarketplace["chainName"]);
-
-                // Tmp xDaiChain fix
-                // TODO : Add enum and chainId behind chainName
-                if ((
-                    $chainName === "xdaichain" ||
-                    $chainName === "ethereum"
-                ) && $token->getSymbol()) {
-                    $pairToken = $this->getLpPairToken($chainName, $secondaryMarketplace["contractPool"], $token->getSymbol());
-                    if (!empty($pairToken)) {
-                        $secondaryMarketplaces[$key]["pair"] = $pairToken;
-                        $token->setSecondaryMarketplaces($secondaryMarketplaces);
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Update token from uuid.
      *
@@ -214,7 +172,7 @@ class TokenService extends Service
             throw new HttpException(Response::HTTP_NOT_ACCEPTABLE, 'Data is empty or not recognized');
         }
 
-        $this->updateTokenData($token, $parsedJson);
+        $this->tokenMapping($parsedJson, $token);
 
         $this->em->persist($token);
         $this->em->flush();
@@ -335,7 +293,7 @@ class TokenService extends Service
     private function createOrUpdateToken(?Token $actualToken, array $parsedJson, array &$count): void
     {
         if ($actualToken) { // UPDATE
-            $this->updateExistingToken($actualToken, $parsedJson);
+            $this->tokenMapping($parsedJson, $actualToken);
             $this->em->persist($actualToken);
             ++$count['update'];
         } else { // CREATE
@@ -361,51 +319,6 @@ class TokenService extends Service
     }
 
     /**
-     * Get LP pair tokens from Blockscout.
-     *
-     * @param $network
-     * @param $contractAddress
-     * @param $tokenSymbol
-     *
-     * @return array
-     */
-    private function getLpPairToken($network, $contractAddress, $tokenSymbol): array
-    {
-        return $this->cache->get($network.'-'.$contractAddress.'-'.$tokenSymbol, function () use ($network, $contractAddress, $tokenSymbol) {
-            // no expire so we can always use cached data
-            // if cache needs to be flushed just go to the database and TRUNCATE the cache table
-
-            if ($network === "ethereum") {
-                $uri = "https://api.etherscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
-            } else {
-                $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
-            }
-            $json = $this->curlRequest($uri);
-
-            $response = json_decode($json, true);
-
-            // Ignore error & UniswapV1
-            if (empty($response)
-                || $response["status"] === "0"
-                || $response["result"][0]["hash"] != $response["result"][1]["hash"]) {
-                return [];
-            }
-
-            if ($response["result"][0]["tokenSymbol"] !== $tokenSymbol) {
-                $index = 0;
-            } else {
-                $index = 1;
-            }
-
-            $lpPair["contract"] = $response["result"][$index]["contractAddress"];
-            $lpPair["symbol"] = $response["result"][$index]["tokenSymbol"];
-            $lpPair["name"] = $response["result"][$index]["tokenName"];
-
-            return $lpPair;
-        });
-    }
-
-    /**
      * Build token skeleton.
      *
      * @param array $dataJson
@@ -414,7 +327,7 @@ class TokenService extends Service
      * @return Token
      * @throws Exception
      */
-    private function tokenMapping(array $dataJson, $token = null): Token
+    private function tokenMapping(array $dataJson, ?Token $token = null): Token
     {
         if (!$token) {
             $token = new Token();
