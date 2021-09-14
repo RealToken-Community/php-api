@@ -3,12 +3,14 @@
 namespace App\Service;
 
 use App\Entity\Token;
+use App\Traits\NetworkControllerTrait;
 use DateTime;
-use DOMDocument;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * Class TokenService
@@ -16,6 +18,17 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class TokenService extends Service
 {
+    use NetworkControllerTrait;
+
+    private CacheInterface $cache;
+
+    public function __construct(EntityManagerInterface $entityManager, CacheInterface $cache)
+    {
+        $this->cache = $cache;
+
+        parent::__construct($entityManager);
+    }
+
     /**
      * Get list of tokens.
      *
@@ -140,52 +153,6 @@ class TokenService extends Service
         );
     }
 
-    private function updateExistingToken(Token $token, array $parsedJson): void
-    {
-        $this->updateTokenData($token, $parsedJson);
-    }
-
-    private function updateTokenData(Token $token, array $parsedJson): void
-    {
-        if (isset($parsedJson[0])) {
-            $parsedJson = $parsedJson[0];
-        }
-
-        if (empty($token->getSymbol())) {
-            if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
-                $token->setSymbol($symbol);
-            }
-        }
-
-        // Check if secondaryMarketplaces is different
-        $hasMpModified = $this->checkMarketplacesDifference($token, $parsedJson);
-
-        $this->tokenMapping($parsedJson, $token);
-
-        if ($hasMpModified) {
-            // Get xDai Contract
-            $secondaryMarketplaces = $token->getOriginSecondaryMarketplaces();
-
-            foreach ($secondaryMarketplaces as $key => $secondaryMarketplace) {
-                if (array_key_exists("pair", $secondaryMarketplace)) {
-                    continue;
-                }
-                $chainName = strtolower($secondaryMarketplace["chainName"]);
-
-                // Tmp xDaiChain fix
-                // TODO : Add enum and chainId behind chainName
-                if ($chainName === "xdaichain"
-                    || $chainName === "ethereum") {
-                    $pairToken = $this->getLpPairToken($chainName, $secondaryMarketplace["contractPool"], $token->getSymbol());
-                    if (!empty($pairToken)) {
-                        $secondaryMarketplaces[$key]["pair"] = $pairToken;
-                        $token->setSecondaryMarketplaces($secondaryMarketplaces);
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Update token from uuid.
      *
@@ -205,7 +172,7 @@ class TokenService extends Service
             throw new HttpException(Response::HTTP_NOT_ACCEPTABLE, 'Data is empty or not recognized');
         }
 
-        $this->updateTokenData($token, $parsedJson);
+        $this->tokenMapping($parsedJson, $token);
 
         $this->em->persist($token);
         $this->em->flush();
@@ -326,17 +293,13 @@ class TokenService extends Service
     private function createOrUpdateToken(?Token $actualToken, array $parsedJson, array &$count): void
     {
         if ($actualToken) { // UPDATE
-            $this->updateExistingToken($actualToken, $parsedJson);
+            $this->tokenMapping($parsedJson, $actualToken);
             $this->em->persist($actualToken);
             ++$count['update'];
         } else { // CREATE
             $token = $this->tokenMapping($parsedJson);
 
             $token->setSecondaryMarketplaces($token->getOriginSecondaryMarketplaces());
-
-            if ($symbol = $this->getRealtokenSymbol($token->getEthereumContract())) {
-                $token->setSymbol($symbol);
-            }
 
             $this->em->persist($token);
             ++$count['create'];
@@ -356,113 +319,6 @@ class TokenService extends Service
     }
 
     /**
-     * Get symbol token from EtherscanDOM.
-     *
-     * @param $ethereumContract
-     *
-     * @return false|string
-     */
-    private function getRealtokenSymbol($ethereumContract)
-    {
-        $uri = "https://etherscan.io/token/".$ethereumContract;
-        $response = $this->curlRequest($uri);
-
-        $doc = new DOMDocument();
-        @$doc->loadHTML($response);
-
-        $title = $doc->getElementsByTagName('title');
-        $title = $title->item(0)->textContent;
-
-        if ($title === "Etherscan Error Page") {
-            return false;
-        }
-
-        preg_match("/\((.*)\)/", $title, $symbol);
-
-        $name = null;
-        if (!empty($symbol[1])) {
-            $name = $symbol[1];
-        }
-
-        $validSymbol = strpos($name, "REALTOKEN-");
-
-        if (!$name || $validSymbol !== 0) {
-            return false;
-        }
-
-        return $name;
-    }
-
-    /**
-     * Get LP pair tokens from Blockscout.
-     *
-     * @param $network
-     * @param $contractAddress
-     * @param $tokenSymbol
-     *
-     * @return array
-     */
-    private function getLpPairToken($network, $contractAddress, $tokenSymbol): array
-    {
-        if ($network === "ethereum") {
-            $uri = "https://api.etherscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
-        } else {
-            $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
-        }
-        $json = $this->curlRequest($uri);
-
-        $response = json_decode($json, true);
-
-        // Ignore error & UniswapV1
-        if (empty($response)
-            || $response["status"] === "0"
-            || $response["result"][0]["hash"] != $response["result"][1]["hash"]) {
-            return [];
-        }
-
-        if ($response["result"][0]["tokenSymbol"] !== $tokenSymbol) {
-            $index = 0;
-        } else {
-            $index = 1;
-        }
-
-        $lpPair["contract"] = $response["result"][$index]["contractAddress"];
-        $lpPair["symbol"] = $response["result"][$index]["tokenSymbol"];
-        $lpPair["name"] = $response["result"][$index]["tokenName"];
-
-        return $lpPair;
-    }
-
-    /**
-     * Make cURL request.
-     *
-     * @param $uri
-     *
-     * @return bool|string
-     */
-    private function curlRequest($uri)
-    {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $uri,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-
-        return $response;
-    }
-
-    /**
      * Build token skeleton.
      *
      * @param array $dataJson
@@ -471,7 +327,7 @@ class TokenService extends Service
      * @return Token
      * @throws Exception
      */
-    private function tokenMapping(array $dataJson, $token = null): Token
+    private function tokenMapping(array $dataJson, ?Token $token = null): Token
     {
         if (!$token) {
             $token = new Token();
@@ -508,7 +364,7 @@ class TokenService extends Service
             - $token->getPropertyMaintenanceMonthly()) ?: null);
         $token->setNetRentYear($token->getNetRentMonth() * 12 ?: null);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?: null);
-        $token->setNetRentYearPerToken($token->getNetRentYear() / $token->getTotalTokens() ?: null);
+        $token->setNetRentYearPerToken(!empty($token->getTotalTokens()) ? $token->getNetRentYear() / $token->getTotalTokens() : 0);
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?: null);
         $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?: null);
         $token->setAnnualPercentageYield($token->getTotalInvestment()
@@ -536,7 +392,7 @@ class TokenService extends Service
                 $token->setRenewalDate($renewalDate);
             }
         }
-        $token->setSection8paid(isset($dataJson['section8paid']) ? $dataJson['section8paid'] : null);
+        $token->setSection8paid(isset($dataJson['section8paid']) ? (int)$dataJson['section8paid'] : null);
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?: null);
         $token->setSecondaryMarketplace($dataJson['secondaryMarketplace'] ?? null);
         $token->setOriginSecondaryMarketplaces(
@@ -549,7 +405,11 @@ class TokenService extends Service
             : null);
         $token->setUnderlyingAssetPrice((float)$dataJson['underlyingAssetPrice'] ?: null);
         $token->setRenovationReserve((float)$dataJson['renovationReserve'] ?: null);
-        $token->setRentStartDate(!is_array($dataJson['rentStartDate']) ? new DateTime($dataJson['rentStartDate']) : null);
+        $token->setRentStartDate(
+            !is_array($dataJson['rentStartDate'])
+            && !empty($dataJson['rentStartDate'])
+                ? new DateTime($dataJson['rentStartDate'])
+                : null);
         $token->setInitialMaintenanceReserve($dataJson['initialMaintenanceReserve'] ?: null);
         $token->setLastUpdate(new DateTime());
 
