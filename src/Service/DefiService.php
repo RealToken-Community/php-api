@@ -432,7 +432,7 @@ class DefiService extends Service
 
                         $tokenData = [
                             "address" => $blockchainsAddresses[$chainName]["contract"],
-                            "chainId" => $secondaryMarketplace["chainId"],
+                            "chainId" => (int)$secondaryMarketplace["chainId"],
                             "name" => $shortname,
                             "symbol" => strtoupper(str_replace(" ", "-", str_replace(".", "", $shortname))),
                             "decimals" => 18,
