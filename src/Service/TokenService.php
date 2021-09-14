@@ -364,7 +364,7 @@ class TokenService extends Service
             - $token->getPropertyMaintenanceMonthly()) ?: null);
         $token->setNetRentYear($token->getNetRentMonth() * 12 ?: null);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?: null);
-        $token->setNetRentYearPerToken($token->getNetRentYear() / $token->getTotalTokens() ?: null);
+        $token->setNetRentYearPerToken(!empty($token->getTotalTokens()) ? $token->getNetRentYear() / $token->getTotalTokens() : 0);
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?: null);
         $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?: null);
         $token->setAnnualPercentageYield($token->getTotalInvestment()
@@ -392,7 +392,7 @@ class TokenService extends Service
                 $token->setRenewalDate($renewalDate);
             }
         }
-        $token->setSection8paid(isset($dataJson['section8paid']) ? $dataJson['section8paid'] : null);
+        $token->setSection8paid(isset($dataJson['section8paid']) ? (int)$dataJson['section8paid'] : null);
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?: null);
         $token->setSecondaryMarketplace($dataJson['secondaryMarketplace'] ?? null);
         $token->setOriginSecondaryMarketplaces(
@@ -405,7 +405,11 @@ class TokenService extends Service
             : null);
         $token->setUnderlyingAssetPrice((float)$dataJson['underlyingAssetPrice'] ?: null);
         $token->setRenovationReserve((float)$dataJson['renovationReserve'] ?: null);
-        $token->setRentStartDate(!is_array($dataJson['rentStartDate']) ? new DateTime($dataJson['rentStartDate']) : null);
+        $token->setRentStartDate(
+            !is_array($dataJson['rentStartDate'])
+            && !empty($dataJson['rentStartDate'])
+                ? new DateTime($dataJson['rentStartDate'])
+                : null);
         $token->setInitialMaintenanceReserve($dataJson['initialMaintenanceReserve'] ?: null);
         $token->setLastUpdate(new DateTime());
 

@@ -202,7 +202,7 @@ class DefiService extends Service
 
         return new JsonResponse([
             'updated_tokens_with_symbol' => $count,
-            'tokens_to_update' => $emptySymbol,
+            'tokens_to_update' => $emptySymbol - $count,
         ], $count !== $emptySymbol ? Response::HTTP_MULTI_STATUS : Response::HTTP_OK);
     }
 
@@ -252,7 +252,7 @@ class DefiService extends Service
 
         return new JsonResponse([
             'updated_tokens_with_lp_pair' => $count,
-            'tokens_to_update' => $emptyLpPair,
+            'tokens_to_update' => $emptyLpPair - $count,
         ], $count !== $emptyLpPair ? Response::HTTP_MULTI_STATUS : Response::HTTP_OK);
     }
 
