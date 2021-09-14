@@ -479,12 +479,10 @@ class DefiService extends Service
      */
     private function checkMarketplacesDifference($token): bool
     {
-//        $hashSource = md5(serialize($json['secondaryMarketplaces']));
         $hashOrigin = md5(serialize($token->getOriginSecondaryMarketplaces()));
         $hashWithPair = md5(serialize($token->getSecondaryMarketplaces()));
 
-//        if (!hash_equals($hashSource, $hashOrigin) || hash_equals($hashOrigin, $hashWithPair)) {
-        if (hash_equals($hashOrigin, $hashWithPair)) {
+        if (hash_equals($hashOrigin, $hashWithPair) && !empty($hashOrigin)) {
             return true;
         }
 
