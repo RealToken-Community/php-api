@@ -24,3 +24,8 @@ services:
         class: App\Event\PublishedMessageExceptionListener
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+    Symfony\Contracts\Cache\CacheInterface: '@Symfony\Component\Cache\Adapter\PdoAdapter'
+
+    Symfony\Component\Cache\Adapter\PdoAdapter:
+        $connOrDsn: '%env(DATABASE_URL)%'
