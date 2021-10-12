@@ -120,7 +120,7 @@ class TokenService extends Service
                 }
 
                 $token = array_filter($tokens, static function ($currentToken) use ($item) {
-                    if ($currentToken->getEthereumContract() === $item['ethereumContract']) {
+                    if (strtolower($currentToken->getEthereumContract()) === strtolower($item['ethereumContract'])) {
                         return true;
                     }
                 });
