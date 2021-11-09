@@ -1,3 +1,6 @@
 sensio_framework_extra:
     router:
         annotations: false
+    # needed for a bug in sensio framework bundle < 6.0, see https://github.com/sensiolabs/SensioFrameworkExtraBundle/pull/710
+    psr_message:
+        enabled: false
