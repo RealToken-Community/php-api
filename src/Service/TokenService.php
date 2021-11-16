@@ -342,18 +342,21 @@ class TokenService extends Service
         $token->setMaticContract(isset($dataJson['maticContract']) ? $dataJson['maticContract'] : null);
         $token->setXDaiContract($dataJson['xDaiContract'] ?: null);
         $token->setTotalInvestment((float)$dataJson['totalInvestment'] ?: null);
-        $token->setGrossRentMonth(isset($dataJson['grossRent']) ? (float)$dataJson['grossRent'] : $dataJson['grossRentMonth']);
-        $token->setGrossRentYear($token->getGrossRentMonth() * 12?: null);
-        $token->setPropertyManagementPercent((float)$dataJson['propertyManagementPercent'] ?: null);
+        $token->setGrossRentMonth(isset($dataJson['grossRent']) ? (float)$dataJson['grossRent'] : 0);
+        $token->setGrossRentYear($token->getGrossRentMonth() * 12 ?: 0);
+        $token->setPropertyManagementPercent((float)$dataJson['propertyManagementPercent'] ?: 0);
         $token->setPropertyManagement(
-            $token->getGrossRentMonth() * $token->getPropertyManagementPercent() ?: null
+            $token->getGrossRentMonth() * $token->getPropertyManagementPercent() ?: 0
         );
-        $token->setRealtPlatformPercent(isset($dataJson['realtPlatformPercent']) ? (float)$dataJson['realtPlatformPercent'] : null);
-        $token->setRealtPlatform($token->getGrossRentMonth() * $token->getRealtPlatformPercent() ?: null);
-        $token->setInsurance((float)$dataJson['insurance'] ?: null);
-        $token->setPropertyTaxes((float)$dataJson['propertyTaxes'] ?: null);
-        $token->setUtilities((float)$dataJson['utilities'] ?: null);
-        $token->setPropertyMaintenanceMonthly((float)$dataJson['propertyMaintenanceMonthly'] ?: null);
+        $token->setRealtPlatformPercent(isset($dataJson['realtPlatformPercent'])
+            ? (float)$dataJson['realtPlatformPercent']
+            : 0
+        );
+        $token->setRealtPlatform($token->getGrossRentMonth() * $token->getRealtPlatformPercent() ?: 0);
+        $token->setInsurance((float)$dataJson['insurance'] ?: 0);
+        $token->setPropertyTaxes((float)$dataJson['propertyTaxes'] ?: 0);
+        $token->setUtilities((float)$dataJson['utilities'] ?: 0);
+        $token->setPropertyMaintenanceMonthly((float)$dataJson['propertyMaintenanceMonthly'] ?: 0);
         $token->setNetRentMonth(
             ($token->getGrossRentMonth()
             - $token->getPropertyManagement()
@@ -361,12 +364,14 @@ class TokenService extends Service
             - $token->getPropertyTaxes()
             - $token->getInsurance()
             - $token->getUtilities()
-            - $token->getPropertyMaintenanceMonthly()) ?: null);
-        $token->setNetRentYear($token->getNetRentMonth() * 12 ?: null);
-        $token->setNetRentDay($token->getNetRentYear() / 365 ?: null);
-        $token->setNetRentYearPerToken(!empty($token->getTotalTokens()) ? $token->getNetRentYear() / $token->getTotalTokens() : 0);
-        $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?: null);
-        $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?: null);
+            - $token->getPropertyMaintenanceMonthly()) ?: 0);
+        $token->setNetRentYear($token->getNetRentMonth() * 12 ?: 0);
+        $token->setNetRentDay($token->getNetRentYear() / 365 ?: 0);
+        $token->setNetRentYearPerToken(!empty($token->getTotalTokens())
+            ? $token->getNetRentYear() / $token->getTotalTokens()
+            : 0);
+        $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?: 0);
+        $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?: 0);
         $token->setAnnualPercentageYield($token->getTotalInvestment()
             ? $token->getNetRentYear() / $token->getTotalInvestment() * 100
             : null
@@ -382,7 +387,7 @@ class TokenService extends Service
         $token->setLotSize($dataJson['lotSize'] ?: null);
         $token->setBedroomBath(!empty($dataJson['bedroom/bath']) ? $dataJson['bedroom/bath'] : null);
         $token->setHasTenants($dataJson['hasTenants'] ?: null);
-        $token->setRentedUnits($dataJson['rentedUnits'] ?: null);
+        $token->setRentedUnits($dataJson['rentedUnits'] ?: 0);
         $token->setTotalUnits($dataJson['totalUnits'] ?: null);
         $token->setTermOfLease($dataJson['termOfLease'] ?: null);
         $token->setRenewalDate(null);

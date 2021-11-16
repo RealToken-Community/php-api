@@ -181,6 +181,7 @@ class AdminController extends AbstractController
                 'apiKey' => $apiKey,
                 'routes' => $this->adminService->getRouteIntegrity(),
                 'totalTokens' => $this->adminService->getTotalTokens(),
+                'envServer' => strtoupper($_ENV['APP_ENV']),
             ]
         );
     }
