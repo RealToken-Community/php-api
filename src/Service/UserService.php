@@ -67,6 +67,18 @@ class UserService extends Service
     }
 
     /**
+     * Get all users.
+     *
+     * @return array
+     */
+    public function getUsers(): array
+    {
+        $userRepository = $this->em->getRepository(User::class);
+
+        return $userRepository->findAll();
+    }
+
+    /**
      * Generate unique token.
      *
      * @return string

@@ -19,6 +19,7 @@
             {% block menu %}
                 <li class="nav-item"><a class="nav-link" href="{{ path('admin_check_route_integrity', {realtAuthToken: apiKey}) }}">Check route integrity</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('register_api_user', {realtAuthToken: apiKey}) }}">Register new User</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ path('manage_api_user', {realtAuthToken: apiKey}) }}">Manage Users</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('admin_user_quota', {realtAuthToken: apiKey}) }}">Get users quota</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('admin_manage_quota', {realtAuthToken: apiKey}) }}">Manage Quotas (V1)</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('admin_manage_quotas', {realtAuthToken: apiKey}) }}">Manage Quotas (V2)</a></li>

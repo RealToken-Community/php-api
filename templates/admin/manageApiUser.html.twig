@@ -1,0 +1,32 @@
+{% extends "base.html.twig" %}
+
+{% block title %}[ADMIN] Manage users{% endblock %}
+
+{% block body %}
+    <table class="table table-bordered table-striped">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">Email</th>
+                <th scope="col">Username</th>
+                <th scope="col">Ethereum Address</th>
+                <th scope="col">Roles</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <th scope="row">{{ user.id }}</th>
+                <td>{{ user.email }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.ethereumAddress }}</td>
+                <td>
+                    {% for role in user.roles %}
+                        {{ role }}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
