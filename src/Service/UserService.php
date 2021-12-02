@@ -23,10 +23,24 @@ class UserService extends Service
      */
     public function userRegistration(Request $request): array
     {
-        if ($request->get('isAdmin')) {
-            $roles = ["ROLE_USER", "ROLE_ADMIN"];
-        } else {
-            $roles = ["ROLE_USER"];
+        $roles = ["ROLE_USER"];
+
+        switch ($request->get('quotaRole')) {
+            case 'isAdmin':
+                array_push($roles, "ROLE_ADMIN");
+                break;
+            case 'isVip':
+                array_push($roles, "ROLE_VIP");
+                break;
+            case 'isExternal':
+                array_push($roles, "ROLE_EXTERNAL");
+                break;
+            case 'isPremium':
+                array_push($roles, "ROLE_PREMIUM");
+                break;
+            case 'isFreemium':
+                array_push($roles, "ROLE_FREEMIUM");
+                break;
         }
 
         $user = $this->checkUserExistence($request->get('email'));
