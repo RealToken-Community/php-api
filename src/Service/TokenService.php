@@ -416,17 +416,17 @@ class TokenService extends Service
                 ? new DateTime($dataJson['rentStartDate'])
                 : null);
         $token->setInitialMaintenanceReserve($dataJson['initialMaintenanceReserve'] ?: null);
-        $token->setInitialLaunchDate($dataJson['initialLaunchDate']);
-        $token->setSeriesNumber($dataJson['seriesNumber']);
-        $token->setConstructionYear($dataJson['constructionYear']);
-        $token->setConstructionType($dataJson['constructionType']);
-        $token->setRoofType($dataJson['roofType']);
-        $token->setAssetParking($dataJson['assetParking']);
-        $token->setFoundation($dataJson['foundation']);
-        $token->setHeating($dataJson['heating']);
-        $token->setCooling($dataJson['cooling']);
-        $token->setTokenIdRules($dataJson['tokenIdRules']);
-        $token->setRentCalculationType($dataJson['rentCalculationType']);
+        $token->setInitialLaunchDate($dataJson['initialLaunchDate'] ?: null);
+        $token->setSeriesNumber($dataJson['seriesNumber'] ?: null);
+        $token->setConstructionYear($dataJson['constructionYear'] ?: null);
+        $token->setConstructionType($dataJson['constructionType'] ?: null);
+        $token->setRoofType($dataJson['roofType'] ?: null);
+        $token->setAssetParking($dataJson['assetParking'] ?: null);
+        $token->setFoundation($dataJson['foundation'] ?: null);
+        $token->setHeating($dataJson['heating'] ?: null);
+        $token->setCooling($dataJson['cooling'] ?: null);
+        $token->setTokenIdRules($dataJson['tokenIdRules'] ?: null);
+        $token->setRentCalculationType($dataJson['rentCalculationType'] ?: null);
 
         $token->setLastUpdate(new DateTime());
 
