@@ -290,7 +290,7 @@ class Token
     private $seriesNumber;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $constructionYear;
 
@@ -1003,12 +1003,12 @@ class Token
         return $this;
     }
 
-    public function getConstructionYear(): ?\DateTimeInterface
+    public function getConstructionYear(): ?int
     {
         return $this->constructionYear;
     }
 
-    public function setConstructionYear(?\DateTimeInterface $constructionYear): self
+    public function setConstructionYear(?int $constructionYear): self
     {
         $this->constructionYear = $constructionYear;
 
