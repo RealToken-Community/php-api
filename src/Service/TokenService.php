@@ -416,6 +416,18 @@ class TokenService extends Service
                 ? new DateTime($dataJson['rentStartDate'])
                 : null);
         $token->setInitialMaintenanceReserve($dataJson['initialMaintenanceReserve'] ?: null);
+        $token->setInitialLaunchDate($dataJson['initialLaunchDate']);
+        $token->setSeriesNumber($dataJson['seriesNumber']);
+        $token->setConstructionYear($dataJson['constructionYear']);
+        $token->setConstructionType($dataJson['constructionType']);
+        $token->setRoofType($dataJson['roofType']);
+        $token->setAssetParking($dataJson['assetParking']);
+        $token->setFoundation($dataJson['foundation']);
+        $token->setHeating($dataJson['heating']);
+        $token->setCooling($dataJson['cooling']);
+        $token->setTokenIdRules($dataJson['tokenIdRules']);
+        $token->setRentCalculationType($dataJson['rentCalculationType']);
+
         $token->setLastUpdate(new DateTime());
 
         return $token;
