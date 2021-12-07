@@ -416,7 +416,11 @@ class TokenService extends Service
                 ? new DateTime($dataJson['rentStartDate'])
                 : null);
         $token->setInitialMaintenanceReserve($dataJson['initialMaintenanceReserve'] ?: null);
-        $token->setInitialLaunchDate($dataJson['initialLaunchDate'] ?: null);
+        $token->setInitialLaunchDate(
+            !is_array($dataJson['initialLaunchDate'])
+            && !empty($dataJson['initialLaunchDate'])
+                ? new DateTime($dataJson['initialLaunchDate'])
+                : null);
         $token->setSeriesNumber($dataJson['seriesNumber'] ?: null);
         $token->setConstructionYear($dataJson['constructionYear'] ?: null);
         $token->setConstructionType($dataJson['constructionType'] ?: null);
@@ -427,6 +431,9 @@ class TokenService extends Service
         $token->setCooling($dataJson['cooling'] ?: null);
         $token->setTokenIdRules($dataJson['tokenIdRules'] ?: null);
         $token->setRentCalculationType($dataJson['rentCalculationType'] ?: null);
+        if ($token->getSymbol() == null) {
+            $token->setSymbol($dataJson['symbol'] ?: null);
+        }
 
         $token->setLastUpdate(new DateTime());
 
