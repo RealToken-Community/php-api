@@ -279,6 +279,61 @@ class Token
      */
     private $originSecondaryMarketplaces = [];
 
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $initialLaunchDate;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $seriesNumber;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $constructionYear;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $constructionType;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $roofType;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $assetParking;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $foundation;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $heating;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $cooling;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $tokenIdRules;
+
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $rentCalculationType;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -912,6 +967,150 @@ class Token
         return $this;
     }
 
+    public function getOriginSecondaryMarketplaces(): ?array
+    {
+        return $this->originSecondaryMarketplaces;
+    }
+
+    public function setOriginSecondaryMarketplaces(?array $originSecondaryMarketplaces): self
+    {
+        $this->originSecondaryMarketplaces = $originSecondaryMarketplaces;
+
+        return $this;
+    }
+
+    public function getInitialLaunchDate(): ?\DateTimeInterface
+    {
+        return $this->initialLaunchDate;
+    }
+
+    public function setInitialLaunchDate(?\DateTimeInterface $initialLaunchDate): self
+    {
+        $this->initialLaunchDate = $initialLaunchDate;
+
+        return $this;
+    }
+
+    public function getSeriesNumber(): ?int
+    {
+        return $this->seriesNumber;
+    }
+
+    public function setSeriesNumber(?int $seriesNumber): self
+    {
+        $this->seriesNumber = $seriesNumber;
+
+        return $this;
+    }
+
+    public function getConstructionYear(): ?\DateTimeInterface
+    {
+        return $this->constructionYear;
+    }
+
+    public function setConstructionYear(?\DateTimeInterface $constructionYear): self
+    {
+        $this->constructionYear = $constructionYear;
+
+        return $this;
+    }
+
+    public function getConstructionType(): ?string
+    {
+        return $this->constructionType;
+    }
+
+    public function setConstructionType(?string $constructionType): self
+    {
+        $this->constructionType = $constructionType;
+
+        return $this;
+    }
+
+    public function getRoofType(): ?string
+    {
+        return $this->roofType;
+    }
+
+    public function setRoofType(?string $roofType): self
+    {
+        $this->roofType = $roofType;
+
+        return $this;
+    }
+
+    public function getAssetParking(): ?string
+    {
+        return $this->assetParking;
+    }
+
+    public function setAssetParking(?string $assetParking): self
+    {
+        $this->assetParking = $assetParking;
+
+        return $this;
+    }
+
+    public function getFoundation(): ?string
+    {
+        return $this->foundation;
+    }
+
+    public function setFoundation(?string $foundation): self
+    {
+        $this->foundation = $foundation;
+
+        return $this;
+    }
+
+    public function getHeating(): ?string
+    {
+        return $this->heating;
+    }
+
+    public function setHeating(?string $heating): self
+    {
+        $this->heating = $heating;
+
+        return $this;
+    }
+
+    public function getCooling(): ?string
+    {
+        return $this->cooling;
+    }
+
+    public function setCooling(?string $cooling): self
+    {
+        $this->cooling = $cooling;
+
+        return $this;
+    }
+
+    public function getTokenIdRules(): ?int
+    {
+        return $this->tokenIdRules;
+    }
+
+    public function setTokenIdRules(?int $tokenIdRules): self
+    {
+        $this->tokenIdRules = $tokenIdRules;
+
+        return $this;
+    }
+
+    public function getRentCalculationType(): ?string
+    {
+        return $this->rentCalculationType;
+    }
+
+    public function setRentCalculationType(?string $rentCalculationType): self
+    {
+        $this->rentCalculationType = $rentCalculationType;
+
+        return $this;
+    }
+
     public function __toArray(array $credentials): array
     {
         if ($credentials['isAuth']) {
@@ -965,7 +1164,19 @@ class Token
                 'renovationReserve' => $this->renovationReserve,
                 'propertyMaintenanceMonthly' => $this->propertyMaintenanceMonthly,
                 'rentStartDate' => $this->rentStartDate,
-                'lastUpdate' => $this->lastUpdate
+                'lastUpdate' => $this->lastUpdate,
+                'originSecondaryMarketplaces' => $this->originSecondaryMarketplaces,
+                'initialLaunchDate' => $this->initialLaunchDate,
+                'seriesNumber' => $this->seriesNumber,
+                'constructionYear' => $this->constructionYear,
+                'constructionType' => $this->constructionType,
+                'roofType' => $this->roofType,
+                'assetParking' => $this->assetParking,
+                'foundation' => $this->foundation,
+                'heating' => $this->heating,
+                'cooling' => $this->cooling,
+                'tokenIdRules' => $this->tokenIdRules,
+                'rentCalculationType' => $this->rentCalculationType
             ];
         } else {
             $response = [
@@ -987,17 +1198,5 @@ class Token
         }
 
         return $response;
-    }
-
-    public function getOriginSecondaryMarketplaces(): ?array
-    {
-        return $this->originSecondaryMarketplaces;
-    }
-
-    public function setOriginSecondaryMarketplaces(?array $originSecondaryMarketplaces): self
-    {
-        $this->originSecondaryMarketplaces = $originSecondaryMarketplaces;
-
-        return $this;
     }
 }
