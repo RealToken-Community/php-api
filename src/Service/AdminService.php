@@ -14,8 +14,11 @@ use App\Entity\TokenlistTag;
 use App\Entity\TokenlistToken;
 use App\Entity\TokenMapping;
 use App\Entity\User;
+use App\Traits\NetworkControllerTrait;
 use DateTime;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
+use TreeWalker;
 
 /**
  * Class AdminService
@@ -23,6 +26,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class AdminService extends Service
 {
+    use NetworkControllerTrait;
+
     /**
      * Get total users quota.
      *
@@ -244,7 +249,8 @@ class AdminService extends Service
         ];
 
         foreach ($urls as $url) {
-            $response = $this->checkRoute($url);
+            $uri = $_SERVER["SERVER_NAME"] . $url;
+            $response = $this->curlRequest($uri, true);
 
             if (!isset($response['error'])) {
                 $response = substr(json_encode($response),0,85);
@@ -496,6 +502,28 @@ class AdminService extends Service
     }
 
     /**
+     * Compare online tokens data.
+     *
+     * @return stdClass
+     */
+    public function compareOnlineTokensData(): stdClass
+    {
+        $ENDPOINT_PROD = "https://api.realt.community/v1/token";
+        $ENDPOINT_PREPROD = "https://api.preprod.realt.community/v1/token";
+
+        $headers = array();
+        $headers[] = 'Accept: */*';
+        $headers[] = 'X-Auth-Realt-Token: ' . $_ENV["API_TOKEN_CHECK_HEALTH"];
+
+        $onlineDataProd = $this->curlRequest($ENDPOINT_PROD, false, $headers);
+        $onlineDataPreprod = $this->curlRequest($ENDPOINT_PREPROD, false, $headers);
+
+        $treeWalker = new TreeWalker([]);
+
+        return json_decode($treeWalker->getdiff($onlineDataProd, $onlineDataPreprod, true));
+    }
+
+    /**
      * Check quota configuration existence.
      *
      * @param string $name
@@ -559,31 +587,5 @@ class AdminService extends Service
         }
 
         return $result;
-    }
-
-    /**
-     * @param string $url
-     *
-     * @return array
-     */
-    private function checkRoute(string $url): array
-    {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $_SERVER["SERVER_NAME"] . $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-        ));
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        return json_decode($response, true);
     }
 }

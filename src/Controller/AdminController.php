@@ -182,6 +182,7 @@ class AdminController extends AbstractController
                 'routes' => $this->adminService->getRouteIntegrity(),
                 'totalTokens' => $this->adminService->getTotalTokens(),
                 'envServer' => strtoupper($_ENV['APP_ENV']),
+                'tokensDiff' => $this->adminService->compareOnlineTokensData()
             ]
         );
     }

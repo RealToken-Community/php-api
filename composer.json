@@ -15,6 +15,7 @@
         "doctrine/doctrine-migrations-bundle": "^2.2",
         "doctrine/orm": "^2.7",
         "jms/serializer-bundle": "^3.5",
+        "lukascivil/treewalker": "dev-master",
         "nelmio/api-doc-bundle": "^4.0",
         "nelmio/cors-bundle": "^2.1",
         "sensio/framework-extra-bundle": "^5.5",
