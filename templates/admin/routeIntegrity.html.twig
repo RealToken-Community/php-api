@@ -1,24 +1,88 @@
 {% extends "base.html.twig" %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <style>
+        pre.microlight {
+            font-size: 12px;
+
+            margin: 0;
+            padding: 10px;
+
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            word-break: break-all;
+            /*word-break: break-word;*/
+            hyphens: auto;
+
+            border-radius: 4px;
+            background: #41444e;
+            color: #fff;
+
+            overflow-wrap: break-word;
+        }
+
+        .highlight-code {
+            position: relative;
+        }
+
+        .highlight-code .microlight {
+            overflow-y: auto;
+            max-height: 400px;
+            min-height: 6em;
+        }
+    </style>
+{% endblock %}
+
 {% block title %}[ADMIN] Check route integrity{% endblock %}
 
 {% block body %}
 <div class="container">
     <h3>[{{ envServer }}] Routes ({{ totalTokens }} tokens)</h3>
     {% for route in routes %}
+    <div class="row">
+        <div class="col-3 url">{{ route.url }}</div>
+        {% if route.response.error is defined %}
+            <div class="col-1 text-danger code">{{ route.response.error.code }}</div>
+            <div class="col-8 text-danger message">{{ route.response.error.message }}</div>
+        {% else %}
+            <div class="col-1 text-success code">200</div>
+            <div class="col-8 text-success message">{{ route.response }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <h4>Diff Prod/PreProd tokens data</h4>
+    <div class="row mt-3">
+        <h5>New</h5>
         <div class="col-12">
-            <div class="row">
-                <div class="col-2 url">{{ route.url }}</div>
-                {% if route.response.error is defined %}
-                    <div class="col-2 text-danger code">{{ route.response.error.code }}</div>
-                    <div class="col-8 text-danger message">{{ route.response.error.message }}</div>
-                {% else %}
-                    <div class="col-2 text-success code">200</div>
-                    <div class="col-8 text-success message">{{ route.response }}</div>
-                {% endif %}
+            <div class="highlight-code">
+                <pre class="microlight">
+{{ tokensDiff.new|json_encode(constant('JSON_PRETTY_PRINT')) }}
+                </pre>
             </div>
         </div>
-    {% endfor %}
+    </div>
+    <div class="row mt-3">
+        <h5>Removed</h5>
+        <div class="col-12">
+            <div class="highlight-code">
+                <pre class="microlight">
+{{ tokensDiff.removed|json_encode(constant('JSON_PRETTY_PRINT')) }}
+                </pre>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <h5>Edited</h5>
+        <div class="col-12">
+            <div class="highlight-code">
+                <pre class="microlight">
+{{ tokensDiff.edited|json_encode(constant('JSON_PRETTY_PRINT')) }}
+                </pre>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
