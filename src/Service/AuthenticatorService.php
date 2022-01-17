@@ -36,6 +36,22 @@ class AuthenticatorService extends Service
     }
 
     /**
+     * Check hydrator rights.
+     *
+     * @param string|null $apiKey
+     */
+    public function checkHydratorRights(?string $apiKey)
+    {
+        if (!empty($apiKey)) {
+            $application = $this->getApplicationByToken($apiKey);
+        }
+
+        if (empty($apiKey) || !$this->applicationHaveHydratorRights($application)) {
+            throw new HttpException(Response::HTTP_FORBIDDEN, "Unauthorized");
+        }
+    }
+
+    /**
      * Get application by token.
      *
      * @param string $apiKey
@@ -70,6 +86,18 @@ class AuthenticatorService extends Service
     public function applicationHaveAdminRights(Application $application): bool
     {
         return in_array("ROLE_ADMIN", $application->getUser()->getRoles());
+    }
+
+    /**
+     * Check if Application have hydrator rights.
+     *
+     * @param Application $application
+     *
+     * @return bool
+     */
+    public function applicationHaveHydratorRights(Application $application): bool
+    {
+        return in_array("ROLE_HYDRATOR", $application->getUser()->getRoles());
     }
 
     /**

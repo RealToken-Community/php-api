@@ -41,6 +41,9 @@ class UserService extends Service
             case 'isFreemium':
                 array_push($roles, "ROLE_FREEMIUM");
                 break;
+            case 'isHydrator':
+                array_push($roles, "ROLE_HYDRATOR");
+                break;
         }
 
         $user = $this->checkUserExistence($request->get('email'));
