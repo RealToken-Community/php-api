@@ -90,7 +90,7 @@ class DefiController
      */
     public function generateTokenSymbol(Request $request): JsonResponse
     {
-        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+        $this->authenticatorService->checkHydratorRights($this->getApiToken($request));
 
         return $this->defiService->generateTokenSymbol();
     }
@@ -112,7 +112,7 @@ class DefiController
      */
     public function generateLpPair(Request $request): JsonResponse
     {
-        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+        $this->authenticatorService->checkHydratorRights($this->getApiToken($request));
 
         return $this->defiService->generateLpPairToken();
     }
