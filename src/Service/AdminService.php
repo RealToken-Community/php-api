@@ -508,19 +508,41 @@ class AdminService extends Service
      */
     public function compareOnlineTokensData(): stdClass
     {
-        $ENDPOINT_PROD = "https://api.realt.community/v1/token";
         $ENDPOINT_PREPROD = "https://api.preprod.realt.community/v1/token";
+        $ENDPOINT_PROD = "https://api.realt.community/v1/token";
 
         $headers = array();
         $headers[] = 'Accept: */*';
         $headers[] = 'X-Auth-Realt-Token: ' . $_ENV["API_TOKEN_CHECK_HEALTH"];
 
-        $onlineDataProd = $this->curlRequest($ENDPOINT_PROD, false, $headers);
         $onlineDataPreprod = $this->curlRequest($ENDPOINT_PREPROD, false, $headers);
+        $onlineDataProd = $this->curlRequest($ENDPOINT_PROD, false, $headers);
+
+        $onlineDataPreprod = $this->formatDataForParsing($onlineDataPreprod);
+        $onlineDataProd = $this->formatDataForParsing($onlineDataProd);
 
         $treeWalker = new TreeWalker([]);
 
-        return json_decode($treeWalker->getdiff($onlineDataProd, $onlineDataPreprod, true));
+        // Get json diff
+        $filteredResult = $treeWalker->getdiff($onlineDataPreprod, $onlineDataProd, true);
+
+        // Remove values
+        $treeWalker->walker($filteredResult, function(&$struct, $key) {
+            if ($key == "lastUpdate") {
+                unset($struct[$key]);
+            }
+        });
+
+        // Check empty
+        foreach ($filteredResult as $key => $options) {
+            foreach ($options as $id => $values) {
+                if (empty($values)) {
+                    unset($filteredResult[$key][$id]);
+                }
+            }
+        }
+
+        return json_decode(json_encode($filteredResult));
     }
 
     /**
@@ -587,5 +609,24 @@ class AdminService extends Service
         }
 
         return $result;
+    }
+
+    /**
+     * Format data for parsing.
+     *
+     * @param $jsonData
+     *
+     * @return string
+     */
+    private function formatDataForParsing($jsonData): string
+    {
+        $orderedArray = [];
+
+        $array = json_decode($jsonData);
+        foreach($array as $value) {
+            $orderedArray[$value->blockchainAddresses->ethereum->distributor] = $value;
+        }
+
+        return json_encode($orderedArray);
     }
 }
