@@ -508,19 +508,19 @@ class AdminService extends Service
      */
     public function compareOnlineTokensData(): stdClass
     {
-        $ENDPOINT_PROD = "https://api.realt.community/v1/token";
         $ENDPOINT_PREPROD = "https://api.preprod.realt.community/v1/token";
+        $ENDPOINT_PROD = "https://api.realt.community/v1/token";
 
         $headers = array();
         $headers[] = 'Accept: */*';
         $headers[] = 'X-Auth-Realt-Token: ' . $_ENV["API_TOKEN_CHECK_HEALTH"];
 
-        $onlineDataProd = $this->curlRequest($ENDPOINT_PROD, false, $headers);
         $onlineDataPreprod = $this->curlRequest($ENDPOINT_PREPROD, false, $headers);
+        $onlineDataProd = $this->curlRequest($ENDPOINT_PROD, false, $headers);
 
         $treeWalker = new TreeWalker([]);
 
-        return json_decode($treeWalker->getdiff($onlineDataProd, $onlineDataPreprod, true));
+        return json_decode($treeWalker->getdiff($onlineDataPreprod, $onlineDataProd, true));
     }
 
     /**
