@@ -357,14 +357,18 @@ class TokenService extends Service
         $token->setPropertyTaxes((float)$dataJson['propertyTaxes'] ?: 0);
         $token->setUtilities((float)$dataJson['utilities'] ?: 0);
         $token->setPropertyMaintenanceMonthly((float)$dataJson['propertyMaintenanceMonthly'] ?: 0);
-        $token->setNetRentMonth(
-            ($token->getGrossRentMonth()
-            - $token->getPropertyManagement()
-            - $token->getRealtPlatform()
-            - $token->getPropertyTaxes()
-            - $token->getInsurance()
-            - $token->getUtilities()
-            - $token->getPropertyMaintenanceMonthly()) ?: 0);
+        $token->setNetRentMonth(0);
+        $expenses = $token->getPropertyManagement()
+            + $token->getRealtPlatform()
+            + $token->getPropertyTaxes()
+            + $token->getInsurance()
+            + $token->getUtilities()
+            + $token->getPropertyMaintenanceMonthly();
+        if ($token->getGrossRentMonth() - $expenses > 0) {
+            $token->setNetRentMonth(
+                $token->getGrossRentMonth()
+                - $expenses ?: 0);
+        }
         $token->setNetRentYear($token->getNetRentMonth() * 12 ?: 0);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?: 0);
         $token->setNetRentYearPerToken(!empty($token->getTotalTokens())
