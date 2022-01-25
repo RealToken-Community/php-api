@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3ac91769c582c9db81bd404a07d0831c",
+    "content-hash": "50cf7d9d9e69984b89d65f51072b2e4b",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -2324,6 +2324,58 @@
                 }
             ],
             "time": "2021-02-25T21:54:58+00:00"
+        },
+        {
+            "name": "lukascivil/treewalker",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lukascivil/TreeWalker.git",
+                "reference": "edc0b9c613732f4796c1b2574811b6ed658d6f9f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lukascivil/TreeWalker/zipball/edc0b9c613732f4796c1b2574811b6ed658d6f9f",
+                "reference": "edc0b9c613732f4796c1b2574811b6ed658d6f9f",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "lucas cordeiro da Silva",
+                    "email": "lukas_civil@hotmail.com"
+                }
+            ],
+            "description": "TreeWalker is a simple and small Library that will help you to work faster with manipulation of structures in PHP",
+            "keywords": [
+                "array",
+                "diff",
+                "dynamically",
+                "json",
+                "merge",
+                "objects",
+                "recursivelly",
+                "struct"
+            ],
+            "support": {
+                "issues": "https://github.com/lukascivil/TreeWalker/issues",
+                "source": "https://github.com/lukascivil/TreeWalker/tree/0.9.1"
+            },
+            "time": "2019-12-22T15:06:46+00:00"
         },
         {
             "name": "nelmio/api-doc-bundle",
@@ -8761,7 +8813,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "lukascivil/treewalker": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

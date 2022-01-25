@@ -357,14 +357,18 @@ class TokenService extends Service
         $token->setPropertyTaxes((float)$dataJson['propertyTaxes'] ?: 0);
         $token->setUtilities((float)$dataJson['utilities'] ?: 0);
         $token->setPropertyMaintenanceMonthly((float)$dataJson['propertyMaintenanceMonthly'] ?: 0);
-        $token->setNetRentMonth(
-            ($token->getGrossRentMonth()
-            - $token->getPropertyManagement()
-            - $token->getRealtPlatform()
-            - $token->getPropertyTaxes()
-            - $token->getInsurance()
-            - $token->getUtilities()
-            - $token->getPropertyMaintenanceMonthly()) ?: 0);
+        $token->setNetRentMonth(0);
+        $expenses = $token->getPropertyManagement()
+            + $token->getRealtPlatform()
+            + $token->getPropertyTaxes()
+            + $token->getInsurance()
+            + $token->getUtilities()
+            + $token->getPropertyMaintenanceMonthly();
+        if ($token->getGrossRentMonth() - $expenses > 0) {
+            $token->setNetRentMonth(
+                $token->getGrossRentMonth()
+                - $expenses ?: 0);
+        }
         $token->setNetRentYear($token->getNetRentMonth() * 12 ?: 0);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?: 0);
         $token->setNetRentYearPerToken(!empty($token->getTotalTokens())
@@ -416,6 +420,25 @@ class TokenService extends Service
                 ? new DateTime($dataJson['rentStartDate'])
                 : null);
         $token->setInitialMaintenanceReserve($dataJson['initialMaintenanceReserve'] ?: null);
+        $token->setInitialLaunchDate(
+            !is_array($dataJson['initialLaunchDate'])
+            && !empty($dataJson['initialLaunchDate'])
+                ? new DateTime($dataJson['initialLaunchDate'])
+                : null);
+        $token->setSeriesNumber($dataJson['seriesNumber'] ?: null);
+        $token->setConstructionYear($dataJson['constructionYear'] ?: null);
+        $token->setConstructionType($dataJson['constructionType'] ?: null);
+        $token->setRoofType($dataJson['roofType'] ?: null);
+        $token->setAssetParking($dataJson['assetParking'] ?: null);
+        $token->setFoundation($dataJson['foundation'] ?: null);
+        $token->setHeating($dataJson['heating'] ?: null);
+        $token->setCooling($dataJson['cooling'] ?: null);
+        $token->setTokenIdRules($dataJson['tokenIdRules'] ?: null);
+        $token->setRentCalculationType($dataJson['rentCalculationType'] ?: null);
+        if ($token->getSymbol() == null) {
+            $token->setSymbol($dataJson['symbol'] ?: null);
+        }
+
         $token->setLastUpdate(new DateTime());
 
         return $token;
