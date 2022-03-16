@@ -26,7 +26,6 @@ class AuthenticatorService extends Service
      */
     public function checkAdminRights(?string $apiKey)
     {
-        return true;
         if (!empty($apiKey)) {
             $application = $this->getApplicationByToken($apiKey);
         }
