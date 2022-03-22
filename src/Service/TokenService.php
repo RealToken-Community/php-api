@@ -71,6 +71,11 @@ class TokenService extends Service
     {
         $token = $this->em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]);
 
+        // Todo : Factorize previous and next rqt
+        if (empty($token)) {
+          $token = $this->em->getRepository(Token::class)->findOneBy(['xDaiContract' => $uuid]);
+        }
+
         if (!($token instanceof Token)) {
             throw new HttpException(Response::HTTP_NOT_FOUND, 'Token not found');
         }
@@ -214,6 +219,11 @@ class TokenService extends Service
     {
         /** @var Token $token */
         $token = $this->em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]);
+
+        // Todo : Factorize previous and next rqt
+        if (empty($token)) {
+          $token = $this->em->getRepository(Token::class)->findOneBy(['xDaiContract' => $uuid]);
+        }
 
         if (!$token) {
             throw new HttpException(Response::HTTP_NOT_FOUND, 'Record doesn\'t exist');
