@@ -1131,6 +1131,54 @@ class Token
         return $this;
     }
 
+    public function getRealtListingFeePercent(): ?float
+    {
+        return $this->realtListingFeePercent;
+    }
+
+    public function setRealtListingFeePercent(?float $realtListingFeePercent): self
+    {
+        $this->realtListingFeePercent = $realtListingFeePercent;
+
+        return $this;
+    }
+
+    public function getRealtListingFee(): ?float
+    {
+        return $this->realtListingFee;
+    }
+
+    public function setRealtListingFee(?float $realtListingFee): self
+    {
+        $this->realtListingFee = $realtListingFee;
+
+        return $this;
+    }
+
+    public function getMiscellaneousCosts(): ?float
+    {
+        return $this->miscellaneousCosts;
+    }
+
+    public function setMiscellaneousCosts(?float $miscellaneousCosts): self
+    {
+        $this->miscellaneousCosts = $miscellaneousCosts;
+
+        return $this;
+    }
+
+    public function getPropertyStories(): ?int
+    {
+        return $this->propertyStories;
+    }
+
+    public function setPropertyStories(?int $propertyStories): self
+    {
+        $this->propertyStories = $propertyStories;
+
+        return $this;
+    }
+
     public function __toArray(array $credentials): array
     {
         if ($credentials['isAuth']) {
@@ -1196,7 +1244,11 @@ class Token
                 'heating' => $this->heating,
                 'cooling' => $this->cooling,
                 'tokenIdRules' => $this->tokenIdRules,
-                'rentCalculationType' => $this->rentCalculationType
+                'rentCalculationType' => $this->rentCalculationType,
+                'realtListingFeePercent' => $this->realtListingFeePercent,
+                'realtListingFee' => $this->realtListingFee,
+                'miscellaneousCosts' => $this->miscellaneousCosts,
+                'propertyStories' => $this->propertyStories
             ];
         } else {
             $response = [
@@ -1218,53 +1270,5 @@ class Token
         }
 
         return $response;
-    }
-
-    public function getRealtListingFeePercent(): ?float
-    {
-        return $this->realtListingFeePercent;
-    }
-
-    public function setRealtListingFeePercent(?float $realtListingFeePercent): self
-    {
-        $this->realtListingFeePercent = $realtListingFeePercent;
-
-        return $this;
-    }
-
-    public function getRealtListingFee(): ?float
-    {
-        return $this->realtListingFee;
-    }
-
-    public function setRealtListingFee(?float $realtListingFee): self
-    {
-        $this->realtListingFee = $realtListingFee;
-
-        return $this;
-    }
-
-    public function getMiscellaneousCosts(): ?float
-    {
-        return $this->miscellaneousCosts;
-    }
-
-    public function setMiscellaneousCosts(?float $miscellaneousCosts): self
-    {
-        $this->miscellaneousCosts = $miscellaneousCosts;
-
-        return $this;
-    }
-
-    public function getPropertyStories(): ?int
-    {
-        return $this->propertyStories;
-    }
-
-    public function setPropertyStories(?int $propertyStories): self
-    {
-        $this->propertyStories = $propertyStories;
-
-        return $this;
     }
 }
