@@ -300,27 +300,27 @@ class Token
     private $constructionType;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=true)
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $roofType;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=true)
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $assetParking;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=true)
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $foundation;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=true)
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $heating;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=true)
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $cooling;
 
@@ -333,6 +333,26 @@ class Token
      * @ORM\Column(type="string", length=20, nullable=true)
      */
     private $rentCalculationType;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $realtListingFeePercent;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $realtListingFee;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $miscellaneousCosts;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $propertyStories;
 
     public function getId(): ?int
     {
@@ -1111,6 +1131,54 @@ class Token
         return $this;
     }
 
+    public function getRealtListingFeePercent(): ?float
+    {
+        return $this->realtListingFeePercent;
+    }
+
+    public function setRealtListingFeePercent(?float $realtListingFeePercent): self
+    {
+        $this->realtListingFeePercent = $realtListingFeePercent;
+
+        return $this;
+    }
+
+    public function getRealtListingFee(): ?float
+    {
+        return $this->realtListingFee;
+    }
+
+    public function setRealtListingFee(?float $realtListingFee): self
+    {
+        $this->realtListingFee = $realtListingFee;
+
+        return $this;
+    }
+
+    public function getMiscellaneousCosts(): ?float
+    {
+        return $this->miscellaneousCosts;
+    }
+
+    public function setMiscellaneousCosts(?float $miscellaneousCosts): self
+    {
+        $this->miscellaneousCosts = $miscellaneousCosts;
+
+        return $this;
+    }
+
+    public function getPropertyStories(): ?int
+    {
+        return $this->propertyStories;
+    }
+
+    public function setPropertyStories(?int $propertyStories): self
+    {
+        $this->propertyStories = $propertyStories;
+
+        return $this;
+    }
+
     public function __toArray(array $credentials): array
     {
         if ($credentials['isAuth']) {
@@ -1176,7 +1244,11 @@ class Token
                 'heating' => $this->heating,
                 'cooling' => $this->cooling,
                 'tokenIdRules' => $this->tokenIdRules,
-                'rentCalculationType' => $this->rentCalculationType
+                'rentCalculationType' => $this->rentCalculationType,
+                'realtListingFeePercent' => $this->realtListingFeePercent,
+                'realtListingFee' => $this->realtListingFee,
+                'miscellaneousCosts' => $this->miscellaneousCosts,
+                'propertyStories' => $this->propertyStories
             ];
         } else {
             $response = [
