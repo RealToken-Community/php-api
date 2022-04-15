@@ -448,6 +448,10 @@ class TokenService extends Service
         if ($token->getSymbol() == null) {
             $token->setSymbol($dataJson['symbol'] ?: null);
         }
+        $token->setRealtListingFeePercent((float)$dataJson['realtListingFeePercent'] ?: null);
+        $token->setRealtListingFee((float)$dataJson['realtListingFee'] ?: null);
+        $token->setMiscellaneousCosts((float)$dataJson['miscellaneousCosts'] ?: null);
+        $token->setPropertyStories($dataJson['propertyStories'] ?: null);
 
         $token->setLastUpdate(new DateTime());
 
