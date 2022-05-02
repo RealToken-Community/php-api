@@ -55,7 +55,9 @@ workflows:
             - build
           filters:
             branches:
-              only: preprod
+              only:
+                - preprod
+                - circleci
       - webhook:
           requires:
             - deploy
