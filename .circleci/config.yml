@@ -12,6 +12,9 @@ jobs:
           IMAGE_NAME: silarhi/symfony-docker-ci
     steps:
       - checkout
+      - run:
+          name: "What branch am I on now?"
+          command: echo $CIRCLE_BRANCH
 
   deploy:
     machine:
