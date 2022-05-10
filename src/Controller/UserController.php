@@ -41,7 +41,7 @@ class UserController extends AbstractController
         $apiKey = $this->getApiToken($request);
         $this->authenticatorService->checkAdminRights(
             $apiKey,
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         $form = [];

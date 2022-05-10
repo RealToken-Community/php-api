@@ -51,7 +51,7 @@ class DefiController
      */
     public function getTokenListDeprecated(Request $request): JsonResponse
     {
-        return $this->defiService->getTokenListForAMMDeprecated($this->getRefer($request));
+        return $this->defiService->getTokenListForAMMDeprecated($this->getReferer($request));
     }
 
     /**
@@ -70,7 +70,7 @@ class DefiController
      */
     public function getTokenList(Request $request): JsonResponse
     {
-        return $this->defiService->getTokenListForAMM($this->getRefer($request));
+        return $this->defiService->getTokenListForAMM($this->getReferer($request));
     }
 
     /**

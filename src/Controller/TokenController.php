@@ -52,7 +52,7 @@ class TokenController
     {
         $credentials = $this->authenticatorService->checkCredentials(
             $this->getApiToken($request),
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         return $this->tokenService->getTokens($credentials, true);
@@ -76,7 +76,7 @@ class TokenController
     {
         $credentials = $this->authenticatorService->checkCredentials(
             $this->getApiToken($request),
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         return $this->tokenService->getTokens($credentials);
@@ -101,7 +101,7 @@ class TokenController
     {
         $credentials = $this->authenticatorService->checkCredentials(
             $this->getApiToken($request),
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         return $this->tokenService->getToken($credentials, $uuid);
@@ -136,7 +136,7 @@ class TokenController
     {
         $this->authenticatorService->checkAdminRights(
             $this->getApiToken($request),
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         return $this->tokenService->updateToken($uuid, $this->getDataJson($request));
@@ -161,7 +161,7 @@ class TokenController
     {
         $this->authenticatorService->checkAdminRights(
             $this->getApiToken($request),
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         return $this->tokenService->deleteToken($uuid);
@@ -197,7 +197,7 @@ class TokenController
     {
         $this->authenticatorService->checkAdminRights(
             $this->getApiToken($request),
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         return $this->tokenService->createToken($this->getDataJson($request), true);
@@ -231,7 +231,7 @@ class TokenController
     {
         $this->authenticatorService->checkAdminRights(
             $this->getApiToken($request),
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         return $this->tokenService->createToken($this->getDataJson($request));

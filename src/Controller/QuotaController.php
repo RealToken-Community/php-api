@@ -49,7 +49,7 @@ class QuotaController
         $apiKey = $this->getApiToken($request);
         $this->authenticatorService->checkAdminRights(
             $apiKey,
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         return $this->quotaService->getUserQuotas($apiKey);

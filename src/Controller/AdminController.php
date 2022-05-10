@@ -13,6 +13,7 @@ use App\Form\Type\TokenlistTagType;
 use App\Form\Type\TokenlistTokenType;
 use App\Service\AdminService;
 use App\Service\AuthenticatorService;
+use App\Traits\DataControllerTrait;
 use App\Traits\HeadersControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class AdminController extends AbstractController
 {
     use HeadersControllerTrait;
+    use DataControllerTrait;
 
     /** @var AuthenticatorService */
     private AuthenticatorService $authenticatorService;
@@ -51,7 +53,7 @@ class AdminController extends AbstractController
         $apiKey = $this->getApiToken($request);
         $this->authenticatorService->checkAdminRights(
             $apiKey,
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         return $this->render(
@@ -76,7 +78,7 @@ class AdminController extends AbstractController
         $apiKey = $this->getApiToken($request);
         $this->authenticatorService->checkAdminRights(
             $apiKey,
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         switch ($request->get('method')) {
@@ -113,7 +115,7 @@ class AdminController extends AbstractController
         $apiKey = $this->getApiToken($request);
         $this->authenticatorService->checkAdminRights(
             $apiKey,
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         switch ($request->get('method')) {
@@ -151,7 +153,7 @@ class AdminController extends AbstractController
         $apiKey = $this->getApiToken($request);
         $this->authenticatorService->checkAdminRights(
             $apiKey,
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         switch ($request->get('method')) {
@@ -188,7 +190,7 @@ class AdminController extends AbstractController
         $apiKey = $this->getApiToken($request);
         $this->authenticatorService->checkAdminRights(
             $apiKey,
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         return $this->render(
@@ -216,7 +218,7 @@ class AdminController extends AbstractController
         $apiKey = $this->getApiToken($request);
         $this->authenticatorService->checkAdminRights(
             $apiKey,
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
         if ($request->get('method') === 'delete') {
@@ -244,7 +246,7 @@ class AdminController extends AbstractController
         $apiKey = $this->getApiToken($request);
         $this->authenticatorService->checkAdminRights(
             $apiKey,
-            $request->headers->get('host')
+            $this->getRequestOrigin($request)
         );
 
 //        // Form Chain
