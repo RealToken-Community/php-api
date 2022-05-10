@@ -23,8 +23,9 @@ class AuthenticatorService extends Service
      * Check admin rights.
      *
      * @param string|null $apiKey
+     * @param string|null $refer
      */
-    public function checkAdminRights(?string $apiKey)
+    public function checkAdminRights(?string $apiKey, ?string $refer)
     {
         if (!empty($apiKey)) {
             $application = $this->getApplicationByToken($apiKey);
@@ -32,6 +33,11 @@ class AuthenticatorService extends Service
 
         if (empty($apiKey) || !$this->applicationHaveAdminRights($application)) {
             throw new HttpException(Response::HTTP_FORBIDDEN, "Unauthorized");
+        }
+
+        // Match application with refer
+        if (!empty($refer) && !empty($application->getRefer()) && $refer !== $application->getRefer()) {
+            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid refer');
         }
     }
 
@@ -104,10 +110,11 @@ class AuthenticatorService extends Service
      * Check user authentication.
      *
      * @param string|null $apiKey
+     * @param string|null $refer
      *
      * @return array
      */
-    public function checkCredentials(string $apiKey = null): array
+    public function checkCredentials(?string $apiKey, ?string $refer): array
     {
         $credentials = ['isAdmin' => false, 'isAuth' => false];
 
@@ -117,6 +124,11 @@ class AuthenticatorService extends Service
 
             if (!($application Instanceof Application)) {
                 throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid API Token');
+            }
+
+            // Match application with refer
+            if (!empty($refer) && !empty($application->getRefer()) && $refer !== $application->getRefer()) {
+                throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid refer');
             }
 
             $user = $application->getUser();

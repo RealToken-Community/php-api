@@ -50,7 +50,10 @@ class TokenController
      */
     public function showTokensDeprecated(Request $request): JsonResponse
     {
-        $credentials = $this->authenticatorService->checkCredentials($this->getApiToken($request));
+        $credentials = $this->authenticatorService->checkCredentials(
+            $this->getApiToken($request),
+            $request->headers->get('host')
+        );
 
         return $this->tokenService->getTokens($credentials, true);
     }
@@ -71,7 +74,10 @@ class TokenController
      */
     public function showTokens(Request $request): JsonResponse
     {
-        $credentials = $this->authenticatorService->checkCredentials($this->getApiToken($request));
+        $credentials = $this->authenticatorService->checkCredentials(
+            $this->getApiToken($request),
+            $request->headers->get('host')
+        );
 
         return $this->tokenService->getTokens($credentials);
     }
@@ -93,7 +99,10 @@ class TokenController
      */
     public function showToken(Request $request, string $uuid) : JsonResponse
     {
-        $credentials = $this->authenticatorService->checkCredentials($this->getApiToken($request));
+        $credentials = $this->authenticatorService->checkCredentials(
+            $this->getApiToken($request),
+            $request->headers->get('host')
+        );
 
         return $this->tokenService->getToken($credentials, $uuid);
     }
@@ -125,7 +134,10 @@ class TokenController
      */
     public function updateToken(Request $request, string $uuid) : JsonResponse
     {
-        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+        $this->authenticatorService->checkAdminRights(
+            $this->getApiToken($request),
+            $request->headers->get('host')
+        );
 
         return $this->tokenService->updateToken($uuid, $this->getDataJson($request));
     }
@@ -147,7 +159,10 @@ class TokenController
      */
     public function deleteToken(Request $request, string $uuid): JsonResponse
     {
-        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+        $this->authenticatorService->checkAdminRights(
+            $this->getApiToken($request),
+            $request->headers->get('host')
+        );
 
         return $this->tokenService->deleteToken($uuid);
     }
@@ -180,7 +195,10 @@ class TokenController
      */
     public function createTokenDeprecated(Request $request): JsonResponse
     {
-        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+        $this->authenticatorService->checkAdminRights(
+            $this->getApiToken($request),
+            $request->headers->get('host')
+        );
 
         return $this->tokenService->createToken($this->getDataJson($request), true);
     }
@@ -211,7 +229,10 @@ class TokenController
      */
     public function createToken(Request $request): JsonResponse
     {
-        $this->authenticatorService->checkAdminRights($this->getApiToken($request));
+        $this->authenticatorService->checkAdminRights(
+            $this->getApiToken($request),
+            $request->headers->get('host')
+        );
 
         return $this->tokenService->createToken($this->getDataJson($request));
     }
