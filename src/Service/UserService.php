@@ -62,6 +62,7 @@ class UserService extends Service
         $application->setUser($user);
         $application->setName($request->get('appName'));
         $application->setApiToken($this->generateToken());
+        $application->setRefer($this->parseReferUri($request->get('refer')));
 
         $this->em->persist($application);
         $this->em->flush();
@@ -127,5 +128,13 @@ class UserService extends Service
         }
         
         return $user;
+    }
+
+    private function parseReferUri(string $uri)
+    {
+        $pattern = "/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/";
+        preg_match($pattern, $uri, $matches);
+
+        return $matches[1];
     }
 }
