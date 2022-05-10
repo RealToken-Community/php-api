@@ -37,7 +37,7 @@ class AuthenticatorService extends Service
 
         // Match application with refer
         if (!empty($refer) && !empty($application->getRefer()) && $refer !== $application->getRefer()) {
-            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid refer');
+            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid refer : ' . $refer);
         }
     }
 
@@ -128,7 +128,7 @@ class AuthenticatorService extends Service
 
             // Match application with refer
             if (!empty($refer) && !empty($application->getRefer()) && $refer !== $application->getRefer()) {
-                throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid refer');
+                throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid refer' . $refer);
             }
 
             $user = $application->getUser();
