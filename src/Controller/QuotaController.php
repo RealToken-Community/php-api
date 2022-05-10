@@ -47,7 +47,10 @@ class QuotaController
     public function showQuotas(Request $request): JsonResponse
     {
         $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights($apiKey);
+        $this->authenticatorService->checkAdminRights(
+            $apiKey,
+            $request->headers->get('host')
+        );
 
         return $this->quotaService->getUserQuotas($apiKey);
     }

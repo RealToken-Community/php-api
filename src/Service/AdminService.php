@@ -593,6 +593,7 @@ class AdminService extends Service
                     'id' => $application->getId(),
                     'name' => $application->getName(),
                     'token' => $application->getApiToken(),
+                    'refer' => $application->getRefer(),
                 ],
                 'quota' => [
                     'id' => $quotaId,

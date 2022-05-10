@@ -39,6 +39,11 @@ class Application
      */
     private $apiToken;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $refer;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -94,5 +99,17 @@ class Application
     public function setApiToken(string $apiToken): void
     {
         $this->apiToken = $apiToken;
+    }
+
+    public function getRefer(): ?string
+    {
+        return $this->refer;
+    }
+
+    public function setRefer(?string $refer): self
+    {
+        $this->refer = $refer;
+
+        return $this;
     }
 }
