@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
 #      - image: sigri44/circleci-php-ruby-capistrano
-      - image: cimg/base:stable
+      - image: cimg/base:current
         environment:
           IMAGE_NAME: silarhi/symfony-docker-ci
     steps:
