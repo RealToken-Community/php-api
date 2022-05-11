@@ -39,7 +39,11 @@ trait DataControllerTrait
      */
     public function getRequestOrigin(Request $request): ?string
     {
-        return $request->server->get('HTTP_ORIGIN') ?? null;
+        if (!empty($request->server->get('HTTP_ORIGIN'))) {
+            return $this->extractDomainUri($request->server->get('HTTP_ORIGIN'));
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -52,5 +56,20 @@ trait DataControllerTrait
     public function getRequestIpAddress(Request $request): ?string
     {
         return $request->server->get('HTTP_X_REAL_IP') ?? null;
+    }
+
+    /**
+     * Extract domain Uri.
+     *
+     * @param string $uri
+     *
+     * @return mixed
+     */
+    private function extractDomainUri(string $uri)
+    {
+        $pattern = "/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/";
+        preg_match($pattern, $uri, $matches);
+
+        return $matches[1];
     }
 }

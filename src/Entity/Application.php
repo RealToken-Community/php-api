@@ -42,7 +42,7 @@ class Application
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $refer;
+    private $referer;
 
     public function getId(): ?int
     {
@@ -101,14 +101,14 @@ class Application
         $this->apiToken = $apiToken;
     }
 
-    public function getRefer(): ?string
+    public function getReferer(): ?string
     {
-        return $this->refer;
+        return $this->referer;
     }
 
-    public function setRefer(?string $refer): self
+    public function setReferer(?string $referer): self
     {
-        $this->refer = $refer;
+        $this->referer = $referer;
 
         return $this;
     }

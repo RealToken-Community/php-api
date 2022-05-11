@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\AuthenticatorService;
 use App\Service\UserService;
+use App\Traits\DataControllerTrait;
 use App\Traits\HeadersControllerTrait;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends AbstractController
 {
     use HeadersControllerTrait;
+    use DataControllerTrait;
 
     /** @var AuthenticatorService */
     private AuthenticatorService $authenticatorService;

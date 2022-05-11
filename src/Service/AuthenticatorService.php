@@ -36,7 +36,7 @@ class AuthenticatorService extends Service
         }
 
         // Match application with refer
-        if (!empty($application->getRefer()) && $refer !== $application->getRefer()) {
+        if (!empty($application->getReferer()) && $refer !== $application->getReferer()) {
             throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid refer source : ' . $refer);
         }
     }
@@ -127,7 +127,7 @@ class AuthenticatorService extends Service
             }
 
             // Match application with refer
-            if (!empty($application->getRefer()) && $refer !== $application->getRefer()) {
+            if (!empty($application->getReferer()) && $refer !== $application->getReferer()) {
                 throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid refer source : ' . $refer);
             }
 
