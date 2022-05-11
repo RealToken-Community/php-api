@@ -163,6 +163,8 @@ class DefiService extends Service
      * Get symbol token from EtherscanDOM.
      *
      * @return JsonResponse
+     *
+     * @throws InvalidArgumentException
      */
     public function generateTokenSymbol(): JsonResponse
     {

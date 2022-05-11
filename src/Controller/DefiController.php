@@ -85,7 +85,7 @@ class DefiController
      * @param Request $request
      *
      * @return JsonResponse
-     * @throws Exception
+     * @throws InvalidArgumentException
      * @Route("/generateSymbol", name="token_symbol_generate", methods={"POST"})
      */
     public function generateTokenSymbol(Request $request): JsonResponse
