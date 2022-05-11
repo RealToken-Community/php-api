@@ -18,7 +18,7 @@ jobs:
 
   deploy:
     machine:
-      enabled: true
+      image: ubuntu-2004:current
     steps:
       - add_ssh_keys:
           fingerprints:
