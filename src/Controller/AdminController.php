@@ -13,6 +13,7 @@ use App\Form\Type\TokenlistTagType;
 use App\Form\Type\TokenlistTokenType;
 use App\Service\AdminService;
 use App\Service\AuthenticatorService;
+use App\Traits\DataControllerTrait;
 use App\Traits\HeadersControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class AdminController extends AbstractController
 {
     use HeadersControllerTrait;
+    use DataControllerTrait;
 
     /** @var AuthenticatorService */
     private AuthenticatorService $authenticatorService;
@@ -49,7 +51,10 @@ class AdminController extends AbstractController
     {
         // Check admin rights
         $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights($apiKey);
+        $this->authenticatorService->checkAdminRights(
+            $apiKey,
+            $this->getRequestOrigin($request)
+        );
 
         return $this->render(
             "admin/usersQuota.html.twig", [
@@ -71,7 +76,10 @@ class AdminController extends AbstractController
     {
         // Check admin rights
         $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights($apiKey);
+        $this->authenticatorService->checkAdminRights(
+            $apiKey,
+            $this->getRequestOrigin($request)
+        );
 
         switch ($request->get('method')) {
             case 'create':
@@ -105,7 +113,10 @@ class AdminController extends AbstractController
     {
         // Check admin rights
         $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights($apiKey);
+        $this->authenticatorService->checkAdminRights(
+            $apiKey,
+            $this->getRequestOrigin($request)
+        );
 
         switch ($request->get('method')) {
             case 'create':
@@ -140,7 +151,10 @@ class AdminController extends AbstractController
     {
         // Check admin rights
         $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights($apiKey);
+        $this->authenticatorService->checkAdminRights(
+            $apiKey,
+            $this->getRequestOrigin($request)
+        );
 
         switch ($request->get('method')) {
             case 'create':
@@ -174,7 +188,10 @@ class AdminController extends AbstractController
     {
         // Check admin rights
         $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights($apiKey);
+        $this->authenticatorService->checkAdminRights(
+            $apiKey,
+            $this->getRequestOrigin($request)
+        );
 
         return $this->render(
             "admin/routeIntegrity.html.twig", [
@@ -199,7 +216,10 @@ class AdminController extends AbstractController
     {
         // Check admin rights
         $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights($apiKey);
+        $this->authenticatorService->checkAdminRights(
+            $apiKey,
+            $this->getRequestOrigin($request)
+        );
 
         if ($request->get('method') === 'delete') {
             $this->adminService->dropTokens();
@@ -224,7 +244,10 @@ class AdminController extends AbstractController
     {
         // Check admin rights
         $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights($apiKey);
+        $this->authenticatorService->checkAdminRights(
+            $apiKey,
+            $this->getRequestOrigin($request)
+        );
 
 //        // Form Chain
 //        $tokenlistNetwork = new TokenlistNetwork();

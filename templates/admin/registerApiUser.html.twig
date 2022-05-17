@@ -59,6 +59,9 @@
             <div class="form-group">
                 <input type="text" class="form-control" id="formGroupAppName" name="appName" placeholder="AppName" required>
             </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="formGroupReferer" name="referer" placeholder="Referer">
+            </div>
 
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
@@ -79,6 +82,7 @@
                 Password : {{ form.user.password }}
                 Token : {{ form.application.apiToken }}
                 AppName : {{ form.application.name }}
+                Refer : {{ form.application.referer }}
                 </pre>
             </div>
         </div>

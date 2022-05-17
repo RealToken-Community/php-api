@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Application;
 use App\Entity\User;
+use App\Traits\DataControllerTrait;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class UserService extends Service
 {
+    use DataControllerTrait;
+
     /**
      * Register user form
      *
@@ -62,6 +65,7 @@ class UserService extends Service
         $application->setUser($user);
         $application->setName($request->get('appName'));
         $application->setApiToken($this->generateToken());
+        $application->setReferer($this->extractDomainUri($request->get('referer')));
 
         $this->em->persist($application);
         $this->em->flush();
@@ -127,5 +131,13 @@ class UserService extends Service
         }
         
         return $user;
+    }
+
+    private function parseReferUri(string $uri)
+    {
+        $pattern = "/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/";
+        preg_match($pattern, $uri, $matches);
+
+        return $matches[1];
     }
 }
