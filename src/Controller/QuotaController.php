@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\AuthenticatorService;
 use App\Service\QuotaService;
 use App\Service\TokenService;
+use App\Traits\DataControllerTrait;
 use App\Traits\HeadersControllerTrait;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -18,6 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class QuotaController
 {
     use HeadersControllerTrait;
+    use DataControllerTrait;
 
     /** @var AuthenticatorService */
     private AuthenticatorService $authenticatorService;
