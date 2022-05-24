@@ -23,7 +23,7 @@ jobs:
       - run: echo ${VPS_REALT_HOST}
       - run:
           name: "Deploy image to staging"
-          command: ssh realt@149.202.145.112 -p 2222 "cd ${WORKING_DIR}/current && /bin/bash -eo .circleci/continous_deployment.sh"
+          command: ssh realt@149.202.145.112 -p 2222 "set +eo && cd ${WORKING_DIR}/current && ./.circleci/continous_deployment.sh"
 
   webhook:
     machine:
