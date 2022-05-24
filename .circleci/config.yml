@@ -4,18 +4,7 @@ orbs:
   discord: antonioned/discord@0.1.0
 
 jobs:
-  build:
-    machine:
-      image: ubuntu-2004:current
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "20:00:72:01:07:09:68:c9:78:df:ee:54:2e:72:5a:c8"
-      - run:
-          name: "Deploy Capistrano pipeline"
-          command: ssh realt@149.202.145.112 -p 2222 "cd ${WORKING_DIR}/current && cap symfony:realtapi:staging deploy --dry-run"
-
-#  deploy:
+#  build:
 #    machine:
 #      image: ubuntu-2004:current
 #    steps:
@@ -23,8 +12,21 @@ jobs:
 #          fingerprints:
 #            - "20:00:72:01:07:09:68:c9:78:df:ee:54:2e:72:5a:c8"
 #      - run:
+#          name: "Deploy Capistrano pipeline"
+#          command: ssh realt@149.202.145.112 -p 2222 "cd ${WORKING_DIR}/current && cap symfony:realtapi:staging deploy --dry-run"
+
+  deploy:
+    machine:
+      image: ubuntu-2004:current
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "20:00:72:01:07:09:68:c9:78:df:ee:54:2e:72:5a:c8"
+      - run:
 #          name: "Deploy image to staging"
 #          command: ssh realt@149.202.145.112 -p 2222 "cd ${WORKING_DIR}/current && ./.circleci/continous_deployment.sh"
+          name: "Deploy Capistrano pipeline"
+          command: ssh realt@149.202.145.112 -p 2222 "cd ${WORKING_DIR}/current && cap symfony:realtapi:staging deploy --dry-run"
 
   webhook:
     machine:
@@ -39,10 +41,10 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      - build
+#      - build
       - deploy:
-          requires:
-            - build
+#          requires:
+#            - build
           filters:
             branches:
               only:
