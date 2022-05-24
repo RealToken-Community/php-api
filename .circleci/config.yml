@@ -34,7 +34,7 @@ jobs:
 #            ssh ${VPS_REALT_USER}@${VPS_REALT_HOST} -p ${VPS_REALT_PORT} "ls -lah"
 #            ssh ${VPS_REALT_USER}@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "ls -lah"
 #            ssh ${VPS_REALT_USER}@${VPS_REALT_IP} -p ${VPS_REALT_PORT} "cd ${VPS_REALT_PATH} && ./deploy.sh"
-            ssh realt@149.202.145.112 -p 2222 "cd /home/realt/docker/api/preprod/current/.circleci && ./continous_deployment.sh"
+            ssh realt@149.202.145.112 -p 2222 "cd /home/realt/docker/api/preprod && ./current/.circleci/continous_deployment.sh"
 
   webhook:
     machine:
