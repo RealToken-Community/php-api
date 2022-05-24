@@ -11,7 +11,9 @@ jobs:
         environment:
           IMAGE_NAME: silarhi/symfony-docker-ci
     steps:
-      - checkout
+      #- checkout
+      - run: ssh realt@149.202.145.112 -p 2222 "cd ${WORKING_DIR}/current && cap symfony:realtapi:staging deploy --dry-run"
+
 
   deploy:
     machine:
@@ -20,7 +22,6 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "20:00:72:01:07:09:68:c9:78:df:ee:54:2e:72:5a:c8"
-      - run: echo ${VPS_REALT_HOST}
       - run:
           name: "Deploy image to staging"
           command: ssh realt@149.202.145.112 -p 2222 "cd ${WORKING_DIR}/current && ./.circleci/continous_deployment.sh"

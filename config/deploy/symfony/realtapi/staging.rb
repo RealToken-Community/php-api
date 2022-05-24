@@ -1,6 +1,6 @@
 set :stage, :staging
 
-server "preprod.realt.community", user: "root", port: 2222, roles: %w{all staging}
+server "preprod.realt.community", user: "realt", port: 2222, roles: %w{all staging}
 
 # The user that the server is running under (used for ACLs)
 # set :symfony_server_user, 'realt'
