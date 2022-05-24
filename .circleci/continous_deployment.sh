@@ -1,11 +1,11 @@
 #!/bin/bash
 
-WORKING_DIR=${PWD}
+WORKING_DIR="/home/realt/docker/api/preprod"
 
 # Remove linked .env
 rm .env*
 # Copy real .env files
-cp "${WORKING_DIR}"/../../shared/.env* .
+cp "${WORKING_DIR}"/shared/.env* .
 
 # Docker build
 docker build .
