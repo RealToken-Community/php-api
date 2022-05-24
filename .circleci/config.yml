@@ -5,15 +5,9 @@ orbs:
 
 jobs:
   build:
-#    docker:
-#      - image: sigri44/circleci-php-ruby-capistrano
-#      - image: cimg/base:current
-#        environment:
-#          IMAGE_NAME: silarhi/symfony-docker-ci
     machine:
       image: ubuntu-2004:current
     steps:
-      #- checkout
       - add_ssh_keys:
           fingerprints:
             - "20:00:72:01:07:09:68:c9:78:df:ee:54:2e:72:5a:c8"
