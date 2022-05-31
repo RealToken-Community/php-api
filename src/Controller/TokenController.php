@@ -33,6 +33,35 @@ class TokenController
     }
 
     /**
+     * Show latest token updated.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     * @Route("/lastUpdate", name="token_last_updated", methods={"GET"})
+     */
+    public function showLatestUpdated(Request $request): JsonResponse
+    {
+        $credentials = $this->authenticatorService->checkCredentials(
+            $this->getApiToken($request),
+            $this->getRequestOrigin($request)
+        );
+
+        return $this->tokenService->showLatestUpdated($credentials);
+    }
+
+    /**
+     * Show latest token update time.
+     *
+     * @return JsonResponse
+     * @throws Exception
+     * @Route("/lastUpdateTime", name="token_last_update_time", methods={"GET"})
+     */
+    public function showLatestUpdateTime(): JsonResponse
+    {
+        return $this->tokenService->showLatestUpdateTime();
+    }
+
+    /**
      * List all tokens (deprecated).
      *
      * @OA\Response(
