@@ -209,6 +209,37 @@ class TokenService extends Service
     }
 
     /**
+     * Show latest token updated.
+     *
+     * @param array $credentials
+     * @return JsonResponse
+     */
+    public function showLatestUpdated(array $credentials): JsonResponse
+    {
+        $tokenRepository = $this->em->getRepository(Token::class);
+
+        /** @var Token $lastTokenUpdated */
+        $lastTokenUpdated = $tokenRepository->getLastTokenUpdated()[0];
+
+        return new JsonResponse($lastTokenUpdated->__toArray($credentials), Response::HTTP_OK);
+    }
+
+    /**
+     * Show latest token update time.
+     *
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function showLatestUpdateTime(): JsonResponse
+    {
+        $tokenRepository = $this->em->getRepository(Token::class);
+
+        $lastUpdateTime = new DateTime($tokenRepository->getLastTokenUpdateTime());
+
+        return new JsonResponse($lastUpdateTime, Response::HTTP_OK);
+    }
+
+    /**
      * Check existence of Token.
      *
      * @param string $uuid
