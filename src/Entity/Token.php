@@ -1179,6 +1179,13 @@ class Token
         return $this;
     }
 
+    /**
+     * Token toArray.
+     *
+     * @param array $credentials
+     *
+     * @return array
+     */
     public function __toArray(array $credentials): array
     {
         if ($credentials['isAuth']) {

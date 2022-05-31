@@ -52,4 +52,36 @@ class TokenRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute();
     }
+
+    /**
+     * Show last token updated.
+     *
+     * @return array
+     */
+    public function getLastTokenUpdated(): array
+    {
+        return $this->createQueryBuilder('t')
+            ->select('t')
+            ->orderBy('t.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Show last token update time.
+     *
+     * @return string
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function getLastTokenUpdateTime()
+    {
+        return $this->createQueryBuilder('t')
+            ->select('t.lastUpdate')
+            ->orderBy('t.lastUpdate', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
