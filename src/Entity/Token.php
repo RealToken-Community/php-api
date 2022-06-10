@@ -359,6 +359,11 @@ class Token
      */
     private $uuid;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $totalTokensRegSummed;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -1196,6 +1201,18 @@ class Token
         return $this;
     }
 
+    public function getTotalTokensRegSummed(): ?int
+    {
+        return $this->totalTokensRegSummed;
+    }
+
+    public function setTotalTokensRegSummed(?int $totalTokensRegSummed): self
+    {
+        $this->totalTokensRegSummed = $totalTokensRegSummed;
+
+        return $this;
+    }
+
     /**
      * Token toArray.
      *
@@ -1214,6 +1231,7 @@ class Token
                 'canal' => $this->canal,
                 'currency' => $this->currency,
                 'totalTokens' => $this->totalTokens,
+                'totalTokensRegSummed' => $this->totalTokensRegSummed,
                 'uuid' => $this->uuid,
                 'ethereumContract' => $this->ethereumContract,
                 'xDaiContract' => $this->xDaiContract,
