@@ -54,19 +54,19 @@ class Token
     private $totalTokens;
 
     /**
-     * @ORM\Column(type="string", length=42, unique=true)
+     * @ORM\Column(type="string", length=42, nullable=true)
      */
     private $ethereumContract;
 
     /**
      * @ORM\Column(type="string", length=42, nullable=true)
      */
-    private $maticContract;
+    private $xDaiContract;
 
     /**
      * @ORM\Column(type="string", length=42, nullable=true)
      */
-    private $xDaiContract;
+    private $gnosisContract;
 
     /**
      * @ORM\Column(type="float", nullable=true)
@@ -354,6 +354,16 @@ class Token
      */
     private $propertyStories;
 
+    /**
+     * @ORM\Column(type="string", length=42, unique=true)
+     */
+    private $uuid;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $totalTokensRegSummed;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -431,26 +441,26 @@ class Token
         return $this;
     }
 
+    public function getUuid(): ?string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid): self
+    {
+        $this->uuid = $uuid;
+
+        return $this;
+    }
+
     public function getEthereumContract(): ?string
     {
         return $this->ethereumContract;
     }
 
-    public function setEthereumContract(string $ethereumContract): self
+    public function setEthereumContract(?string $ethereumContract): self
     {
         $this->ethereumContract = $ethereumContract;
-
-        return $this;
-    }
-
-    public function getMaticContract(): ?string
-    {
-        return $this->maticContract;
-    }
-
-    public function setMaticContract(?string $maticContract): self
-    {
-        $this->maticContract = $maticContract;
 
         return $this;
     }
@@ -463,6 +473,18 @@ class Token
     public function setXDaiContract(?string $xDaiContract): self
     {
         $this->xDaiContract = $xDaiContract;
+
+        return $this;
+    }
+
+    public function getGnosisContract(): ?string
+    {
+        return $this->gnosisContract;
+    }
+
+    public function setGnosisContract(?string $gnosisContract): self
+    {
+        $this->gnosisContract = $gnosisContract;
 
         return $this;
     }
@@ -1179,6 +1201,18 @@ class Token
         return $this;
     }
 
+    public function getTotalTokensRegSummed(): ?int
+    {
+        return $this->totalTokensRegSummed;
+    }
+
+    public function setTotalTokensRegSummed(?int $totalTokensRegSummed): self
+    {
+        $this->totalTokensRegSummed = $totalTokensRegSummed;
+
+        return $this;
+    }
+
     /**
      * Token toArray.
      *
@@ -1197,9 +1231,11 @@ class Token
                 'canal' => $this->canal,
                 'currency' => $this->currency,
                 'totalTokens' => $this->totalTokens,
+                'totalTokensRegSummed' => $this->totalTokensRegSummed,
+                'uuid' => $this->uuid,
                 'ethereumContract' => $this->ethereumContract,
-                //'maticContract' => $this->maticContract,
                 'xDaiContract' => $this->xDaiContract,
+                'gnosisContract' => $this->gnosisContract,
                 'totalInvestment' => $this->totalInvestment,
                 'grossRentYear' => $this->grossRentYear,
                 'grossRentMonth' => $this->grossRentMonth,
@@ -1264,15 +1300,15 @@ class Token
                 'symbol' => $this->symbol,
                 'tokenPrice' => $this->tokenPrice,
                 'currency' => $this->currency,
+                'uuid' => $this->uuid,
                 'ethereumContract' => $this->ethereumContract,
-                //'maticContract' => $this->maticContract,
                 'xDaiContract' => $this->xDaiContract,
+                'gnosisContract' => $this->gnosisContract,
                 'lastUpdate' => $this->lastUpdate
             ];
         }
 
         if ($credentials['isAdmin']) {
-            $response['maticContract'] = $this->maticContract;
             $response['originSecondaryMarketplaces'] = $this->originSecondaryMarketplaces;
         }
 

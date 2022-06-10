@@ -155,20 +155,20 @@ class TokenController
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
      * @param Request $request
-     * @param string $uuid
+     * @param string $contractAddress
      *
      * @return JsonResponse
      * @throws Exception
      * @Route("/{uuid}", name="token_update", methods={"PUT"})
      */
-    public function updateToken(Request $request, string $uuid) : JsonResponse
+    public function updateToken(Request $request, string $contractAddress) : JsonResponse
     {
         $this->authenticatorService->checkAdminRights(
             $this->getApiToken($request),
             $this->getRequestOrigin($request)
         );
 
-        return $this->tokenService->updateToken($uuid, $this->getDataJson($request));
+        return $this->tokenService->updateToken($contractAddress, $this->getDataJson($request));
     }
 
     /**
@@ -181,19 +181,19 @@ class TokenController
      * @OA\Tag(name="Tokens")
      * @Security(name="api_key")
      * @param Request $request
-     * @param string $uuid
+     * @param string $contractAddress
      *
      * @return JsonResponse
      * @Route("/{uuid}", name="token_delete", methods={"DELETE"})
      */
-    public function deleteToken(Request $request, string $uuid): JsonResponse
+    public function deleteToken(Request $request, string $contractAddress): JsonResponse
     {
         $this->authenticatorService->checkAdminRights(
             $this->getApiToken($request),
             $this->getRequestOrigin($request)
         );
 
-        return $this->tokenService->deleteToken($uuid);
+        return $this->tokenService->deleteToken($contractAddress);
     }
 
     /**

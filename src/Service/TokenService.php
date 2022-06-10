@@ -105,27 +105,29 @@ class TokenService extends Service
 
         // Check if unique value or multiple are push
         if (!isset($parsedJson[0])) { // Single
-            /** @var Token $token */
-            $token = $tokenRepository->findOneBy(['ethereumContract' => $parsedJson['ethereumContract']]);
+            $token = $this->checkTokenExistence($parsedJson['uuid']);
+
             $this->createOrUpdateToken($token, $parsedJson, $count);
             $this->em->flush();
         } else { // Multiple
-            $tokens = $tokenRepository->findBy(['ethereumContract' => array_column($parsedJson, 'ethereumContract')]);
+            $tokens = $tokenRepository->findBy(['uuid' => array_column($parsedJson, 'uuid')]);
 
             $this->em->getConnection()->beginTransaction();
 
             $batchSize = 50;
             $i = 1;
             foreach ($parsedJson as $item) {
-                if (empty($item['ethereumContract'])) {
+                if (empty($item['uuid'])) {
                     continue;
                 }
+
                 if (false === $this->haveValidChannel($item['canal'])) {
                     continue;
                 }
 
                 $token = array_filter($tokens, static function ($currentToken) use ($item) {
-                    if (strtolower($currentToken->getEthereumContract()) === strtolower($item['ethereumContract'])) {
+                    /** @var Token $currentToken */
+                    if (strtolower($currentToken->getUuid()) === strtolower($item['uuid'])) {
                         return true;
                     }
                 });
@@ -161,15 +163,15 @@ class TokenService extends Service
     /**
      * Update token from uuid.
      *
-     * @param string $uuid
+     * @param string $contractAddress
      * @param array|null $dataJson
      *
      * @return JsonResponse
      * @throws Exception
      */
-    public function updateToken(string $uuid, array $dataJson = []): JsonResponse
+    public function updateToken(string $contractAddress, array $dataJson = []): JsonResponse
     {
-        $token = $this->checkTokenExistence($uuid);
+        $token = $this->checkTokenExistence($contractAddress);
 
         $parsedJson = $this->checkAndParseDataJson($dataJson);
 
@@ -189,15 +191,15 @@ class TokenService extends Service
     }
 
     /**
-     * Delete token from uuid.
+     * Delete token from contract address.
      *
-     * @param string $uuid
+     * @param string $contractAddress
      *
      * @return JsonResponse
      */
-    public function deleteToken(string $uuid): JsonResponse
+    public function deleteToken(string $contractAddress): JsonResponse
     {
-        $token = $this->checkTokenExistence($uuid);
+        $token = $this->checkTokenExistence($contractAddress);
 
         $this->em->remove($token);
         $this->em->flush();
@@ -242,19 +244,16 @@ class TokenService extends Service
     /**
      * Check existence of Token.
      *
-     * @param string $uuid
+     * @param string $contractAddress
      *
      * @return Token
      */
-    private function checkTokenExistence(string $uuid): Token
+    private function checkTokenExistence(string $contractAddress): Token
     {
-        /** @var Token $token */
-        $token = $this->em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]);
+        //$uuid = $this->getUuidByUniversalId($contractAddress);
 
-        // Todo : Factorize previous and next rqt
-        if (empty($token)) {
-          $token = $this->em->getRepository(Token::class)->findOneBy(['xDaiContract' => $uuid]);
-        }
+        /** @var Token $token */
+        $token = $this->em->getRepository(Token::class)->findOneBy(['uuid' => $contractAddress]);
 
         if (!$token) {
             throw new HttpException(Response::HTTP_NOT_FOUND, 'Record doesn\'t exist');
@@ -360,6 +359,30 @@ class TokenService extends Service
     }
 
     /**
+     * Get token uuid from contracts.
+     *
+     * @param string $uuid
+     *
+     * @return string
+     */
+    private function getUuidByUniversalId(string $uuid): string
+    {
+        if (!empty($tokenByUuid = $this->em->getRepository(Token::class)->findOneBy(['uuid' => $uuid]))) {
+            $uuid = $tokenByUuid["uuid"];
+        } elseif (!empty($tokenByGnosisContract = $this->em->getRepository(Token::class)->findOneBy(['gnosisContract' => $uuid]))) {
+            $uuid = $tokenByGnosisContract["uuid"];
+        } elseif (!empty($tokenByXdaiContract = $this->em->getRepository(Token::class)->findOneBy(['xDaiContract' => $uuid]))) {
+            $uuid = $tokenByXdaiContract["uuid"];
+        } elseif (!empty($tokenByEthereumContract = $this->em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]))) {
+            $uuid = $tokenByEthereumContract["uuid"];
+        } else {
+            $uuid = null;
+        }
+
+        return $uuid;
+    }
+
+    /**
      * Build token skeleton.
      *
      * @param array $dataJson
@@ -379,9 +402,11 @@ class TokenService extends Service
         $token->setCanal($dataJson['canal'] ?: null);
         $token->setCurrency($dataJson['currency'] ?: null);
         $token->setTotalTokens($dataJson['totalTokens'] ?: 0);
-        $token->setEthereumContract($dataJson['ethereumContract']);
-        $token->setMaticContract(isset($dataJson['maticContract']) ? $dataJson['maticContract'] : null);
+        $token->setTotalTokensRegSummed($dataJson['totalTokensRegSummed'] ?: 0);
+        $token->setUuid($dataJson['uuid'] ?: null);
+        $token->setEthereumContract($dataJson['ethereumContract'] ?: null);
         $token->setXDaiContract($dataJson['xDaiContract'] ?: null);
+        $token->setGnosisContract($dataJson['xDaiContract'] ?: null);
         $token->setTotalInvestment((float)$dataJson['totalInvestment'] ?: null);
         $token->setGrossRentMonth(isset($dataJson['grossRent']) ? (float)$dataJson['grossRent'] : 0);
         $token->setGrossRentYear($token->getGrossRentMonth() * 12 ?: 0);
@@ -412,9 +437,10 @@ class TokenService extends Service
         }
         $token->setNetRentYear($token->getNetRentMonth() * 12 ?: 0);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?: 0);
-        $token->setNetRentYearPerToken(!empty($token->getTotalTokens())
-            ? $token->getNetRentYear() / $token->getTotalTokens()
-            : 0);
+        $token->setNetRentYearPerToken(
+            !empty($token->getTotalTokensRegSummed())
+            ? $token->getNetRentYear() / $token->getTotalTokensRegSummed()
+            : $token->getNetRentYear() / $token->getTotalTokens());
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?: 0);
         $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?: 0);
         $token->setAnnualPercentageYield($token->getTotalInvestment()
