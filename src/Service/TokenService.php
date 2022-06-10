@@ -105,22 +105,19 @@ class TokenService extends Service
 
         // Check if unique value or multiple are push
         if (!isset($parsedJson[0])) { // Single
-            $token = $this->checkTokenExistence($parsedJson['ethereumContract']);
-            if (empty($token)) {
-                $token = $this->checkTokenExistence($parsedJson['xDaiContract']);
-            }
+            $token = $this->checkTokenExistence($parsedJson['uuid']);
 
             $this->createOrUpdateToken($token, $parsedJson, $count);
             $this->em->flush();
         } else { // Multiple
-            $tokens = $tokenRepository->findBy(['uuid' => array_column($parsedJson, 'ethereumContract')]);
+            $tokens = $tokenRepository->findBy(['uuid' => array_column($parsedJson, 'uuid')]);
 
             $this->em->getConnection()->beginTransaction();
 
             $batchSize = 50;
             $i = 1;
             foreach ($parsedJson as $item) {
-                if (empty($item['ethereumContract']) && $item['xDaiContract']) {
+                if (empty($item['uuid'])) {
                     continue;
                 }
 
@@ -129,7 +126,8 @@ class TokenService extends Service
                 }
 
                 $token = array_filter($tokens, static function ($currentToken) use ($item) {
-                    if (strtolower($currentToken->getEthereumContract()) === strtolower($item['ethereumContract'])) {
+                    /** @var Token $currentToken */
+                    if (strtolower($currentToken->getUuid()) === strtolower($item['uuid'])) {
                         return true;
                     }
                 });
@@ -404,6 +402,7 @@ class TokenService extends Service
         $token->setCanal($dataJson['canal'] ?: null);
         $token->setCurrency($dataJson['currency'] ?: null);
         $token->setTotalTokens($dataJson['totalTokens'] ?: 0);
+        $token->setTotalTokensRegSummed($dataJson['totalTokensRegSummed'] ?: 0);
         $token->setUuid($dataJson['uuid'] ?: null);
         $token->setEthereumContract($dataJson['ethereumContract'] ?: null);
         $token->setXDaiContract($dataJson['xDaiContract'] ?: null);
@@ -438,9 +437,10 @@ class TokenService extends Service
         }
         $token->setNetRentYear($token->getNetRentMonth() * 12 ?: 0);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?: 0);
-        $token->setNetRentYearPerToken(!empty($token->getTotalTokens())
-            ? $token->getNetRentYear() / $token->getTotalTokens()
-            : 0);
+        $token->setNetRentYearPerToken(
+            !empty($token->getTotalTokensRegSummed())
+            ? $token->getNetRentYear() / $token->getTotalTokensRegSummed()
+            : $token->getNetRentYear() / $token->getTotalTokens());
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?: 0);
         $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?: 0);
         $token->setAnnualPercentageYield($token->getTotalInvestment()
