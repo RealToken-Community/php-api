@@ -458,7 +458,7 @@ class Token
         return $this->ethereumContract;
     }
 
-    public function setEthereumContract(string $ethereumContract): self
+    public function setEthereumContract(?string $ethereumContract): self
     {
         $this->ethereumContract = $ethereumContract;
 
