@@ -179,6 +179,13 @@ class TokenService extends Service
             throw new HttpException(Response::HTTP_NOT_ACCEPTABLE, 'Data is empty or not recognized');
         }
 
+        if (!$this->diffTokenApiWithJson($token, $parsedJson)) {
+            return new JsonResponse(
+                ["status" => "success", "message" => "Nothing to update"],
+                Response::HTTP_ACCEPTED
+            );
+        }
+
         $this->tokenMapping($parsedJson, $token);
 
         $this->em->persist($token);
@@ -380,6 +387,115 @@ class TokenService extends Service
         }
 
         return $uuid;
+    }
+
+    /**
+     * Compare API Token with Json token.
+     *
+     * @param Token $token
+     * @param array $json
+     *
+     * @return bool
+     */
+    private function diffTokenApiWithJson(Token $token, array $json): bool
+    {
+        $hashToken = $this->hashTokenData($token);
+        $hashJson = $this->hashTokenData($json);
+
+        if ($hashToken != $hashJson) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Hash token data.
+     *
+     * @param $token
+     *
+     * @return string
+     */
+    private function hashTokenData($token): string
+    {
+        $result = $this->getTokenProperties($token);
+        $hash = hash("md5", (string)$result);
+
+        return $hash;
+    }
+
+    private function getTokenProperties($json): array
+    {
+        if (gettype($json) === "object") {
+            $toto = json_encode($json);
+            $err = json_last_error_msg();
+            $array = (array)$json;
+
+            $result = [];
+            foreach ($json as $key => $value)
+            {
+                $result[$key] = (is_array($value) || is_object($value)) ? object_to_array($value) : $value;
+            }
+
+            $json = json_decode(json_encode($json),true);
+        }
+
+        return [
+            $json['assetParking'],
+            $json['bedroom/bath'],
+            $json['blockchainAddresses'],
+            $json['canal'],
+            $json['constructionType'],
+            $json['constructionYear'],
+            $json['cooling'],
+            $json['currency'],
+            $json['ethereumContract'],
+            $json['foundation'],
+            $json['fullName'],
+            $json['hasTenants'],
+            $json['heating'],
+            $json['imageLink'],
+            $json['initialLaunchDate'],
+            $json['initialMaintenanceReserve'],
+            $json['lotSize'],
+            $json['marketplaceLink'],
+            $json['propertyStories'],
+            $json['propertyType'],
+            $json['renewalDate'],
+            $json['rentCalculationType'],
+            $json['rentStartDate'],
+            $json['rentedUnits'],
+            $json['roofType'],
+            $json['secondaryMarketplace'],
+            $json['secondaryMarketplaces'],
+            $json['sellPropertyTo'],
+            $json['seriesNumber'],
+            $json['shortName'],
+            $json['squareFeet'],
+            $json['symbol'],
+            $json['termOfLease'],
+            $json['tokenIdRules'],
+            $json['totalTokens'],
+            $json['totalTokensRegSummed'],
+            $json['totalUnits'],
+            $json['uuid'],
+            $json['xDaiContract'],
+            (float)$json['grossRent'],
+            (float)$json['insurance'],
+            (float)$json['miscellaneousCosts'],
+            (float)$json['propertyMaintenanceMonthly'],
+            (float)$json['propertyManagementPercent'],
+            (float)$json['propertyTaxes'],
+            (float)$json['realtListingFee'],
+            (float)$json['realtListingFeePercent'],
+            (float)$json['realtPlatformPercent'],
+            (float)$json['renovationReserve'],
+            (float)$json['tokenPrice'],
+            (float)$json['totalInvestment'],
+            (float)$json['underlyingAssetPrice'],
+            (float)$json['utilities'],
+            (int)$json['section8paid']
+        ];
     }
 
     /**
