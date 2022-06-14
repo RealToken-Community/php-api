@@ -255,12 +255,7 @@ class TokenService extends Service
         /** @var Token $token */
         $token = $this->em->getRepository(Token::class)->findOneBy(['uuid' => $contractAddress]);
 
-        if (!$token) {
-//            throw new HttpException(Response::HTTP_NOT_FOUND, 'Record doesn\'t exist');
-            return null;
-        }
-
-        return $token;
+        return $token ?: null;
     }
 
     /**
