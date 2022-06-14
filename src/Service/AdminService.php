@@ -524,7 +524,11 @@ class AdminService extends Service
         $treeWalker = new TreeWalker([]);
 
         // Get json diff
-        $filteredResult = $treeWalker->getdiff($onlineDataPreprod, $onlineDataProd, true);
+        if ($_ENV['APP_ENV'] === "prod") {
+            $filteredResult = $treeWalker->getdiff($onlineDataProd, $onlineDataPreprod, true);
+        } else {
+            $filteredResult = $treeWalker->getdiff($onlineDataPreprod, $onlineDataProd, true);
+        }
 
         // Remove values
         $treeWalker->walker($filteredResult, function(&$struct, $key) {
