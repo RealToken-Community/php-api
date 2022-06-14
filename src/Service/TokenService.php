@@ -246,9 +246,9 @@ class TokenService extends Service
      *
      * @param string $contractAddress
      *
-     * @return Token
+     * @return Token|null
      */
-    private function checkTokenExistence(string $contractAddress): Token
+    private function checkTokenExistence(string $contractAddress): ?Token
     {
         //$uuid = $this->getUuidByUniversalId($contractAddress);
 
@@ -256,7 +256,8 @@ class TokenService extends Service
         $token = $this->em->getRepository(Token::class)->findOneBy(['uuid' => $contractAddress]);
 
         if (!$token) {
-            throw new HttpException(Response::HTTP_NOT_FOUND, 'Record doesn\'t exist');
+//            throw new HttpException(Response::HTTP_NOT_FOUND, 'Record doesn\'t exist');
+            return null;
         }
 
         return $token;
