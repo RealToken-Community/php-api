@@ -5,7 +5,7 @@ server "preprod.realt.community", user: "realt", port: 2222, roles: %w{all stagi
 # The user that the server is running under (used for ACLs)
 # set :symfony_server_user, 'realt'
 set :application, 'api.preprod.realt.community'
-set :branch, 'preprod'
+set :branch, 'circleci'
 
 set :deploy_to, -> { "/home/realt/docker/api/preprod" }
 set :repo_path, -> { "#{fetch(:deploy_to)}/repo" }
