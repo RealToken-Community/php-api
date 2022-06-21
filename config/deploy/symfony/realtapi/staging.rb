@@ -19,8 +19,8 @@ set :linked_files, %w{.env .env.prod .env.testing}
 set :keep_releases, 5
 
 # Use local composer.phar
-SSHKit.config.command_map[:php] = '/usr/bin/php'
-SSHKit.config.command_map[:composer] = "/usr/bin/php #{release_path.join("composer.phar")}"
+# SSHKit.config.command_map[:php] = '/usr/bin/php'
+# SSHKit.config.command_map[:composer] = "/usr/bin/php #{release_path.join("composer.phar")}"
 
 # For Debug
 #set :composer_install_flags, '--no-interaction --optimize-autoloader'
