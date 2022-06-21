@@ -629,7 +629,7 @@ class AdminService extends Service
 
         $array = json_decode($jsonData);
         foreach($array as $value) {
-            $orderedArray[$value->blockchainAddresses->ethereum->distributor] = $value;
+            $orderedArray[$value->uuid] = $value;
         }
 
         return json_encode($orderedArray);
