@@ -1,4 +1,5 @@
 set :repo_url, 'git@github.com:RealT-Community/RealT-API.git'
+set :branch, 'circleci'
 
 ## Docker Config
 namespace :docker do
