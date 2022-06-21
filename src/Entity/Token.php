@@ -12,9 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Token
 {
-    const CANAL_RELEASE = "Release";
-    const CANAL_COMING_SOON = "Coming Soon";
-    const CANAL_CLOSED = "Closed";
+    const CANAL_RELEASE = "release";
+    const CANAL_COMING_SOON = "coming_soon";
+    const CANAL_OFFERING_CLOSED = "offering_closed";
+    const CANAL_OFFERING_CANCELED = "offering_canceled";
 
     /**
      * @ORM\Id()
@@ -1222,6 +1223,13 @@ class Token
      */
     public function __toArray(array $credentials): array
     {
+        // Check if canal is available for public & check rights
+        if (!in_array($this->getCanal(), [Token::CANAL_RELEASE, Token::CANAL_OFFERING_CLOSED])) {
+            if (!$credentials['isAdmin']) {
+                return [];
+            }
+        }
+
         if ($credentials['isAuth']) {
             $response = [
                 'fullName' => $this->fullName,
