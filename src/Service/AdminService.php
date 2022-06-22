@@ -245,6 +245,7 @@ class AdminService extends Service
             '/v1/tokenList',
             '/v1/token',
             '/v1/token/0xe5f7ef61443fc36ae040650aa585b0395aef77c8',
+            '/v1/token/lastUpdate',
             '/v1/quota',
         ];
 
