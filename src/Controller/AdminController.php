@@ -16,6 +16,7 @@ use App\Service\AuthenticatorService;
 use App\Traits\DataControllerTrait;
 use App\Traits\HeadersControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -291,5 +292,24 @@ class AdminController extends AbstractController
                 'tokenList' => $this->adminService->getTokenList(),
             ]
         );
+    }
+
+    /**
+     * Get environments differences.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     * @Route("/environmentsDifferences", name="admin_environments_differences", methods={"GET"})
+     */
+    public function getEnvironmentsDifferences(Request $request): Response
+    {
+        // Check admin rights
+        $this->authenticatorService->checkAdminRights(
+            $this->getApiToken($request),
+            $this->getRequestOrigin($request)
+        );
+
+        return new JsonResponse($this->adminService->compareOnlineTokensData(), Response::HTTP_OK);
     }
 }
