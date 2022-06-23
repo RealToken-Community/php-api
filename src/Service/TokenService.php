@@ -47,7 +47,9 @@ class TokenService extends Service
                 throw new HttpException(Response::HTTP_NOT_FOUND, 'Token not found');
             }
 
-            $result[] = $token->__toArray($credentials);
+            if (!empty($tokenResult = $token->__toArray($credentials))) {
+                $result[] = $tokenResult;
+            }
         }
 
         $response = Response::HTTP_OK;
@@ -73,7 +75,7 @@ class TokenService extends Service
 
         // Todo : Factorize previous and next rqt
         if (empty($token)) {
-          $token = $this->em->getRepository(Token::class)->findOneBy(['xDaiContract' => $uuid]);
+            $token = $this->em->getRepository(Token::class)->findOneBy(['xDaiContract' => $uuid]);
         }
 
         if (!($token instanceof Token)) {
@@ -351,7 +353,14 @@ class TokenService extends Service
      */
     private function haveValidChannel($channel): bool
     {
-        return $channel === Token::CANAL_RELEASE || $channel === Token::CANAL_COMING_SOON;
+        $channels = [
+            Token::CANAL_RELEASE,
+            Token::CANAL_COMING_SOON,
+            Token::CANAL_OFFERING_CLOSED,
+            Token::CANAL_OFFERING_CANCELED
+        ];
+
+        return in_array($channel, $channels);
     }
 
     /**
