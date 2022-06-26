@@ -4,6 +4,17 @@ set :repo_url, 'git@github.com:RealT-Community/RealT-API.git'
 namespace :docker do
     desc "Custom RealT jobs for containers/Symfony config"
     task :realt do
+        on roles(:circleci) do
+            within release_path do
+                # Restart containers on Staging
+                # TODO: Add docker builder
+#                execute "chown", "-R", "realt:docker", "/home/realt/docker/api/circleci/releases", "/home/realt/docker/api/circleci/current"
+#                execute "chmod", "+x", "/home/realt/docker/api/circleci/current/.circleci/continous_deployment.sh"
+#                execute "runuser", "-l", "realt", "-c", "'cd /home/realt/docker/api/circleci/current && ./.circleci/continous_deployment.sh'"
+               execute "'cd /home/realt/docker/api/circleci/current && ./.circleci/continous_deployment.sh'"
+            end
+        end
+
         on roles(:staging) do
             within release_path do
                 # Restart containers on Staging
@@ -11,7 +22,7 @@ namespace :docker do
 #                execute "chown", "-R", "realt:docker", "/home/realt/docker/api/preprod/releases", "/home/realt/docker/api/preprod/current"
 #                execute "chmod", "+x", "/home/realt/docker/api/preprod/current/.circleci/continous_deployment.sh"
 #                execute "runuser", "-l", "realt", "-c", "'cd /home/realt/docker/api/preprod/current && ./.circleci/continous_deployment.sh'"
-               execute "'cd /home/realt/docker/api/preprod/current && ./.circleci/continous_deployment.sh'"
+#               execute "'cd /home/realt/docker/api/preprod/current && ./.circleci/continous_deployment.sh'"
             end
         end
 
