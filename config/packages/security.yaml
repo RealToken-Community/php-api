@@ -1,7 +1,8 @@
 security:
-    encoders:
-        App\Entity\User:
-            algorithm: auto
+# TODO : DEPRECATED WITH SF 6.X
+#    encoders:
+#        App\Entity\User:
+#            algorithm: auto
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
@@ -15,14 +16,17 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            anonymous: lazy
+            # TODO : DEPRECATED WITH SF 6.X
+#            anonymous: lazy
             logout: ~
 
-            provider: app_user_provider
+            # TODO : DEPRECATED WITH SF 6.X
+#            provider: app_user_provider
 
-            guard:
-                authenticators:
-                    - App\Security\TokenAuthenticator
+            # TODO : DEPRECATED WITH SF 6.X
+#            guard:
+#                authenticators:
+#                    - App\Security\TokenAuthenticator
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
