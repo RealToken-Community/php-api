@@ -1,4 +1,4 @@
-set :stage, :staging
+set :stage, :circleci
 
 server "preprod.realt.community", user: "realt", port: 2222, roles: %w{all circleci}
 
