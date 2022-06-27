@@ -1,3 +1,4 @@
+set :stages, ["staging", "circleci"]
 set :repo_url, 'git@github.com:RealT-Community/RealT-API.git'
 
 ## Docker Config
@@ -15,25 +16,6 @@ namespace :docker do
             end
         end
 
-        on roles(:staging) do
-            within release_path do
-                # Restart containers on Staging
-                # TODO: Add docker builder
-#                execute "chown", "-R", "realt:docker", "/home/realt/docker/api/preprod/releases", "/home/realt/docker/api/preprod/current"
-#                execute "chmod", "+x", "/home/realt/docker/api/preprod/current/.circleci/continous_deployment.sh"
-#                execute "runuser", "-l", "realt", "-c", "'cd /home/realt/docker/api/preprod/current && ./.circleci/continous_deployment.sh'"
-#               execute "'cd /home/realt/docker/api/preprod/current && ./.circleci/continous_deployment.sh'"
-            end
-        end
-
-        on roles(:production) do
-            within release_path do
-                # Restart containers on Production
-#                execute "chown", "-R", "realt:docker", "/home/realt/docker/api/prod/releases", "/home/realt/docker/api/prod/current"
-#                 execute "chmod", "+x", "/home/realt/docker/api/prod/current/.circleci/continous_deployment.sh"
-#                 execute "runuser", "-l", "realt", "-c", "'cd /home/realt/docker/api/prod/current && ./.circleci/continous_deployment.sh'"
-            end
-        end
     end
 end
 
