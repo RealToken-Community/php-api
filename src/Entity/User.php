@@ -133,9 +133,9 @@ class User implements UserInterface
     }
 
     /**
-     * @return Collection|Application[]
+     * @return Collection
      */
-    public function getApplications(): Collection|\Doctrine\Common\Collections\Collection
+    public function getApplications(): Collection
     {
         return $this->applications;
     }

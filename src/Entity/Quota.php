@@ -70,9 +70,9 @@ class Quota
     }
 
     /**
-     * @return Collection|QuotaHistory[]
+     * @return Collection
      */
-    public function getQuotaHistories(): Collection|\Doctrine\Common\Collections\Collection
+    public function getQuotaHistories(): Collection
     {
         return $this->quotaHistories;
     }
