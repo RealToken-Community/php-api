@@ -24,7 +24,7 @@ class QuotaLimitationsRepository extends ServiceEntityRepository
      *
      * @return array
      */
-    public function getLimitationsValues():array
+    public function getLimitationsValues(): array
     {
         return $this->_em
             ->getRepository(QuotaLimitations::class)

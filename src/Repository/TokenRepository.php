@@ -33,7 +33,7 @@ class TokenRepository extends ServiceEntityRepository
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function countAllTokens()
+    public function countAllTokens(): mixed
     {
         return $this->createQueryBuilder('t')
             ->select('count(t.id)')
@@ -75,7 +75,7 @@ class TokenRepository extends ServiceEntityRepository
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function getLastTokenUpdateTime()
+    public function getLastTokenUpdateTime(): string
     {
         return $this->createQueryBuilder('t')
             ->select('t.lastUpdate')

@@ -135,7 +135,7 @@ class User implements UserInterface
     /**
      * @return Collection|Application[]
      */
-    public function getApplications(): Collection
+    public function getApplications(): Collection|\Doctrine\Common\Collections\Collection
     {
         return $this->applications;
     }
@@ -179,5 +179,10 @@ class User implements UserInterface
         $this->ethereumAddress = $ethereumAddress;
 
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        // TODO: Implement getUserIdentifier() method.
     }
 }
