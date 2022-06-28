@@ -65,7 +65,7 @@ trait DataControllerTrait
      *
      * @return mixed
      */
-    private function extractDomainUri(string $uri)
+    private function extractDomainUri(string $uri): mixed
     {
         $pattern = "/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/";
         preg_match($pattern, $uri, $matches);

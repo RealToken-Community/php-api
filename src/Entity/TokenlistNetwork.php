@@ -71,7 +71,7 @@ class TokenlistNetwork
     /**
      * @return Collection|TokenlistToken[]
      */
-    public function getTokenlistTokens(): Collection
+    public function getTokenlistTokens(): Collection|\Doctrine\Common\Collections\Collection
     {
         return $this->tokenlistTokens;
     }

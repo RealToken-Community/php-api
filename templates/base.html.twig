@@ -1,19 +1,41 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>
+        {% block title %}
+            Welcome!
         {% endblock %}
+    </title>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    {% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Admin</a>
+    <ul class="navbar-nav mr-auto">
+        {% block menu %}
+            <li class="nav-item"><a class="nav-link" href="{{ path('admin_check_route_integrity', {realtAuthToken: apiKey}) }}">Check route integrity</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('register_api_user', {realtAuthToken: apiKey}) }}">Register new User</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('admin_user_quota', {realtAuthToken: apiKey}) }}">Get users quota</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('admin_manage_quota', {realtAuthToken: apiKey}) }}">Manage Quotas (V1)</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('admin_manage_quotas', {realtAuthToken: apiKey}) }}">Manage Quotas (V2)</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('admin_manage_token_mapping', {realtAuthToken: apiKey}) }}">Token mapping</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('admin_manage_token_list', {realtAuthToken: apiKey}) }}">Token list</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ path('admin_drop_tokens', {realtAuthToken: apiKey}) }}">Drop tokens</a></li>
+        {% endblock %}
+    </ul>
+</nav>
+{% block body %}{% endblock %}
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+<footer>
+    {% block javascripts %}
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    {% endblock %}
+</footer>
+</body>
 </html>
