@@ -442,10 +442,14 @@ class TokenService extends Service
         }
         $token->setNetRentYear($token->getNetRentMonth() * 12 ?: 0);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?: 0);
-        $token->setNetRentYearPerToken(
-            !empty($token->getTotalTokensRegSummed())
-            ? $token->getNetRentYear() / $token->getTotalTokensRegSummed()
-            : $token->getNetRentYear() / $token->getTotalTokens());
+        if (empty($token->getTotalTokensRegSummed()) && empty($token->getTotalTokens())) {
+            $token->setNetRentYearPerToken(0);
+        } else {
+            $token->setNetRentYearPerToken(
+                !empty($token->getTotalTokensRegSummed())
+                    ? $token->getNetRentYear() / $token->getTotalTokensRegSummed()
+                    : $token->getNetRentYear() / $token->getTotalTokens());
+        }
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?: 0);
         $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?: 0);
         $token->setAnnualPercentageYield($token->getTotalInvestment()
