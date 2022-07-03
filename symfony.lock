@@ -267,6 +267,9 @@
             "config/packages/sentry.yaml"
         ]
     },
+    "symfony-bundles/json-request-bundle": {
+        "version": "4.1.2"
+    },
     "symfony/asset": {
         "version": "v4.4.14"
     },
