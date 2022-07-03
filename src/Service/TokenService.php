@@ -100,7 +100,10 @@ class TokenService extends Service
         $parsedJson = $this->checkAndParseDataJson($dataJson);
 
         if (!$parsedJson) {
-            throw new HttpException(Response::HTTP_NOT_ACCEPTABLE, 'Data is empty or not recognized');
+            return new JsonResponse(
+                ["status" => "error", "message" => "Data is empty or not recognized"],
+                Response::HTTP_NOT_ACCEPTABLE
+            );
         }
 
         $tokenRepository = $this->em->getRepository(Token::class);
@@ -166,7 +169,7 @@ class TokenService extends Service
      * Update token from uuid.
      *
      * @param string $contractAddress
-     * @param array|null $dataJson
+     * @param array $dataJson
      *
      * @return JsonResponse
      * @throws Exception
@@ -178,7 +181,10 @@ class TokenService extends Service
         $parsedJson = $this->checkAndParseDataJson($dataJson);
 
         if (!$parsedJson) {
-            throw new HttpException(Response::HTTP_NOT_ACCEPTABLE, 'Data is empty or not recognized');
+            return new JsonResponse(
+                ["status" => "error", "message" => "Data is empty or not recognized"],
+                Response::HTTP_NOT_ACCEPTABLE
+            );
         }
 
         $this->tokenMapping($parsedJson, $token);
