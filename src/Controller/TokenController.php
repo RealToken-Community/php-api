@@ -36,6 +36,7 @@ class TokenController
      * Show latest token updated.
      *
      * @param Request $request
+     *
      * @return JsonResponse
      * @Route("/lastUpdate", name="token_last_updated", methods={"GET"})
      */
@@ -110,7 +111,7 @@ class TokenController
 
         return $this->tokenService->getTokens($credentials);
     }
-
+    
     /**
      * Return data from token.
      *

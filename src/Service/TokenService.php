@@ -9,7 +9,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Contracts\Cache\CacheInterface;
 
 /**
@@ -44,7 +43,10 @@ class TokenService extends Service
         $result = [];
         foreach ($tokens as $token) {
             if (!($token instanceof Token)) {
-                throw new HttpException(Response::HTTP_NOT_FOUND, 'Token not found');
+                return new JsonResponse(
+                    ["status" => "error", "message" => "Token not found"],
+                    Response::HTTP_NOT_FOUND
+                );
             }
 
             if (!empty($tokenResult = $token->__toArray($credentials))) {
@@ -79,7 +81,10 @@ class TokenService extends Service
         }
 
         if (!($token instanceof Token)) {
-            throw new HttpException(Response::HTTP_NOT_FOUND, 'Token not found');
+            return new JsonResponse(
+                ["status" => "error", "message" => "Token not found"],
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         return new JsonResponse($token->__toArray($credentials), Response::HTTP_OK);

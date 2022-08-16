@@ -2,15 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\TokenlistNetwork;
-use App\Entity\TokenlistRefer;
-use App\Entity\TokenlistTag;
-use App\Entity\TokenlistToken;
-use App\Form\TokenlistForm;
-use App\Form\Type\TokenlistNetworkType;
-use App\Form\Type\TokenlistReferType;
-use App\Form\Type\TokenlistTagType;
-use App\Form\Type\TokenlistTokenType;
 use App\Service\AdminService;
 use App\Service\AuthenticatorService;
 use App\Traits\DataControllerTrait;

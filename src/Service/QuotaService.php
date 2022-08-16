@@ -17,12 +17,19 @@ class QuotaService extends Service
     /**
      * Get user quotas.
      *
-     * @param string $apiKey
+     * @param string|null $apiKey
      *
      * @return JsonResponse
      */
-    public function getUserQuotas(string $apiKey): JsonResponse
+    public function getUserQuotas(?string $apiKey): JsonResponse
     {
+        if (empty($apiKey)) {
+            return new JsonResponse(
+                ["status" => "error", "message" => "Api key not found"],
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
         $applicationRepository = $this->em->getRepository(Application::class);
         $application = $applicationRepository->findOneBy(['apiToken' => $apiKey]);
 
@@ -33,7 +40,10 @@ class QuotaService extends Service
         }
 
         if (empty(array_values($roles))) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, "Not admin user");
+            return new JsonResponse(
+                ["status" => "error", "message" => "Not admin user"],
+                Response::HTTP_FORBIDDEN
+            );
         }
 
         $role = array_values($roles)[0];

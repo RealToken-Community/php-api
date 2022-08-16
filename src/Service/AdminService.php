@@ -253,14 +253,16 @@ class AdminService extends Service
             $uri = $_SERVER["SERVER_NAME"] . $url;
             $response = $this->curlRequest($uri, true);
 
-            if (!isset($response['error'])) {
+            if (!isset($response['status'])) {
                 $response = substr(json_encode($response),0,85);
+            } else {
+                $response = ["error" => ["code" => 401, "message" => $response["message"]]];
             }
 
-            array_push($routes, [
+            $routes[] = [
                 "url" => substr($url, 0, 20),
                 "response" => $response,
-            ]);
+            ];
         }
 
         return $routes;

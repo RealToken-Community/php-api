@@ -7,8 +7,8 @@ use App\Entity\Quota;
 use App\Entity\QuotaHistory;
 use App\Entity\QuotaLimitations;
 use DateTime;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\RateLimiter\Storage\InMemoryStorage;
@@ -24,6 +24,8 @@ class AuthenticatorService extends Service
      *
      * @param string|null $apiKey
      * @param string|null $refer
+     *
+     * @return JsonResponse|void
      */
     public function checkAdminRights(?string $apiKey, ?string $refer)
     {
@@ -31,13 +33,23 @@ class AuthenticatorService extends Service
             $application = $this->getApplicationByToken($apiKey);
         }
 
+        if (!empty($application) && $application instanceof JsonResponse) {
+            return $application;
+        }
+
         if (empty($apiKey) || !$this->applicationHaveAdminRights($application)) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, "Unauthorized");
+            return new JsonResponse(
+                ["status" => "error", "message" => "Unauthorized"],
+                Response::HTTP_FORBIDDEN
+            );
         }
 
         // Match application with refer
         if (!empty($application->getReferer()) && $refer !== $application->getReferer()) {
-            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid refer source : ' . $refer);
+            return new JsonResponse(
+                ["status" => "error", "message" => "Invalid refer source : " . $refer],
+                Response::HTTP_UNAUTHORIZED
+            );
         }
     }
 
@@ -45,6 +57,8 @@ class AuthenticatorService extends Service
      * Check hydrator rights.
      *
      * @param string|null $apiKey
+     *
+     * @return JsonResponse|void
      */
     public function checkHydratorRights(?string $apiKey)
     {
@@ -53,7 +67,10 @@ class AuthenticatorService extends Service
         }
 
         if (empty($apiKey) || !$this->applicationHaveHydratorRights($application)) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, "Unauthorized");
+            return new JsonResponse(
+                ["status" => "error", "message" => "Unauthorized"],
+                Response::HTTP_FORBIDDEN
+            );
         }
     }
 
@@ -62,9 +79,9 @@ class AuthenticatorService extends Service
      *
      * @param string $apiKey
      *
-     * @return Application
+     * @return Application|JsonResponse
      */
-    public function getApplicationByToken(string $apiKey): Application
+    public function getApplicationByToken(string $apiKey): JsonResponse|Application
     {
         $applicationRepository = $this->em->getRepository(Application::class);
 
@@ -72,7 +89,10 @@ class AuthenticatorService extends Service
         $application = $applicationRepository->findOneBy(['apiToken' => $apiKey]);
 
         if (is_null($application)) {
-            throw new HttpException(Response::HTTP_NOT_FOUND, "Api token not found");
+            return new JsonResponse(
+                ["status" => "error", "message" => "Api token not found"],
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         $this->consumeQuota($application);
@@ -112,9 +132,9 @@ class AuthenticatorService extends Service
      * @param string|null $apiKey
      * @param string|null $refer
      *
-     * @return array
+     * @return bool[]|false[]|JsonResponse
      */
-    public function checkCredentials(?string $apiKey, ?string $refer): array
+    public function checkCredentials(?string $apiKey, ?string $refer): array|JsonResponse
     {
         $credentials = ['isAdmin' => false, 'isAuth' => false];
 
@@ -123,12 +143,18 @@ class AuthenticatorService extends Service
             $application = $applicationRepository->findOneBy(['apiToken' => $apiKey]);
 
             if (!($application Instanceof Application)) {
-                throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid API Token');
+                return new JsonResponse(
+                    ["status" => "error", "message" => "Invalid API Token"],
+                    Response::HTTP_UNAUTHORIZED
+                );
             }
 
             // Match application with refer
             if (!empty($application->getReferer()) && $refer !== $application->getReferer()) {
-                throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Invalid refer source : ' . $refer);
+                return new JsonResponse(
+                    ["status" => "error", "message" => "Invalid refer source : " . $refer],
+                    Response::HTTP_UNAUTHORIZED
+                );
             }
 
             $user = $application->getUser();
@@ -200,7 +226,10 @@ class AuthenticatorService extends Service
         ];
 
         if (false === $limit->isAccepted()) {
-            throw new HttpException(Response::HTTP_TOO_MANY_REQUESTS, null, null, $headers);
+            return new JsonResponse(
+                ["status" => "error", "message" => "Too many requests"],
+                Response::HTTP_TOO_MANY_REQUESTS
+            );
         }
 
         // the argument of consume() is the number of tokens to consume
@@ -262,6 +291,8 @@ class AuthenticatorService extends Service
      *
      * @param Quota $quotaHistory
      * @param Application $application
+     *
+     * @return JsonResponse|void
      */
     private function checkUserQuota(Quota $quotaHistory, Application $application)
     {
@@ -301,7 +332,10 @@ class AuthenticatorService extends Service
             case $nbRequest['day'] > $quotaLimitation->getLimitPerDay():
             case $nbRequest['hour'] > $quotaLimitation->getLimitPerHour():
             case $nbRequest['minute'] > $quotaLimitation->getLimitPerMinute():
-                throw new HttpException(Response::HTTP_TOO_MANY_REQUESTS, 'API quota exceeded');
+                return new JsonResponse(
+                    ["status" => "error", "message" => "API quota exceeded"],
+                    Response::HTTP_TOO_MANY_REQUESTS
+                );
         }
     }
 
@@ -310,6 +344,8 @@ class AuthenticatorService extends Service
      *
      * @param array $roles
      * @param string $apiKey
+     *
+     * @return JsonResponse|void
      */
     private function getUserLimiter(array $roles, string $apiKey)
     {
@@ -318,7 +354,10 @@ class AuthenticatorService extends Service
         }
 
         if (empty(array_values($roles))) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, "Not admin user");
+            return new JsonResponse(
+                ["status" => "error", "message" => "Not admin user"],
+                Response::HTTP_FORBIDDEN
+            );
         }
 
         $role = array_values($roles)[0];
