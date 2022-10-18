@@ -406,13 +406,13 @@ class DefiService extends Service
                         // Regex to format long shortname
                         $shortname = $token->getShortName();
                         if (strlen($shortname) > 20) {
-                            $pattern = "/((.*-)(.*[0-9])-(.*[0-9]) (.*))|((.*[0-9])-(.*[0-9]) (.*))/";
+                            $pattern = "/((OLD-\d*|\d*)?(-?\d*)) (.*)/";
                             preg_match($pattern, $shortname, $matches);
-                            if (!empty($matches[1])) {
-                                $shortname = $matches[2] . $matches[3] . " " . $matches[5];
-                            } else {
-                                $shortname = $matches[7] . " " . $matches[9];
-                            }
+
+                            $shortname = $matches[2] . " " . $matches[4];
+
+                            // TODO : Get only 20 first char (If needed in future)
+                            //$shortname = substr($shortname, 0, 20);
                         }
 
                         $tokenData = [
