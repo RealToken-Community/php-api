@@ -1330,7 +1330,6 @@ class Token
                 'ethereumContract' => $this->ethereumContract,
                 'xDaiContract' => $this->xDaiContract,
                 'gnosisContract' => $this->gnosisContract,
-                'goerliContract' => $this->goerliContract,
                 'lastUpdate' => $this->lastUpdate
             ];
         }
