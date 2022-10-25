@@ -535,6 +535,9 @@ class AdminService extends Service
         $treeWalker->walker($filteredResult, function(&$struct, $key) {
             if ($key == "lastUpdate") {
                 unset($struct[$key]);
+            } // TODO : Tmp filter to prod update
+            elseif($key == "goerliContract") {
+                unset($struct[$key]);
             }
         });
 
