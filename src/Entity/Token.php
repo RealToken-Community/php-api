@@ -70,6 +70,11 @@ class Token
     private $gnosisContract;
 
     /**
+     * @ORM\Column(type="string", length=42, nullable=true)
+     */
+    private $goerliContract;
+
+    /**
      * @ORM\Column(type="float", nullable=true)
      */
     private $totalInvestment;
@@ -486,6 +491,18 @@ class Token
     public function setGnosisContract(?string $gnosisContract): self
     {
         $this->gnosisContract = $gnosisContract;
+
+        return $this;
+    }
+
+    public function getGoerliContract(): ?string
+    {
+        return $this->goerliContract;
+    }
+
+    public function setGoerliContract(?string $goerliContract): self
+    {
+        $this->goerliContract = $goerliContract;
 
         return $this;
     }
@@ -1244,6 +1261,7 @@ class Token
                 'ethereumContract' => $this->ethereumContract,
                 'xDaiContract' => $this->xDaiContract,
                 'gnosisContract' => $this->gnosisContract,
+                'goerliContract' => $this->goerliContract,
                 'totalInvestment' => $this->totalInvestment,
                 'grossRentYear' => $this->grossRentYear,
                 'grossRentMonth' => $this->grossRentMonth,
