@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - circleci
+
+
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: "Deploy Capistrano pipeline"
+        # Need to fix user@host:port, use variables
+        run: ssh realt@149.202.145.112 -p 2222 "cd ${WORKING_DIR}/current && cap symfony:realtapi:staging deploy --trace"
