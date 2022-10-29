@@ -16,4 +16,4 @@ jobs:
 
       - name: "Deploy Capistrano pipeline"
         # Need to fix user@host:port, use variables
-        run: ssh realt@149.202.145.112 -p 2222 "cd ${WORKING_DIR}/current && cap symfony:realtapi:staging deploy --trace"
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }} "cd ${WORKING_DIR}/current && cap symfony:realtapi:staging deploy --trace"
