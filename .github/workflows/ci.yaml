@@ -1,4 +1,4 @@
-name: CI
+name: Connect & Deploy
 
 on:
   push:
