@@ -36,4 +36,4 @@ jobs:
           target: symfony:realtapi:circleci
           enc_rsa_key_pth: config/deploy_id_ed25519_enc
           deploy_key: ${{ secrets.KURTISONELAB_SSH_CAPISTRANO }}
-          capistrano_commands: --trace
+          capistrano_commands: deploy --trace
