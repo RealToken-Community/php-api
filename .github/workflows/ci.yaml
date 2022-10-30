@@ -26,6 +26,6 @@ jobs:
           SSH_KNOWN_HOSTS: ${{secrets.KURTISONELAB_SSH_KNOWN_HOST}}
 
       - name: "Deploy Capistrano pipeline"
-        run: ssh ${{ secrets.KURTISONELAB_SSH_USER }}@${{ secrets.KURTISONELAB_SSH_HOST }} -p ${{ secrets.SSH_PORT }} "cd ${WORKING_DIR}/current && ls -al"
+        run: ssh -i ~/.ssh/private.key ${{ secrets.KURTISONELAB_SSH_USER }}@${{ secrets.KURTISONELAB_SSH_HOST }} -p ${{ secrets.SSH_PORT }} "cd ${WORKING_DIR}/current && ls -al"
         #Host key verification failed.
 
