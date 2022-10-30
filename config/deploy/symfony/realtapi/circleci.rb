@@ -1,13 +1,11 @@
 set :stage, :circleci
 
-server: server, user: ${{ secrets.KURTISONELAB_SSH_USER }}, port: ${{ secrets.SSH_PORT }}, roles: %w{all circleci}
-
 # The user that the server is running under (used for ACLs)
 # set :symfony_server_user, 'realt'
 set :application, 'api.ci.realt.community'
 set :branch, 'circleci'
 
-set :deploy_to, -> { "/home/${{ secrets.KURTISONELAB_SSH_USER }}/docker/api/circleci" }
+set :deploy_to, -> { "/home/kurtisone/docker/api/circleci" }
 set :repo_path, -> { "#{fetch(:deploy_to)}/repo" }
 
 # Set .env files
