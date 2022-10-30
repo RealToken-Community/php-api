@@ -34,4 +34,4 @@ jobs:
         uses: miloserdow/capistrano-deploy@master
         with:
           target: circleci
-          deploy_key: ${{ secrets.KURTISONELAB_SSH_KEY }}
+          deploy_key: ${{ secrets.KURTISONELAB_SSH_CAPISTRANO }}
