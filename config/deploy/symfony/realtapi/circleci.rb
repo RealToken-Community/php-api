@@ -1,6 +1,6 @@
 set :stage, :circleci
 
-server "preprod.realt.community", user: "realt", port: 2222, roles: %w{all circleci}
+server "${{ secrets.KURTISONELAB_SSH_HOST }}", user: "${{ secrets.KURTISONELAB_SSH_USER }}", port: "${{ secrets.SSH_PORT }}", roles: %w{all circleci}
 
 # The user that the server is running under (used for ACLs)
 # set :symfony_server_user, 'realt'
