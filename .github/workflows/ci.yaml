@@ -25,16 +25,26 @@ jobs:
       #    script: |
       #      cd ${WORKING_DIR}/current && ls -al
 
-      - name: "Setup Ruby"
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.0.1
-          bundler-cache: true
-      - name: "Deploy Capistrano pipeline"
-        uses: miloserdow/capistrano-deploy@master
-        with:
-          target: symfony:realtapi:circleci
-          enc_rsa_key_pth: config/deploy_id_ed25519_enc
-          deploy_key: ${{ secrets.KURTISONELAB_SSH_CAPISTRANO }}
-        env: 
-          server: ${{ secrets.KURTISONELAB_SSH_HOST }}
+      #- name: "Setup Ruby"
+      #  uses: ruby/setup-ruby@v1
+      #  with:
+      #    ruby-version: 3.0.1
+      #    bundler-cache: true
+      #- name: "Deploy Capistrano pipeline"
+      #  uses: miloserdow/capistrano-deploy@master
+      #  with:
+      #    target: symfony:realtapi:circleci
+      #    enc_rsa_key_pth: config/deploy_id_ed25519_enc
+      #    deploy_key: ${{ secrets.KURTISONELAB_SSH_CAPISTRANO }}
+      #  env: 
+      #    server: ${{ secrets.KURTISONELAB_SSH_HOST }}
+
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Build and push
+        uses: docker/build-push-action@v3
