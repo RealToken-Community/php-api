@@ -14,14 +14,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2.3.1
+      - name: ssh key passphrase
+        uses: appleboy/ssh-action@master
         with:
+          host: ${{ secrets.KURTISONELAB_SSH_HOST }}
+          username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KURTISONELAB_SSH_KEY }}
-          name: id_rsa # optional
-          known_hosts: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
-          config: ${{ secrets.KURTISONELAB_SSH_CONFIG }} # ssh_config; optional
-          if_key_exists: ignore # replace / ignore / fail; optional (defaults to fail)
+          port: ${{ secrets.SSH_PORT }}
+          passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
+          script: |
+            whoami
+            ls -al
 
       - name: "Deploy Capistrano pipeline"
         run: ssh ${{ secrets.KURTISONELAB_SSH_USER }}@${{ secrets.KURTISONELAB_SSH_HOST }} -p ${{ secrets.SSH_PORT }} "cd ${WORKING_DIR}/current && ls -al"
