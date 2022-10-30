@@ -18,7 +18,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.KURTISONELAB_SSH_HOST }}
-          username: ${{ secrets.USERNAME }}
+          username: ${{ secrets.KURTISONELAB_SSH_USER }}
           key: ${{ secrets.KURTISONELAB_SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
@@ -27,6 +27,6 @@ jobs:
             ls -al
 
       - name: "Deploy Capistrano pipeline"
-        run: ssh ${{ secrets.KURTISONELAB_SSH_USER }}@${{ secrets.KURTISONELAB_SSH_HOST }} -p ${{ secrets.SSH_PORT }} "cd ${WORKING_DIR}/current && ls -al"
+        #run: ssh ${{ secrets.KURTISONELAB_SSH_USER }}@${{ secrets.KURTISONELAB_SSH_HOST }} -p ${{ secrets.SSH_PORT }} "cd ${WORKING_DIR}/current && ls -al"
         #Host key verification failed.
 
