@@ -14,19 +14,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: ssh key passphrase
-        uses: appleboy/ssh-action@master
+      #- name: ssh key passphrase
+      #  uses: appleboy/ssh-action@master
+      #  with:
+      #    host: ${{ secrets.KURTISONELAB_SSH_HOST }}
+      #    username: ${{ secrets.KURTISONELAB_SSH_USER }}
+      #    key: ${{ secrets.KURTISONELAB_SSH_KEY }}
+      #   port: ${{ secrets.SSH_PORT }}
+      #    passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
+      #    script: |
+      #      cd ${WORKING_DIR}/current && ls -al
+
+      - name: "Deploy Capistrano pipeline"
+        uses: ruby/setup-ruby@v1
         with:
-          host: ${{ secrets.KURTISONELAB_SSH_HOST }}
-          username: ${{ secrets.KURTISONELAB_SSH_USER }}
-          key: ${{ secrets.KURTISONELAB_SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
-          script: |
-            whoami
-            ls -al
-
-      #- name: "Deploy Capistrano pipeline"
-        #run: ssh ${{ secrets.KURTISONELAB_SSH_USER }}@${{ secrets.KURTISONELAB_SSH_HOST }} -p ${{ secrets.SSH_PORT }} "cd ${WORKING_DIR}/current && ls -al"
-        #Host key verification failed.
-
+          bundler-cache: true
+        uses: miloserdow/capistrano-deploy@master
+        with:
+          target: circleci
