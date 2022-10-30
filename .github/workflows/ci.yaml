@@ -14,6 +14,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Create SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ../private.key
+          sudo chmod 600 ../private.key
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.KURTISONELAB_SSH_KEY}}
+          SSH_KNOWN_HOSTS: ${{secrets.KURTISONELAB_SSH_KNOWN_HOST}}
+
       - name: "Deploy Capistrano pipeline"
         run: ssh ${{ secrets.KURTISONELAB_SSH_USER }}@${{ secrets.KURTISONELAB_SSH_HOST }} -p ${{ secrets.SSH_PORT }} "cd ${WORKING_DIR}/current && ls -al"
         #Host key verification failed.
+
