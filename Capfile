@@ -18,7 +18,7 @@ install_plugin Capistrano::SCM::Git::WithSubmodules
 require 'capistrano-nc/nc'
 
 # Symfony
-#require 'capistrano/symfony'
+require 'capistrano/symfony'
 
 #task :require_composer do
 #  require 'capistrano/composer'
