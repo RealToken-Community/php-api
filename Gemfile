@@ -13,7 +13,7 @@ gem 'capistrano-git-with-submodules', '~> 2.0'
 gem 'capistrano-nc', '~> 0.2'
 
 # SSHKit
-gem 'net-ssh', '2.7.0'
+gem 'net-ssh', '2.8.0'
 
 # Symfony
 #gem 'capistrano-symfony'
