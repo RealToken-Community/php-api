@@ -13,15 +13,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: ssh key passphrase
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.KURTEST_REALT_HOST }}
           username: ${{ secrets.KURTEST_REALT_USER }}
           key: ${{ secrets.KURTEST_REALT_SSH_KEY }}
-         port: ${{ secrets.SSH_PORT }}
-        #  passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+        # passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
           script: |
             cd ${WORKING_DIR}/current && ls -al
 
