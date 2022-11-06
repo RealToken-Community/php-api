@@ -14,7 +14,7 @@ set :repo_path, -> { "#{fetch(:deploy_to)}/repo" }
 #set :symfony_dotenv_file, './.env.staging' # (Uncomment if use cap in local)
 #set :symfony_upload_dotenv_file_on_deploy, false
 
- set :linked_dirs, %w{logs}
+set :linked_dirs, %w{logs}
 set :linked_files, %w{.env .env.prod .env.testing}
 set :keep_releases, 5
 
