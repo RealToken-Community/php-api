@@ -14,30 +14,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      #- name: ssh key passphrase
-      #  uses: appleboy/ssh-action@master
-      #  with:
-      #    host: ${{ secrets.KURTEST_REALT_HOST }}
-      #    username: ${{ secrets.KURTEST_REALT_USER }}
-      #    key: ${{ secrets.KURTISONELAB_SSH_KEY }}
-      #   port: ${{ secrets.SSH_PORT }}
-      #    passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
-      #    script: |
-      #      cd ${WORKING_DIR}/current && ls -al
+      - name: ssh key passphrase
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.KURTEST_REALT_HOST }}
+          username: ${{ secrets.KURTEST_REALT_USER }}
+          key: ${{ secrets.KURTEST_REALT_SSH_KEY }}
+         port: ${{ secrets.SSH_PORT }}
+        #  passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
+          script: |
+            cd ${WORKING_DIR}/current && ls -al
 
-      - name: "Setup Ruby"
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.0.1
-          bundler-cache: true
-      - name: "Deploy Capistrano pipeline"
-        uses: miloserdow/capistrano-deploy@master
-        with:
-          target: symfony:realtapi:circleci
-          enc_rsa_key_pth: config/deploy_id_ed25519_enc
-          deploy_key: ${{ secrets.KURTEST_CAPISTRANO_PASSWORD }}
-        env: 
-          server: ${{ secrets.KURTEST_REALT_HOST }}
+      #- name: "Setup Ruby"
+      #  uses: ruby/setup-ruby@v1
+      #  with:
+      #    ruby-version: 3.0.1
+      #    bundler-cache: true
+      #- name: "Deploy Capistrano pipeline"
+      #  uses: miloserdow/capistrano-deploy@master
+      #  with:
+      #    target: symfony:realtapi:circleci
+      #    enc_rsa_key_pth: config/deploy_id_ed25519_enc
+      #    deploy_key: ${{ secrets.KURTEST_CAPISTRANO_PASSWORD }}
+      #  env: 
+      #    server: ${{ secrets.KURTEST_REALT_HOST }}
 
       #-
       #  name: Set up QEMU
