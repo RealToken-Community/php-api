@@ -20,6 +20,7 @@ jobs:
           username: ${{ secrets.KURTEST_REALT_USER }}
           key: ${{ secrets.KURTEST_REALT_SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          debug:
         # passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
           script: |
             cd ${WORKING_DIR}/current && ls -al
