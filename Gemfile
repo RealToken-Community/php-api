@@ -12,6 +12,9 @@ gem 'capistrano-git-with-submodules', '~> 2.0'
 # Notifications on MacOS
 gem 'capistrano-nc', '~> 0.2'
 
+# SSHKit
+gem 'net-ssh', '2.7.0'
+
 # Symfony
 #gem 'capistrano-symfony'
 
