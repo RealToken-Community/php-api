@@ -13,7 +13,7 @@ gem 'capistrano-git-with-submodules', '~> 2.0'
 gem 'capistrano-nc', '~> 0.2'
 
 # Symfony
-#gem 'capistrano-symfony'
+gem 'capistrano-symfony'
 
 ########
 # INFO #

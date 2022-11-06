@@ -17,8 +17,8 @@ jobs:
       #- name: ssh key passphrase
       #  uses: appleboy/ssh-action@master
       #  with:
-      #    host: ${{ secrets.KURTISONELAB_SSH_HOST }}
-      #    username: ${{ secrets.KURTISONELAB_SSH_USER }}
+      #    host: ${{ secrets.KURTEST_REALT_HOST }}
+      #    username: ${{ secrets.KURTEST_REALT_USER }}
       #    key: ${{ secrets.KURTISONELAB_SSH_KEY }}
       #   port: ${{ secrets.SSH_PORT }}
       #    passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
