@@ -5,9 +5,9 @@ set :stage, :staging
 # The user that the server is running under (used for ACLs)
 # set :symfony_server_user, 'realt'
 set :application, 'api.preprod.realt.community'
-set :branch, 'preprod'
+set :branch, 'circleci'
 
-set :deploy_to, -> { "/home/realt/docker/api/preprod" }
+set :deploy_to, -> { "/home/kurtest/docker/api/preprod" }
 set :repo_path, -> { "#{fetch(:deploy_to)}/repo" }
 
 # Set .env files

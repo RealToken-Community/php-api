@@ -21,7 +21,9 @@ jobs:
           key: ${{ secrets.KURTEST_REALT_SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
         # passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
-          script: cap install
+          script: |
+          bundle exec cap -T
+          cap check_write_permissions
 
       #- name: "Setup Ruby"
       #  uses: ruby/setup-ruby@v1
