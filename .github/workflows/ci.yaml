@@ -32,7 +32,8 @@ jobs:
         uses: miloserdow/capistrano-deploy@master
         with:
           target: staging
-          enc_rsa_key_pth: config/deploy_id_ed25519_enc
+          #enc_rsa_key_pth: config/deploy_id_ed25519_enc
+          enc_rsa_key_pth: config/deploy_id_ed25519_lab
           deploy_key: ${{ secrets.KURTEST_CAPISTRANO_PASSWORD }}
 
       #-
