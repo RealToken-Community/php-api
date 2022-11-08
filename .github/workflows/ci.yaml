@@ -11,30 +11,30 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      #- name: Checkout
-      #  uses: actions/checkout@v3
-      #- name: ssh key passphrase
-      #  uses: appleboy/ssh-action@master
-      #  with:
-      #    host: ${{ secrets.KURTEST_REALT_HOST }}
-      #    username: ${{ secrets.KURTEST_REALT_USER }}
-      #    key: ${{ secrets.KURTEST_REALT_SSH_KEY }}
-      #    port: ${{ secrets.SSH_PORT }}
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: ssh key passphrase
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.KURTEST_REALT_HOST }}
+          username: ${{ secrets.KURTEST_REALT_USER }}
+          key: ${{ secrets.KURTEST_REALT_SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
         # passphrase: ${{ secrets.KURTISONELAB_SSH_KNOWN_HOST }}
-      #    script: bundle exec cap staging deploy
+          script: bundle exec cap staging deploy
 
-      - name: "Setup Ruby"
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.0.1
-          bundler-cache: true
-      - name: "Deploy Capistrano pipeline"
-        uses: miloserdow/capistrano-deploy@master
-        with:
-          target: staging
-          #enc_rsa_key_pth: config/deploy_id_ed25519_enc
-          enc_rsa_key_pth: config/deploy_id_ed25519_lab
-          deploy_key: ${{ secrets.KURTEST_CAPISTRANO_PASSWORD }}
+      #- name: "Setup Ruby"
+      #  uses: ruby/setup-ruby@v1
+      #  with:
+      #    ruby-version: 3.0.1
+      #    bundler-cache: true
+      #- name: "Deploy Capistrano pipeline"
+      #  uses: miloserdow/capistrano-deploy@master
+      #  with:
+      #    target: staging
+      #    #enc_rsa_key_pth: config/deploy_id_ed25519_enc
+      #    enc_rsa_key_pth: config/deploy_id_ed25519_lab
+      #    deploy_key: ${{ secrets.KURTEST_CAPISTRANO_PASSWORD }}
 
       #-
       #  name: Set up QEMU
