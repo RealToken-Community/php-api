@@ -1,13 +1,14 @@
 set :stage, :circleci
-server "preprod.realt.community", user: "kurtest", port: 2222, roles: %w{app}
+
+server "preprod.realt.community", user: "kurtest", port: 2222, roles: %w{all staging}
 
 # The user that the server is running under (used for ACLs)
 # set :symfony_server_user, 'realt'
-set :application, 'api.ci.realt.community'
+set :application, 'api.preprod.realt.community'
 set :branch, 'circleci'
 
-set :deploy_to, -> { "/home/kurtest/docker/api/circleci" }
-set :repo_path, -> { "#{fetch(:deploy_to)}/repo" }
+set :deploy_to, -> { "/home/kurtest/moncul/" }
+set :repo_path, -> { "#{fetch(:deploy_to)}/repo/" }
 
 # Set .env files
 #set :symfony_dotenv_file, './.env.staging' # (Uncomment if use cap in local)
