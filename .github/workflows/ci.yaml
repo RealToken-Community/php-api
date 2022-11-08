@@ -34,8 +34,6 @@ jobs:
           target: staging
           enc_rsa_key_pth: config/deploy_id_ed25519_enc
           deploy_key: ${{ secrets.KURTEST_CAPISTRANO_PASSWORD }}
-        env: 
-          server: ${{ secrets.KURTEST_REALT_HOST }}
 
       #-
       #  name: Set up QEMU
