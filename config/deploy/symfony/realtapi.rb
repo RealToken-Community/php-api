@@ -12,7 +12,7 @@ namespace :docker do
 #                execute "chown", "-R", "realt:docker", "/home/realt/docker/api/circleci/releases", "/home/realt/docker/api/circleci/current"
 #                execute "chmod", "+x", "/home/realt/docker/api/circleci/current/.circleci/continous_deployment.sh"
 #                execute "runuser", "-l", "realt", "-c", "'cd /home/realt/docker/api/circleci/current && ./.circleci/continous_deployment.sh'"
-               #execute "'cd /home/kurtest/docker/api/circleci/current && ./continous_deployment.sh'"
+                execute "ls", "-al"
             end
         end
 
