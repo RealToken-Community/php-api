@@ -359,7 +359,9 @@ class TokenService extends Service
             Token::CANAL_RELEASE,
             Token::CANAL_COMING_SOON,
             Token::CANAL_OFFERING_CLOSED,
-            Token::CANAL_OFFERING_CANCELED
+            Token::CANAL_OFFERING_CANCELED,
+            Token::CANAL_EXIT_PROPOSED,
+            Token::CANAL_EXIT_COMPLETE
         ];
 
         return in_array($channel, $channels);
