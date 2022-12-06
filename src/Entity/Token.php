@@ -16,6 +16,8 @@ class Token
     const CANAL_COMING_SOON = "coming_soon";
     const CANAL_OFFERING_CLOSED = "offering_closed";
     const CANAL_OFFERING_CANCELED = "offering_canceled";
+    const CANAL_EXIT_PROPOSED = "exit_proposed";
+    const CANAL_EXIT_COMPLETE = "exit_complete";
 
     /**
      * @ORM\Id()
