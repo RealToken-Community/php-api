@@ -1243,7 +1243,12 @@ class Token
     public function __toArray(array $credentials): array
     {
         // Check if canal is available for public & check rights
-        if (!in_array($this->getCanal(), [Token::CANAL_RELEASE, Token::CANAL_OFFERING_CLOSED])) {
+        if (!in_array($this->getCanal(), [
+          Token::CANAL_RELEASE,
+          Token::CANAL_OFFERING_CLOSED,
+          Token::CANAL_EXIT_PROPOSED,
+          Token::CANAL_EXIT_COMPLETE
+        ])) {
             if (!$credentials['isAdmin']) {
                 return [];
             }
