@@ -70,6 +70,6 @@ trait DataControllerTrait
         $pattern = "/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/";
         preg_match($pattern, $uri, $matches);
 
-        return $matches[1];
+        return !empty($matches[1]) ? $matches[1] : null;
     }
 }
