@@ -71,11 +71,13 @@ class TokenService extends Service
      */
     public function getToken(array $credentials, string $uuid): JsonResponse
     {
-        $token = $this->em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]);
-
-        // Todo : Factorize previous and next rqt
-        if (empty($token)) {
-            $token = $this->em->getRepository(Token::class)->findOneBy(['xDaiContract' => $uuid]);
+        // set token variable with gnosisContract Token entity property. If result is null, find with ethereumContract, if result is null, find with goerliContract
+        $token = $this->em->getRepository(Token::class)->findOneBy(['gnosisContract' => $uuid]);
+        if (!$token) {
+            $token = $this->em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]);
+        }
+        if (!$token) {
+            $token = $this->em->getRepository(Token::class)->findOneBy(['goerliContract' => $uuid]);
         }
 
         if (!($token instanceof Token)) {
@@ -357,7 +359,9 @@ class TokenService extends Service
             Token::CANAL_RELEASE,
             Token::CANAL_COMING_SOON,
             Token::CANAL_OFFERING_CLOSED,
-            Token::CANAL_OFFERING_CANCELED
+            Token::CANAL_OFFERING_CANCELED,
+            Token::CANAL_EXIT_PROPOSED,
+            Token::CANAL_EXIT_COMPLETE
         ];
 
         return in_array($channel, $channels);
@@ -380,6 +384,8 @@ class TokenService extends Service
             $uuid = $tokenByXdaiContract["uuid"];
         } elseif (!empty($tokenByEthereumContract = $this->em->getRepository(Token::class)->findOneBy(['ethereumContract' => $uuid]))) {
             $uuid = $tokenByEthereumContract["uuid"];
+        } elseif (!empty($tokenByGoerliContract = $this->em->getRepository(Token::class)->findOneBy(['goerliContract' => $uuid]))) {
+            $uuid = $tokenByGoerliContract["uuid"];
         } else {
             $uuid = null;
         }
@@ -411,7 +417,8 @@ class TokenService extends Service
         $token->setUuid($dataJson['uuid'] ?: null);
         $token->setEthereumContract($dataJson['ethereumContract'] ?: null);
         $token->setXDaiContract($dataJson['xDaiContract'] ?: null);
-        $token->setGnosisContract($dataJson['xDaiContract'] ?: null);
+        $token->setGnosisContract($dataJson['gnosisContract'] ?: null);
+        $token->setGoerliContract($dataJson['goerliContract'] ?: null);
         $token->setTotalInvestment((float)$dataJson['totalInvestment'] ?: null);
         $token->setGrossRentMonth(isset($dataJson['grossRent']) ? (float)$dataJson['grossRent'] : 0);
         $token->setGrossRentYear($token->getGrossRentMonth() * 12 ?: 0);
@@ -442,10 +449,14 @@ class TokenService extends Service
         }
         $token->setNetRentYear($token->getNetRentMonth() * 12 ?: 0);
         $token->setNetRentDay($token->getNetRentYear() / 365 ?: 0);
-        $token->setNetRentYearPerToken(
-            !empty($token->getTotalTokensRegSummed())
-            ? $token->getNetRentYear() / $token->getTotalTokensRegSummed()
-            : $token->getNetRentYear() / $token->getTotalTokens());
+        if (empty($token->getTotalTokensRegSummed()) && empty($token->getTotalTokens())) {
+            $token->setNetRentYearPerToken(0);
+        } else {
+            $token->setNetRentYearPerToken(
+                !empty($token->getTotalTokensRegSummed())
+                    ? $token->getNetRentYear() / $token->getTotalTokensRegSummed()
+                    : $token->getNetRentYear() / $token->getTotalTokens());
+        }
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?: 0);
         $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?: 0);
         $token->setAnnualPercentageYield($token->getTotalInvestment()

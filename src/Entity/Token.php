@@ -16,6 +16,8 @@ class Token
     const CANAL_COMING_SOON = "coming_soon";
     const CANAL_OFFERING_CLOSED = "offering_closed";
     const CANAL_OFFERING_CANCELED = "offering_canceled";
+    const CANAL_EXIT_PROPOSED = "exit_proposed";
+    const CANAL_EXIT_COMPLETE = "exit_complete";
 
     /**
      * @ORM\Id()
@@ -68,6 +70,11 @@ class Token
      * @ORM\Column(type="string", length=42, nullable=true)
      */
     private $gnosisContract;
+
+    /**
+     * @ORM\Column(type="string", length=42, nullable=true)
+     */
+    private $goerliContract;
 
     /**
      * @ORM\Column(type="float", nullable=true)
@@ -486,6 +493,18 @@ class Token
     public function setGnosisContract(?string $gnosisContract): self
     {
         $this->gnosisContract = $gnosisContract;
+
+        return $this;
+    }
+
+    public function getGoerliContract(): ?string
+    {
+        return $this->goerliContract;
+    }
+
+    public function setGoerliContract(?string $goerliContract): self
+    {
+        $this->goerliContract = $goerliContract;
 
         return $this;
     }
@@ -1224,7 +1243,12 @@ class Token
     public function __toArray(array $credentials): array
     {
         // Check if canal is available for public & check rights
-        if (!in_array($this->getCanal(), [Token::CANAL_RELEASE, Token::CANAL_OFFERING_CLOSED])) {
+        if (!in_array($this->getCanal(), [
+          Token::CANAL_RELEASE,
+          Token::CANAL_OFFERING_CLOSED,
+          Token::CANAL_EXIT_PROPOSED,
+          Token::CANAL_EXIT_COMPLETE
+        ])) {
             if (!$credentials['isAdmin']) {
                 return [];
             }
@@ -1244,6 +1268,7 @@ class Token
                 'ethereumContract' => $this->ethereumContract,
                 'xDaiContract' => $this->xDaiContract,
                 'gnosisContract' => $this->gnosisContract,
+                'goerliContract' => $this->goerliContract,
                 'totalInvestment' => $this->totalInvestment,
                 'grossRentYear' => $this->grossRentYear,
                 'grossRentMonth' => $this->grossRentMonth,
