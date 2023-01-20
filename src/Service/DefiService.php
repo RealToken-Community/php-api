@@ -412,7 +412,7 @@ class DefiService extends Service
                             $shortname = $matches[2] . " " . $matches[4];
 
                             // TODO : Get only 20 first char (If needed in future)
-                            //$shortname = substr($shortname, 0, 20);
+                            $shortname = substr($shortname, 0, 20);
                         }
 
                         $tokenData = [
