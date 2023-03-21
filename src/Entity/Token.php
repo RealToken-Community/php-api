@@ -372,6 +372,11 @@ class Token
      */
     private $totalTokensRegSummed;
 
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $rentalType;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -1233,6 +1238,18 @@ class Token
         return $this;
     }
 
+    public function getRentalType(): ?string
+    {
+      return $this->rentalType;
+    }
+
+    public function setRentalType(?string $rentalType): self
+    {
+      $this->rentalType = $rentalType;
+
+      return $this;
+    }
+
     /**
      * Token toArray.
      *
@@ -1324,7 +1341,8 @@ class Token
                 'realtListingFeePercent' => $this->realtListingFeePercent,
                 'realtListingFee' => $this->realtListingFee,
                 'miscellaneousCosts' => $this->miscellaneousCosts,
-                'propertyStories' => $this->propertyStories
+                'propertyStories' => $this->propertyStories,
+                'rentalType' => $this->rentalType
             ];
         } else {
             $response = [
