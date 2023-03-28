@@ -525,6 +525,7 @@ class TokenService extends Service
         $token->setRealtListingFee((float)$dataJson['realtListingFee'] ?: null);
         $token->setMiscellaneousCosts((float)$dataJson['miscellaneousCosts'] ?: null);
         $token->setPropertyStories($dataJson['propertyStories'] ?: null);
+        $token->setRentalType($dataJson['rentalType'] ?: null);
 
         $token->setLastUpdate(new DateTime());
 
