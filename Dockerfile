@@ -1,4 +1,4 @@
-FROM sigri44/docker-symfony:latest
+FROM sigri44/docker-symfony-php7:latest
 
 # Composer
 WORKDIR /var/www/html
@@ -19,6 +19,6 @@ RUN chmod -R 777 var/cache/prod
 # PHP
 ## Remove fastcgi log debug
 #RUN echo 'fastcgi.logging=0' >> "/etc/php7/php.ini"
-RUN echo 'fastcgi.logging=0' >> "/etc/php8/php.ini"
+#RUN echo 'fastcgi.logging=0' >> "/etc/php8/php.ini"
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
