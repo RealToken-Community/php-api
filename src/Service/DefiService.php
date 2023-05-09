@@ -464,10 +464,17 @@ class DefiService extends Service
      */
     private function checkMarketplacesDifference($token): bool
     {
-        $hashOrigin = md5(serialize($token->getOriginSecondaryMarketplaces()));
-        $hashWithPair = md5(serialize($token->getSecondaryMarketplaces()));
+        $getOriginSecondaryMarketplaces = $token->getOriginSecondaryMarketplaces();
+        $getSecondaryMarketplaces = $token->getSecondaryMarketplaces();
 
-        if (hash_equals($hashOrigin, $hashWithPair) && !empty($hashOrigin)) {
+        $hashOrigin = md5(serialize($getOriginSecondaryMarketplaces));
+        $hashWithPair = md5(serialize($getSecondaryMarketplaces));
+
+        // Return true if secondaryMarketplace is empty or if hash's equal, and origin's not empty
+        if (
+          (empty($getSecondaryMarketplaces))
+          || hash_equals($hashOrigin, $hashWithPair) && !empty($hashOrigin)
+        ) {
             return true;
         }
 
@@ -494,7 +501,8 @@ class DefiService extends Service
             if ($network === "ethereum") {
                 $uri = "https://api.etherscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
             } else {
-                $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
+//                $uri = "https://blockscout.com/xdai/mainnet/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
+                $uri = "https://api.gnosisscan.io/api?module=account&action=tokentx&address=".$contractAddress."&sort=asc";
             }
             $json = $this->curlRequest($uri);
 
