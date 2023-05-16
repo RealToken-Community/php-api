@@ -486,7 +486,7 @@ class TokenService extends Service
         }
         $token->setSection8paid(isset($dataJson['section8paid']) ? (int)$dataJson['section8paid'] : null);
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?: null);
-        $token->setSecondaryMarketplace($dataJson['secondaryMarketplace'] ?? null);
+        $token->setSecondaryMarketplace($dataJson['secondaryMarketplace'] ?? []);
         $token->setOriginSecondaryMarketplaces(
             !empty($dataJson['secondaryMarketplaces'])
             ? $dataJson['secondaryMarketplaces']
