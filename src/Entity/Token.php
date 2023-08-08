@@ -377,6 +377,21 @@ class Token
      */
     private $rentalType;
 
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $subsidyStatus;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $subsidyStatusValue;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $subsidyBy;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -1250,6 +1265,42 @@ class Token
       return $this;
     }
 
+    public function getSubsidyStatus(): ?string
+    {
+      return $this->subsidyStatus;
+    }
+
+    public function setSubsidyStatus(?string $subsidyStatus): self
+    {
+      $this->subsidyStatus = $subsidyStatus;
+
+      return $this;
+    }
+
+    public function getSubsidyStatusValue(): ?float
+    {
+      return $this->subsidyStatusValue;
+    }
+
+    public function setSubsidyStatusValue(?float $subsidyStatusValue): self
+    {
+      $this->subsidyStatusValue = $subsidyStatusValue;
+
+      return $this;
+    }
+
+    public function getSubsidyBy(): ?string
+    {
+      return $this->subsidyBy;
+    }
+
+    public function setSubsidyBy(?string $subsidyBy): self
+    {
+      $this->subsidyBy = $subsidyBy;
+
+      return $this;
+    }
+
     /**
      * Token toArray.
      *
@@ -1317,6 +1368,9 @@ class Token
                 'termOfLease' => $this->termOfLease,
                 'renewalDate' => $this->renewalDate,
                 'section8paid' => $this->section8paid,
+                'subsidyStatus' => $this->subsidyStatus,
+                'subsidyStatusValue' => $this->subsidyStatusValue,
+                'subsidyBy' => $this->subsidyBy,
                 'sellPropertyTo' => $this->sellPropertyTo,
                 'secondaryMarketplace' => $this->secondaryMarketplace,
                 'secondaryMarketplaces' => $this->secondaryMarketplaces,
