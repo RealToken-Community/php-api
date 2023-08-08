@@ -484,7 +484,15 @@ class TokenService extends Service
                 $token->setRenewalDate($renewalDate);
             }
         }
+
+        // Section 8
+        // deprecated
         $token->setSection8paid(isset($dataJson['section8paid']) ? (int)$dataJson['section8paid'] : null);
+
+        $token->setSubsidyStatus($dataJson['subsidyStatus'] ?: null);
+        $token->setSubsidyStatusValue($dataJson['subsidyStatusValue'] ?: null);
+        $token->setSubsidyBy($dataJson['subsidyBy'] ?: null);
+
         $token->setSellPropertyTo($dataJson['sellPropertyTo'] ?: null);
         $token->setSecondaryMarketplace($dataJson['secondaryMarketplace'] ?? []);
         $token->setOriginSecondaryMarketplaces(
