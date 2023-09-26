@@ -395,7 +395,7 @@ class Token
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
      */
-    private $product_type;
+    private $productType;
 
     public function getId(): ?int
     {
