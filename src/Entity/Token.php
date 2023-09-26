@@ -392,6 +392,11 @@ class Token
      */
     private $subsidyBy;
 
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $product_type;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -1301,6 +1306,18 @@ class Token
       return $this;
     }
 
+    public function getProductType(): string
+    {
+      return $this->productType;
+    }
+
+    public function setProductType(string $productType): self
+    {
+      $this->productType = $productType;
+
+      return $this;
+    }
+
     /**
      * Token toArray.
      *
@@ -1327,6 +1344,7 @@ class Token
                 'fullName' => $this->fullName,
                 'shortName' => $this->shortName,
                 'symbol' => $this->symbol,
+                'productType' => $this->productType,
                 'tokenPrice' => $this->tokenPrice,
                 'canal' => $this->canal,
                 'currency' => $this->currency,
@@ -1403,6 +1421,7 @@ class Token
                 'fullName' => $this->fullName,
                 'shortName' => $this->shortName,
                 'symbol' => $this->symbol,
+                'productType' => $this->productType,
                 'tokenPrice' => $this->tokenPrice,
                 'currency' => $this->currency,
                 'uuid' => $this->uuid,
