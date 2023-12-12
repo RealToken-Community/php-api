@@ -18,6 +18,7 @@ class Token
     const CANAL_OFFERING_CANCELED = "offering_canceled";
     const CANAL_EXIT_PROPOSED = "exit_proposed";
     const CANAL_EXIT_COMPLETE = "exit_complete";
+    const CANAL_MIGRATED = "tokens_migrated";
 
     /**
      * @ORM\Id()
@@ -1332,7 +1333,8 @@ class Token
           Token::CANAL_RELEASE,
           Token::CANAL_OFFERING_CLOSED,
           Token::CANAL_EXIT_PROPOSED,
-          Token::CANAL_EXIT_COMPLETE
+          Token::CANAL_EXIT_COMPLETE,
+          Token::CANAL_MIGRATED
         ])) {
             if (!$credentials['isAdmin']) {
                 return [];
