@@ -74,6 +74,25 @@ class DefiController
     }
 
     /**
+     * RealToken history list.
+     * 
+     * @OA\Response(
+     *    response=200,
+     *    description="Return list of RealToken history",
+     * )
+     * @OA\Tag(name="DeFi")
+     * 
+     * @param Request $request
+     * 
+     * @return JsonResponse
+     * @Route("/tokenHistory", name="token_history", methods={"GET"})
+     */
+    public function getTokenHistory(Request $request): JsonResponse
+    {
+        return $this->defiService->getTokenHistory($this->getReferer($request));
+    }
+
+    /**
      * Generate token symbol.
      *
      * @OA\Response(
