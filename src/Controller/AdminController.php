@@ -2,19 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\TokenlistNetwork;
-use App\Entity\TokenlistRefer;
-use App\Entity\TokenlistTag;
-use App\Entity\TokenlistToken;
-use App\Form\TokenlistForm;
-use App\Form\Type\TokenlistNetworkType;
-use App\Form\Type\TokenlistReferType;
-use App\Form\Type\TokenlistTagType;
-use App\Form\Type\TokenlistTokenType;
 use App\Service\AdminService;
 use App\Service\AuthenticatorService;
 use App\Traits\DataControllerTrait;
 use App\Traits\HeadersControllerTrait;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -311,5 +303,28 @@ class AdminController extends AbstractController
         );
 
         return new JsonResponse($this->adminService->compareOnlineTokensData(), Response::HTTP_OK);
+    }
+
+    /**
+     * Create user.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws Exception
+     * @Route("/user", name="admin_create_user", methods={"POST"})
+     */
+    public function createUser(Request $request): JsonResponse
+    {
+        // Check admin rights
+        $this->authenticatorService->checkAdminRights(
+            $this->getApiToken($request),
+            $this->getRequestOrigin($request)
+        );
+
+        return new JsonResponse(
+            $this->adminService->createUser($request),
+            Response::HTTP_OK
+        );
     }
 }

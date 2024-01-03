@@ -16,6 +16,7 @@ use App\Entity\TokenMapping;
 use App\Entity\User;
 use App\Traits\NetworkControllerTrait;
 use DateTime;
+use Exception;
 use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use TreeWalker;
@@ -27,6 +28,14 @@ use TreeWalker;
 class AdminService extends Service
 {
     use NetworkControllerTrait;
+
+    /** @var UserService */
+    private UserService $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
 
     /**
      * Get total users quota.
@@ -554,6 +563,28 @@ class AdminService extends Service
     }
 
     /**
+     * Create user.
+     *
+     * @param Request $request
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function createUser(Request $request): string
+    {
+        // Create user and application
+        $user = $this->userService->userRegistration($request);
+
+        // Check if $user["user"] is an User object
+        if ($user["user"] instanceof User) {
+            // Send email
+            return $this->sendEmail($request->get('email'), $user["application"]->getApiToken());
+        } else {
+            return "KO";
+        }
+    }
+
+    /**
      * Check quota configuration existence.
      *
      * @param string $name
@@ -637,5 +668,36 @@ class AdminService extends Service
         }
 
         return json_encode($orderedArray);
+    }
+
+    /**
+     * Send email.
+     *
+     * @param string $userEmail
+     * @param string $userToken
+     *
+     * @return string
+     */
+    private function sendEmail(string $userEmail, string $userToken): string
+    {
+        $uri = "https://emailing.realt.community";
+        $data = [
+            'accessToken' => $_ENV['EMAILING_ACCESS_TOKEN'],
+            'receiverEmail' => $userEmail,
+            'apiToken' => $userToken
+        ];
+
+        $payload = $uri . "?" . http_build_query($data);
+
+        try {
+            $response = $this->curlRequest($payload);
+            if ($response == "Message has been sent successfully!") {
+                return "OK";
+            }
+        } catch (Exception $e) {
+            var_dump($e->getMessage());
+        }
+
+        return "KO";
     }
 }
