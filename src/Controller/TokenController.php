@@ -35,6 +35,12 @@ class TokenController
     /**
      * Show latest token updated.
      *
+     * @OA\Response(
+     *       response=200,
+     *      description="Return last token updated",
+     *   )
+     * @OA\Tag(name="Tokens")
+     *
      * @param Request $request
      * @return JsonResponse
      * @Route("/lastUpdate", name="token_last_updated", methods={"GET"})
@@ -51,6 +57,12 @@ class TokenController
 
     /**
      * Show latest token update time.
+     *
+     * @OA\Response(
+     *      response=200,
+     *     description="Return last update time",
+     *  )
+     * @OA\Tag(name="Tokens")
      *
      * @return JsonResponse
      * @throws Exception

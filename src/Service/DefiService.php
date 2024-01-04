@@ -26,6 +26,7 @@ class DefiService extends Service
     use NetworkControllerTrait;
 
     const URI_THEGRAPH = "https://api.thegraph.com/subgraphs/name";
+    const URI_REALTOKEN_HISTORY = "https://history.api.realt.community";
 
     private CacheInterface $cache;
 
@@ -65,6 +66,20 @@ class DefiService extends Service
         $ammList = $this->createCommunityList($refer);
 
         return new JsonResponse($ammList, Response::HTTP_OK);
+    }
+
+    /**
+     * Generate history list for RealToken.
+     * 
+     * @param string|null $refer
+     *
+     * @return JsonResponse
+     */
+    public function getTokenHistory(?string $refer): JsonResponse
+    {
+        $historyList = $this->getHistoryList($refer);
+
+        return new JsonResponse($historyList, Response::HTTP_OK);
     }
 
     /**
@@ -528,5 +543,17 @@ class DefiService extends Service
 
             return $lpPair;
         });
+    }
+
+    /**
+     * Get history list from RealToken.
+     *
+     * @param string|null $refer
+     *
+     * @return array
+     */
+    private function getHistoryList(?string $refer): array
+    {
+        return $this->curlRequest(self::URI_REALTOKEN_HISTORY, true);
     }
 }
