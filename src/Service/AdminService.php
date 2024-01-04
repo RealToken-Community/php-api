@@ -16,6 +16,7 @@ use App\Entity\TokenMapping;
 use App\Entity\User;
 use App\Traits\NetworkControllerTrait;
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use stdClass;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,8 +33,9 @@ class AdminService extends Service
     /** @var UserService */
     private UserService $userService;
 
-    public function __construct(UserService $userService)
+    public function __construct(EntityManagerInterface $entityManager, UserService $userService)
     {
+        parent::__construct($entityManager);
         $this->userService = $userService;
     }
 
