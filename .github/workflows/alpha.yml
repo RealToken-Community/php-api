@@ -121,6 +121,6 @@ jobs:
                 run: |
                     ssh staging '/home/realt/docker/api/alpha-git
                     git pull origin alpha
-                    docker compose --file docker-compose-preprod.yml pull
+                    docker compose --file docker-compose-alpha.yml pull
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${{ secrets.DOCKER_REGISTRY }}
-                    docker compose --file docker-compose-preprod.yml up -d'
+                    docker compose --file docker-compose-alpha.yml up -d'

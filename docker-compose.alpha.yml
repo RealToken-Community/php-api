@@ -1,0 +1,49 @@
+version: '3.2'
+
+services:
+  symfony-alpha:
+    image: realt-api:alpha
+    container_name: realtapi_alpha-sf
+    build:
+      context: ./
+    ports:
+      - "9081:80"
+    networks:
+      - realtapialpha
+      - traefik-realt
+    volumes:
+      - ./logs/symfony:/var/www/html/var/log:cached
+      - ./logs/nginx:/var/log/nginx:cached
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sf-realt-api-alpha.rule=Host(`api.alpha.realt.community`)"
+      - "traefik.http.routers.sf-realt-api-alpha.entrypoints=websecure"
+    restart: always
+
+  db-alpha:
+    image: mysql:5.7
+    container_name: realtapi_alpha-db
+    ports:
+      - "3307:3306"
+    networks:
+      - realtapialpha
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+    restart: always
+
+  adminer-alpha:
+    image: adminer
+    container_name: realtapi_alpha-adminer
+    ports:
+      - "18081:8080"
+    networks:
+      - realtapialpha
+    restart: always
+
+networks:
+  realtapialpha:
+  traefik-realt:
+    external: true
