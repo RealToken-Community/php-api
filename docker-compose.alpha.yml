@@ -22,7 +22,7 @@ services:
 
   alpha-php-api_db:
     image: mysql:5.7
-    container_name: registry.realt.community/db-php-api-realt:alpha
+    container_name: alpha-php-api_db
     ports:
       - "3307:3306"
     networks:
@@ -36,7 +36,7 @@ services:
 
   alpha-php-api_adminer:
     image: adminer
-    container_name: registry.realt.community/adminer-php-api-realt:alpha
+    container_name: alpha-php-api_adminer
     ports:
       - "18081:8080"
     networks:
