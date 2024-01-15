@@ -119,7 +119,7 @@ jobs:
 
             -   name: Update alpha environment
                 run: |
-                    ssh staging '/home/realt/docker/api/${{ github.ref_name }}-git
+                    ssh staging 'cd /home/realt/docker/api/${{ github.ref_name }}-git
                     git pull origin ${{ github.ref_name }}
                     docker compose --file docker-compose.${{ github.ref_name }}.yml pull
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${{ secrets.DOCKER_REGISTRY }}
