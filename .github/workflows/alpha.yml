@@ -78,7 +78,7 @@ jobs:
 #            - name: Run tests
 #              run: simple-phpunit --coverage-text
     deploy:
-        name: Deploy to pre-production
+        name: Deploy to alpha
         runs-on: ubuntu-latest
         needs: validate
         steps:
@@ -117,10 +117,10 @@ jobs:
                     SSH_HOST: ${{ secrets.SSH_HOST }}
                     SSH_PORT: ${{ secrets.SSH_PORT }}
 
-            -   name: Update pre-production environment
+            -   name: Update alpha environment
                 run: |
                     ssh staging '/home/realt/docker/api/alpha-git
                     git pull origin alpha
-                    docker compose --file docker-compose-alpha.yml pull
+                    docker compose --file docker-compose.alpha.yml pull
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${{ secrets.DOCKER_REGISTRY }}
-                    docker compose --file docker-compose-alpha.yml up -d'
+                    docker compose --file docker-compose.alpha.yml up -d'
