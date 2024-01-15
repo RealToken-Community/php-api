@@ -44,8 +44,8 @@ jobs:
             # - name: Start mysql service
             #   run: sudo systemctl start mysql.service
 
-            - name: Copy .env.alpha
-              run: echo ${{ github.ref_name }} && php -r "file_exists('.env.local') || copy('.env.alpha', '.env.local');"
+            - name: Copy .env.BRANCH_NAME
+              run: php -r "file_exists('.env.local') || copy('.env.${{ github.ref_name }}', '.env.local');"
 
             - name: Get composer cache directory
               id: composer-cache
@@ -78,7 +78,7 @@ jobs:
 #            - name: Run tests
 #              run: simple-phpunit --coverage-text
     deploy:
-        name: Deploy to alpha
+        name: Deploy image
         runs-on: ubuntu-latest
         needs: validate
         steps:
@@ -96,13 +96,13 @@ jobs:
                 with:
                     context: .
                     push: true
-                    tags: registry.realt.community/realtapi_alpha:latest
+                    tags: registry.realt.community/${{ github.ref_name }}-php-api:latest
 
             -   name: Configure SSH
                 run: |
                     mkdir -p ~/.ssh/
                     echo "$SSH_KEY" > ~/.ssh/staging.key
-                    chmod 600 ~/.ssh/staging.key
+                    chmod 644 ~/.ssh/staging.key
                     cat >>~/.ssh/config <<END
                     Host staging
                       HostName $SSH_HOST
@@ -119,8 +119,8 @@ jobs:
 
             -   name: Update alpha environment
                 run: |
-                    ssh staging '/home/realt/docker/api/alpha-git
-                    git pull origin alpha
-                    docker compose --file docker-compose.alpha.yml pull
+                    ssh staging '/home/realt/docker/api/${{ github.ref_name }}-git
+                    git pull origin ${{ github.ref_name }}
+                    docker compose --file docker-compose.${{ github.ref_name }}.yml pull
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${{ secrets.DOCKER_REGISTRY }}
-                    docker compose --file docker-compose.alpha.yml up -d'
+                    docker compose --file docker-compose.${{ github.ref_name }}.yml up -d'
