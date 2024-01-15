@@ -1,15 +1,15 @@
 version: '3.2'
 
 services:
-  symfony-alpha:
-    image: registry.realt.community/realt-api:alpha
-    container_name: realtapi_alpha-sf
+  alpha-php-api_symfony:
+    image: registry.realt.community/symfony-php-api-realt:alpha
+    container_name: alpha-php-api_symfony
     build:
       context: ./
     ports:
       - "9081:80"
     networks:
-      - realtapialpha
+      - alpha-php-api-realt
       - traefik-realt
     volumes:
       - ./logs/symfony:/var/www/html/var/log:cached
@@ -20,13 +20,13 @@ services:
       - "traefik.http.routers.sf-realt-api-alpha.entrypoints=websecure"
     restart: always
 
-  db-alpha:
+  alpha-php-api_db:
     image: mysql:5.7
-    container_name: registry.realt.community/realtapi_alpha-db
+    container_name: registry.realt.community/db-php-api-realt:alpha
     ports:
       - "3307:3306"
     networks:
-      - realtapialpha
+      - alpha-php-api-realt
     environment:
       - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
       - "MYSQL_USER=${MYSQL_USER}"
@@ -34,16 +34,16 @@ services:
       - "MYSQL_DATABASE=${MYSQL_DATABASE}"
     restart: always
 
-  adminer-alpha:
+  alpha-php-api_adminer:
     image: adminer
-    container_name: registry.realt.community/realtapi_alpha-adminer
+    container_name: registry.realt.community/adminer-php-api-realt:alpha
     ports:
       - "18081:8080"
     networks:
-      - realtapialpha
+      - alpha-php-api-realt
     restart: always
 
 networks:
-  realtapialpha:
+  alpha-php-api-realt:
   traefik-realt:
     external: true
