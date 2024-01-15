@@ -1,4 +1,4 @@
-name: Testing Symfony with MySQL and deploy on Alpha
+name: Testing Symfony with MySQL and deploy server
 on:
     push:
         branches: [ "alpha" ]
@@ -96,7 +96,7 @@ jobs:
                 with:
                     context: .
                     push: true
-                    tags: registry.realt.community/${{ github.ref_name }}-php-api:latest
+                    tags: registry.realt.community/symfony-php-api-realt:${{ github.ref_name }}
 
             -   name: Configure SSH
                 run: |
