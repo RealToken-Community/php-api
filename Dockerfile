@@ -1,4 +1,4 @@
-FROM sigri44/docker-symfony-php7:latest
+FROM sigri44/docker-symfony-php8:latest
 
 # Composer
 WORKDIR /var/www/html
