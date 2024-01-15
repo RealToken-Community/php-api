@@ -45,7 +45,7 @@ jobs:
             #   run: sudo systemctl start mysql.service
 
             - name: Copy .env.alpha
-              run: php -r "file_exists('.env.alpha') || copy('.env.alpha', '.env.local');"
+              run: php -r "file_exists('.env.local') || copy('.env.alpha', '.env.local');"
 
             - name: Get composer cache directory
               id: composer-cache
