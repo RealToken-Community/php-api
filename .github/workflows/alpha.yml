@@ -45,7 +45,8 @@ jobs:
             #   run: sudo systemctl start mysql.service
 
             - name: Copy .env.BRANCH_NAME
-              run: echo ${GITHUB REF##*/} && echo ${GITHUB REPOSITORY##*/} && echo $(echo $GITHUB SHA | head -c7)
+              run: echo ${GITHUB REPOSITORY##*/} && echo $(echo $GITHUB SHA | head -c7)
+#              run: echo ${GITHUB REF##*/} && echo ${GITHUB REPOSITORY##*/} && echo $(echo $GITHUB SHA | head -c7)
 #              run: php -r "file_exists('.env.local') || copy('.env.${{ github.ref_name }}', '.env.local');"
 
             - name: Get composer cache directory
