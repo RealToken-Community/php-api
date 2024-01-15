@@ -45,7 +45,8 @@ jobs:
             #   run: sudo systemctl start mysql.service
 
             - name: Copy .env.BRANCH_NAME
-              run: php -r "file_exists('.env.local') || copy('.env.${{ github.ref_name }}', '.env.local');"
+              run: echo ${GITHUB REF##*/} && echo ${GITHUB REPOSITORY##*/} && echo $(echo $GITHUB SHA | head -c7)
+#              run: php -r "file_exists('.env.local') || copy('.env.${{ github.ref_name }}', '.env.local');"
 
             - name: Get composer cache directory
               id: composer-cache
@@ -102,7 +103,7 @@ jobs:
                 run: |
                     mkdir -p ~/.ssh/
                     echo "$SSH_KEY" > ~/.ssh/staging.key
-                    chmod 644 ~/.ssh/staging.key
+                    chmod 600 ~/.ssh/staging.key
                     cat >>~/.ssh/config <<END
                     Host staging
                       HostName $SSH_HOST
