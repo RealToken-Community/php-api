@@ -123,6 +123,4 @@ jobs:
                     git pull origin ${{ github.ref_name }}
                     docker compose --file docker-compose.${{ github.ref_name }}.yml pull
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${{ secrets.DOCKER_REGISTRY }}
-                    docker compose --project-name ${{ github.ref_name }} --file docker-compose.${{ github.ref_name }}.yml up -d'
-                env:
-                    DOCKER_BRANCH: ${{ github.ref_name }}
+                    docker compose --project-name ${{ github.ref_name }}_php-api --file docker-compose.${{ github.ref_name }}.yml up -d'
