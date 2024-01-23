@@ -119,8 +119,7 @@ jobs:
 
             -   name: Update alpha environment
                 run: |
-                    echo ${DOCKER_BRANCH}
-                    ssh staging 'cd /home/realt/docker/api/${{ github.ref_name }}-git
+                    ssh staging 'export DOCKER_BRANCH=${{ github.ref_name }}; cd /home/realt/docker/api/${DOCKER_BRANCH}-git
                     git pull origin ${{ github.ref_name }}
                     docker compose --file docker-compose.${{ github.ref_name }}.yml pull
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${{ secrets.DOCKER_REGISTRY }}
