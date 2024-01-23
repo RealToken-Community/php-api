@@ -9,7 +9,7 @@ services:
     ports:
       - "9082:80"
     networks:
-      - php-api-realt
+      - realt
       - traefik-realt
     volumes:
       - ./logs/symfony:/var/www/html/var/log:cached
@@ -26,7 +26,7 @@ services:
     ports:
       - "3308:3306"
     networks:
-      - php-api-realt
+      - realt
     environment:
       - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
       - "MYSQL_USER=${MYSQL_USER}"
@@ -40,10 +40,10 @@ services:
     ports:
       - "18082:8080"
     networks:
-      - php-api-realt
+      - realt
     restart: always
 
 networks:
-  php-api-realt:
+  realt:
   traefik-realt:
     external: true
