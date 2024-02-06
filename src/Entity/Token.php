@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Token
 {
+    // Canal
     const CANAL_RELEASE = "release";
     const CANAL_COMING_SOON = "coming_soon";
     const CANAL_OFFERING_CLOSED = "offering_closed";
@@ -19,6 +20,19 @@ class Token
     const CANAL_EXIT_PROPOSED = "exit_proposed";
     const CANAL_EXIT_COMPLETE = "exit_complete";
     const CANAL_MIGRATED = "tokens_migrated";
+
+    // PropertyType
+    const PROPERTY_TYPE_SINGLE_FAMILY = "Single Family";
+    const PROPERTY_TYPE_MULTI_FAMILY = "Multi Family";
+    const PROPERTY_TYPE_DUPLEX = "Duplex";
+    const PROPERTY_TYPE_CONDOMINIUM = "Condominium";
+    const PROPERTY_TYPE_APARTMENT = "Apartment";
+    const PROPERTY_TYPE_MIXED_USE = "Mixed-Use";
+    const PROPERTY_TYPE_TRIPLEX = "Triplex";
+    const PROPERTY_TYPE_QUADPLEX = "Quadplex";
+    const PROPERTY_TYPE_COMMERCIAL = "Commercial";
+    const PROPERTY_TYPE_SFR_PORTFOLIO = "SFR Portfolio";
+    const PROPERTY_TYPE_MFR_PORTFOLIO = "MFR Portfolio";
 
     /**
      * @ORM\Id()
@@ -142,6 +156,11 @@ class Token
      * @ORM\Column(type="integer", nullable=true)
      */
     private $propertyType;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $propertyTypeName;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -397,6 +416,11 @@ class Token
      * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $productType;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $neighborhood;
 
     public function getId(): ?int
     {
@@ -807,6 +831,54 @@ class Token
     public function setPropertyType(?int $propertyType): self
     {
         $this->propertyType = $propertyType;
+
+        return $this;
+    }
+
+    public function getPropertyTypeName(): ?string
+    {
+        return $this->propertyTypeName;
+    }
+
+    public function setPropertyTypeName(?int $propertyType): self
+    {
+        switch ($propertyType) {
+            case 1:
+                $this->propertyTypeName = self::PROPERTY_TYPE_SINGLE_FAMILY;
+                break;
+            case 2:
+                $this->propertyTypeName = self::PROPERTY_TYPE_MULTI_FAMILY;
+                break;
+            case 3:
+                $this->propertyTypeName = self::PROPERTY_TYPE_DUPLEX;
+                break;
+            case 4:
+                $this->propertyTypeName = self::PROPERTY_TYPE_CONDOMINIUM;
+                break;
+            case 5:
+                $this->propertyTypeName = self::PROPERTY_TYPE_APARTMENT;
+                break;
+            case 6:
+                $this->propertyTypeName = self::PROPERTY_TYPE_MIXED_USE;
+                break;
+            case 7:
+                $this->propertyTypeName = self::PROPERTY_TYPE_TRIPLEX;
+                break;
+            case 8:
+                $this->propertyTypeName = self::PROPERTY_TYPE_QUADPLEX;
+                break;
+            case 9:
+                $this->propertyTypeName = self::PROPERTY_TYPE_COMMERCIAL;
+                break;
+            case 10:
+                $this->propertyTypeName = self::PROPERTY_TYPE_SFR_PORTFOLIO;
+                break;
+            case 11:
+                $this->propertyTypeName = self::PROPERTY_TYPE_MFR_PORTFOLIO;
+                break;
+            default:
+                $this->propertyTypeName = null;
+        }
 
         return $this;
     }
@@ -1319,6 +1391,18 @@ class Token
       return $this;
     }
 
+    public function getNeighborhood(): ?string
+    {
+        return $this->neighborhood;
+    }
+
+    public function setNeighborhood(?string $neighborhood): self
+    {
+        $this->neighborhood = $neighborhood;
+
+        return $this;
+    }
+
     /**
      * Token toArray.
      *
@@ -1379,6 +1463,7 @@ class Token
                 'marketplaceLink' => $this->marketplaceLink,
                 'imageLink' => $this->imageLink,
                 'propertyType' => $this->propertyType,
+                'propertyTypeName' => $this->propertyTypeName,
                 'squareFeet' => $this->squareFeet,
                 'lotSize' => $this->lotSize,
                 'bedroomBath' => $this->bedroomBath,
@@ -1416,7 +1501,8 @@ class Token
                 'realtListingFee' => $this->realtListingFee,
                 'miscellaneousCosts' => $this->miscellaneousCosts,
                 'propertyStories' => $this->propertyStories,
-                'rentalType' => $this->rentalType
+                'rentalType' => $this->rentalType,
+                'neighborhood' => $this->neighborhood,
             ];
         } else {
             $response = [

@@ -220,7 +220,7 @@ class DefiService extends Service
         /** @var Token $token */
         foreach ($tokens as $token) {
             // Check if secondaryMarketplaces is different
-            if ($this->checkMarketplacesDifference($token)) {
+            if ($this->hasMarketplacesDifference($token)) {
                 // Get xDai Contract
                 $secondaryMarketplaces = $token->getOriginSecondaryMarketplaces();
 
@@ -477,7 +477,7 @@ class DefiService extends Service
      *
      * @return bool
      */
-    private function checkMarketplacesDifference($token): bool
+    private function hasMarketplacesDifference($token): bool
     {
         $getOriginSecondaryMarketplaces = $token->getOriginSecondaryMarketplaces();
         $getSecondaryMarketplaces = $token->getSecondaryMarketplaces();
