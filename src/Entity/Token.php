@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Token
 {
+    // Canal
     const CANAL_RELEASE = "release";
     const CANAL_COMING_SOON = "coming_soon";
     const CANAL_OFFERING_CLOSED = "offering_closed";
@@ -19,6 +20,19 @@ class Token
     const CANAL_EXIT_PROPOSED = "exit_proposed";
     const CANAL_EXIT_COMPLETE = "exit_complete";
     const CANAL_MIGRATED = "tokens_migrated";
+
+    // PropertyType
+    const PROPERTY_TYPE_SINGLE_FAMILY = "Single Family";
+    const PROPERTY_TYPE_MULTI_FAMILY = "Multi Family";
+    const PROPERTY_TYPE_DUPLEX = "Duplex";
+    const PROPERTY_TYPE_CONDOMINIUM = "Condominium";
+    const PROPERTY_TYPE_APARTMENT = "Apartment";
+    const PROPERTY_TYPE_MIXED_USE = "Mixed-Use";
+    const PROPERTY_TYPE_TRIPLEX = "Triplex";
+    const PROPERTY_TYPE_QUADPLEX = "Quadplex";
+    const PROPERTY_TYPE_COMMERCIAL = "Commercial";
+    const PROPERTY_TYPE_SFR_PORTFOLIO = "SFR Portfolio";
+    const PROPERTY_TYPE_MFR_PORTFOLIO = "MFR Portfolio";
 
     /**
      * @ORM\Id()
@@ -830,37 +844,37 @@ class Token
     {
         switch ($propertyType) {
             case 1:
-                $this->propertyTypeName = "Single Family";
+                $this->propertyTypeName = self::PROPERTY_TYPE_SINGLE_FAMILY;
                 break;
             case 2:
-                $this->propertyTypeName = "Multi Family";
+                $this->propertyTypeName = self::PROPERTY_TYPE_MULTI_FAMILY;
                 break;
             case 3:
-                $this->propertyTypeName = "Duplex";
+                $this->propertyTypeName = self::PROPERTY_TYPE_DUPLEX;
                 break;
             case 4:
-                $this->propertyTypeName = "Condominium";
+                $this->propertyTypeName = self::PROPERTY_TYPE_CONDOMINIUM;
                 break;
             case 5:
-                $this->propertyTypeName = "Apartment";
+                $this->propertyTypeName = self::PROPERTY_TYPE_APARTMENT;
                 break;
             case 6:
-                $this->propertyTypeName = "Mixed-Use";
+                $this->propertyTypeName = self::PROPERTY_TYPE_MIXED_USE;
                 break;
             case 7:
-                $this->propertyTypeName = "Triplex";
+                $this->propertyTypeName = self::PROPERTY_TYPE_TRIPLEX;
                 break;
             case 8:
-                $this->propertyTypeName = "Quadplex";
+                $this->propertyTypeName = self::PROPERTY_TYPE_QUADPLEX;
                 break;
             case 9:
-                $this->propertyTypeName = "Commercial";
+                $this->propertyTypeName = self::PROPERTY_TYPE_COMMERCIAL;
                 break;
             case 10:
-                $this->propertyTypeName = "SFR Portfolio";
+                $this->propertyTypeName = self::PROPERTY_TYPE_SFR_PORTFOLIO;
                 break;
             case 11:
-                $this->propertyTypeName = "MFR Portfolio";
+                $this->propertyTypeName = self::PROPERTY_TYPE_MFR_PORTFOLIO;
                 break;
             default:
                 $this->propertyTypeName = null;
