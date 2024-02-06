@@ -144,6 +144,11 @@ class Token
     private $propertyType;
 
     /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $propertyTypeName;
+
+    /**
      * @ORM\Column(type="integer", nullable=true)
      */
     private $squareFeet;
@@ -816,6 +821,54 @@ class Token
         return $this;
     }
 
+    public function getPropertyTypeName(): ?string
+    {
+        return $this->propertyTypeName;
+    }
+
+    public function setPropertyTypeName(?int $propertyType): self
+    {
+        switch ($propertyType) {
+            case 1:
+                $this->propertyTypeName = "Single Family";
+                break;
+            case 2:
+                $this->propertyTypeName = "Multi Family";
+                break;
+            case 3:
+                $this->propertyTypeName = "Duplex";
+                break;
+            case 4:
+                $this->propertyTypeName = "Condominium";
+                break;
+            case 5:
+                $this->propertyTypeName = "Apartment";
+                break;
+            case 6:
+                $this->propertyTypeName = "Mixed-Use";
+                break;
+            case 7:
+                $this->propertyTypeName = "Triplex";
+                break;
+            case 8:
+                $this->propertyTypeName = "Quadplex";
+                break;
+            case 9:
+                $this->propertyTypeName = "Commercial";
+                break;
+            case 10:
+                $this->propertyTypeName = "SFR Portfolio";
+                break;
+            case 11:
+                $this->propertyTypeName = "MFR Portfolio";
+                break;
+            default:
+                $this->propertyTypeName = null;
+        }
+
+        return $this;
+    }
+
     public function getSquareFeet(): ?int
     {
         return $this->squareFeet;
@@ -1396,6 +1449,7 @@ class Token
                 'marketplaceLink' => $this->marketplaceLink,
                 'imageLink' => $this->imageLink,
                 'propertyType' => $this->propertyType,
+                'propertyTypeName' => $this->propertyTypeName,
                 'squareFeet' => $this->squareFeet,
                 'lotSize' => $this->lotSize,
                 'bedroomBath' => $this->bedroomBath,

@@ -471,6 +471,7 @@ class TokenService extends Service
         $token->setMarketplaceLink($dataJson['marketplaceLink'] ?? null);
         $token->setImageLink($dataJson['imageLink']);
         $token->setPropertyType($dataJson['propertyType'] ?: null);
+        $token->setPropertyTypeName($token->getPropertyType());
         $token->setSquareFeet($dataJson['squareFeet'] ?: null);
         $token->setLotSize($dataJson['lotSize'] ?: null);
         $token->setBedroomBath(!empty($dataJson['bedroom/bath']) ? $dataJson['bedroom/bath'] : null);
