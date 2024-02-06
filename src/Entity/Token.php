@@ -1433,7 +1433,8 @@ class Token
                 'realtListingFee' => $this->realtListingFee,
                 'miscellaneousCosts' => $this->miscellaneousCosts,
                 'propertyStories' => $this->propertyStories,
-                'rentalType' => $this->rentalType
+                'rentalType' => $this->rentalType,
+                'neighborhood' => $this->neighborhood,
             ];
         } else {
             $response = [
