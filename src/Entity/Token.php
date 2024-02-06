@@ -398,6 +398,11 @@ class Token
      */
     private $productType;
 
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $neighborhood;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -1317,6 +1322,18 @@ class Token
       $this->productType = $productType;
 
       return $this;
+    }
+
+    public function getNeighborhood(): ?string
+    {
+        return $this->neighborhood;
+    }
+
+    public function setNeighborhood(?string $neighborhood): self
+    {
+        $this->neighborhood = $neighborhood;
+
+        return $this;
     }
 
     /**
