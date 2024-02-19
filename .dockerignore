@@ -1,0 +1,4 @@
+.git
+var/cache/
+var/log/
+vendor
