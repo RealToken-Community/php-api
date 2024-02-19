@@ -345,6 +345,11 @@ class AdminController extends AbstractController
         );
 
         $links = [
+            "admin_api_prod" => [
+                "env" => "prod",
+                "url" => $_ENV['ADMIN_API_URI'],
+                "description" => "Stats API"
+            ],
             "portainer_prod" => [
                 "env" => "prod",
                 "url" => $_ENV['PORTAINER_PROD_URI'],
