@@ -327,4 +327,59 @@ class AdminController extends AbstractController
             Response::HTTP_OK
         );
     }
+
+    /**
+     * List index links.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     * @Route("/links", name="admin_index_links", methods={"GET"})
+     */
+    public function indexLinks(Request $request): Response
+    {
+        // Check admin rights
+        $this->authenticatorService->checkAdminRights(
+            $this->getApiToken($request),
+            $this->getRequestOrigin($request)
+        );
+
+        $links = [
+            "portainer_prod" => [
+                "env" => "prod",
+                "url" => $_ENV['PORTAINER_PROD_URI'],
+                "description" => "Portainer"
+            ],
+            "adminer_prod" => [
+                "env" => "prod",
+                "url" => $_ENV['ADMINER_PROD_URI'],
+                "description" => "Adminer"
+            ],
+            "adminer_preprod" => [
+                "env" => "preprod",
+                "url" => $_ENV['ADMINER_PREPROD_URI'],
+                "description" => "Adminer"
+            ],
+            "adminer_alpha" => [
+                "env" => "alpha",
+                "url" => $_ENV['ADMINER_ALPHA_URI'],
+                "description" => "Adminer"
+            ],
+            "grant_api_form" => [
+                "env" => "prod",
+                "url" => $_ENV['GRANT_API_FORM'],
+                "description" => "Grant API Form"
+            ],
+            "grant_api_response" => [
+                "env" => "prod",
+                "url" => $_ENV['GRANT_API_RESPONSE'],
+                "description" => "Grant API Response"
+            ],
+        ];
+
+        return $this->render('admin/links.html.twig', [
+            'apiKey' => $this->getApiToken($request),
+            'links' => $links,
+        ]);
+    }
 }
