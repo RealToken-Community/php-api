@@ -1,0 +1,24 @@
+{% extends "base.html.twig" %}
+
+{% block title %}[ADMIN] Get index links{% endblock %}
+
+{% block body %}
+<table class="table table-bordered table-striped">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">Env</th>
+            <th scope="col">Description</th>
+            <th scope="col">Url</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for link in links %}
+        <tr>
+            <th scope="row">{{ link.env }}</th>
+            <td>{{ link.description }}</td>
+            <td><a href="{{ link.url }}" target="_blank">{{ link.url }}</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
