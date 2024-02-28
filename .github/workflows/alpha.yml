@@ -47,13 +47,13 @@ jobs:
             # - name: Start mysql service
             #   run: sudo systemctl start mysql.service
 
-            - name: Copy .env.BRANCH_NAME
+            - name: Copy .env.${{ github.ref_name }}
 #              run: php -r "file_exists('.env.local') || copy('.env.${{ github.ref_name }}', '.env.local');"
               run: php -r "file_exists('.env.local') || copy('.env.dist', '.env.local');"
 
-            - name: Get composer cache directory
-              id: composer-cache
-              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+#            - name: Get composer cache directory
+#              id: composer-cache
+#              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
             - name: Cache composer dependencies
               uses: actions/cache@v3
