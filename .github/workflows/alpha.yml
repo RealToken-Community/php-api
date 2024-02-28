@@ -1,11 +1,14 @@
 name: Testing Symfony with MySQL and deploy server
+
 on:
     push:
         branches: [ "alpha" ]
     pull_request:
         branches: [ "alpha" ]
+
 permissions:
     contents: read
+
 jobs:
     validate:
         name: Symfony (PHP ${{ matrix.php-versions }})
@@ -83,7 +86,7 @@ jobs:
         runs-on: ubuntu-latest
         needs: validate
         steps:
-            -   uses: actions/checkout@v4
+#            -   uses: actions/checkout@v4
 
             -   name: Login to registry
                 uses: docker/login-action@v2
