@@ -257,6 +257,7 @@ class AdminService extends Service
             '/v1/token',
             '/v1/token/0xe5f7ef61443fc36ae040650aa585b0395aef77c8',
             '/v1/token/lastUpdate',
+            '/v1/token/lastUpdateTime',
             '/v1/quota',
         ];
 
@@ -268,10 +269,10 @@ class AdminService extends Service
                 $response = substr(json_encode($response),0,85);
             }
 
-            array_push($routes, [
-                "url" => substr($url, 0, 20),
+            $routes[] = [
+                "url" => substr($url, 0, 24),
                 "response" => $response,
-            ]);
+            ];
         }
 
         return $routes;
