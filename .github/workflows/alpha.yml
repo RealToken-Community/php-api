@@ -124,7 +124,6 @@ jobs:
 
             -   name: Update alpha environment
                 run: |
-#                   Set env variables
                     [[ "${{ github.ref_name }}" = "alpha" ]] echo "alpha-branch" || echo "Not alpha branch"
                     ssh staging 'export DOCKER_BRANCH=${{ github.ref_name }}
                     cd /home/realt/docker/api/${DOCKER_BRANCH}-git
