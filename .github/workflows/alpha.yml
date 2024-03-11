@@ -66,7 +66,7 @@ jobs:
                   restore-keys: ${{ runner.os }}-composer-
 
             - name: Install Composer dependencies
-              if: steps.cache-vendor.outputs.cache-hit != 'true' # Skip if cache hit
+              if: steps.composer-cache.outputs.cache-hit != 'true' # Skip if cache hit
               run: composer install --no-progress --prefer-dist --optimize-autoloader
 #              run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
