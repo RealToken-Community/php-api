@@ -58,7 +58,6 @@ jobs:
             - name: Cache composer dependencies
               uses: actions/cache@v3
               with:
-                  id: cache-vendor
                   path: ${{ steps.composer-cache.outputs.dir }}
                   # Use composer.json for key, if composer.lock is not committed.
                   # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
