@@ -105,6 +105,7 @@ jobs:
 
             -   name: Configure SSH
                 run: |
+                    [[ "${{ github.ref_name }}" = "alpha" ]] echo "alpha-branch" || echo "Not alpha branch"
                     mkdir -p ~/.ssh/
                     echo "$SSH_KEY" > ~/.ssh/staging.key
                     chmod 600 ~/.ssh/staging.key
@@ -124,7 +125,6 @@ jobs:
 
             -   name: Update alpha environment
                 run: |
-                    [[ "${{ github.ref_name }}" = "alpha" ]] echo "alpha-branch" || echo "Not alpha branch"
                     ssh staging 'export DOCKER_BRANCH=${{ github.ref_name }}
                     cd /home/realt/docker/api/${DOCKER_BRANCH}-git
                     git pull origin ${{ github.ref_name }}
