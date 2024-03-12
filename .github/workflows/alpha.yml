@@ -105,7 +105,6 @@ jobs:
 
             -   name: Configure SSH
                 run: |
-#                    [[ "${{ github.ref_name }}" = "alpha" ]] echo "alpha-branch" || true
                     if ${{ github.ref_name }} = "alpha"
                     then
                         echo "alpha-branch"
