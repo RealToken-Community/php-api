@@ -105,7 +105,13 @@ jobs:
 
             -   name: Configure SSH
                 run: |
-                    [[ "${{ github.ref_name }}" = "alpha" ]] echo "alpha-branch" || true
+#                    [[ "${{ github.ref_name }}" = "alpha" ]] echo "alpha-branch" || true
+                    if ${{ github.ref_name }} = "alpha"
+                    then
+                        echo "alpha-branch"
+                    else
+                        echo "not alpha-branch"
+                    fi
                     mkdir -p ~/.ssh/
                     echo "$SSH_KEY" > ~/.ssh/staging.key
                     chmod 600 ~/.ssh/staging.key
