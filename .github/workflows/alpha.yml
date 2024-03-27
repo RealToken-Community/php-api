@@ -12,7 +12,7 @@ permissions:
 jobs:
     validate:
         name: Symfony (PHP ${{ matrix.php-versions }})
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
 
         # Docs: https://docs.github.com/en/actions/using-containerized-services
         services:
@@ -84,7 +84,7 @@ jobs:
 #              run: simple-phpunit --coverage-text
     deploy:
         name: Deploy image
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         needs: validate
         steps:
             -   uses: actions/checkout@v4
