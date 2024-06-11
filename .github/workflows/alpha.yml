@@ -12,7 +12,7 @@ permissions:
 jobs:
     validate:
         name: Symfony (PHP ${{ matrix.php-versions }})
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
 
         # Docs: https://docs.github.com/en/actions/using-containerized-services
         services:
@@ -84,7 +84,7 @@ jobs:
 #              run: simple-phpunit --coverage-text
     deploy:
         name: Deploy image
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
         needs: validate
         steps:
             -   uses: actions/checkout@v4
@@ -101,16 +101,10 @@ jobs:
                 with:
                     context: .
                     push: true
-                    tags: registry.realt.community/symfony-php-api-realt:${{ github.ref_name }}
+                    tags: ${{ secrets.DOCKER_REGISTRY }}/api-php:${{ github.ref_name }}
 
             -   name: Configure SSH
                 run: |
-                    if "${{ github.ref_name }}" == "alpha"
-                    then
-                        echo "alpha-branch"
-                    else
-                        echo "not alpha-branch"
-                    fi
                     mkdir -p ~/.ssh/
                     echo "$SSH_KEY" > ~/.ssh/staging.key
                     chmod 600 ~/.ssh/staging.key
@@ -130,10 +124,10 @@ jobs:
 
             -   name: Update alpha environment
                 run: |
-                    ssh staging 'export DOCKER_BRANCH=${{ github.ref_name }}
-                    cd /home/realt/docker/api/${DOCKER_BRANCH}-git
+                    ssh staging 'export DOCKER_BRANCH=${{ github.ref_name }} DOCKER_REGISTRY=${{ secrets.DOCKER_REGISTRY }}
+                    cd /var/docker/api/${DOCKER_BRANCH}
                     git pull origin ${{ github.ref_name }}
-                    docker compose --file docker-compose.${{ github.ref_name }}.yml pull
+                    docker compose --file docker-compose-${{ github.ref_name }}.yml pull
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${{ secrets.DOCKER_REGISTRY }}
-                    docker compose --project-name ${{ github.ref_name }}_php-api --file docker-compose.${{ github.ref_name }}.yml up -d'
+                    docker compose --project-name ${{ github.ref_name }}-api_php --file docker-compose-${{ github.ref_name }}.yml up -d'
 #                    Add migration !?
