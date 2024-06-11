@@ -2,8 +2,8 @@ version: '3.2'
 
 services:
   php-api_symfony:
-    image: registry.realt.community/symfony-php-api-realt:${DOCKER_BRANCH}
-    container_name: ${DOCKER_BRANCH}-php-api_symfony
+    image: ${DOCKER_REGISTRY}/api-php:${DOCKER_BRANCH}
+    container_name: ${DOCKER_BRANCH}-api_php-symfony
     build:
       context: ./
     ports:
@@ -16,13 +16,13 @@ services:
       - ./logs/nginx:/var/log/nginx:cached
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sf-realt-api-${DOCKER_BRANCH}.rule=Host(`api.${DOCKER_BRANCH}.realt.community`)"
-      - "traefik.http.routers.sf-realt-api-${DOCKER_BRANCH}.entrypoints=websecure"
+      - "traefik.http.routers.api-php-${DOCKER_BRANCH}.rule=Host(`api.${DOCKER_BRANCH}.realt.community`)"
+      - "traefik.http.routers.api-php-${DOCKER_BRANCH}.entrypoints=websecure"
     restart: always
 
   php-api_db:
     image: mysql:5.7
-    container_name: ${DOCKER_BRANCH}-php-api_db
+    container_name: ${DOCKER_BRANCH}-api_php-db
     ports:
       - "3308:3306"
     networks:
@@ -36,7 +36,7 @@ services:
 
   php-api_adminer:
     image: adminer
-    container_name: ${DOCKER_BRANCH}-php-api_adminer
+    container_name: ${DOCKER_BRANCH}-api_php-adminer
     ports:
       - "18082:8080"
     networks:
