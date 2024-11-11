@@ -1,13 +1,9 @@
-version: '3.2'
-
 services:
   symfony-prod:
     image: realt-api:1.0
     container_name: realtapi_prod-sf
     build:
       context: ./
-    ports:
-      - "9080:80"
     networks:
       - realtapiprod
       - traefik-realt
@@ -16,15 +12,12 @@ services:
       - ./logs/nginx:/var/log/nginx:cached
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sf-realt-api-prod.rule=Host(`api.realt.community`)"
-      - "traefik.http.routers.sf-realt-api-prod.entrypoints=websecure"
+      - "traefik.http.routers.sf-realt-api-prod.rule=Host(`api.realtoken.community`)"
     restart: always
 
   db-prod:
     image: mysql:5.7
     container_name: realtapi_prod-db
-    ports:
-      - "3306:3306"
     networks:
       - realtapiprod
     environment:
