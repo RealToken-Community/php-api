@@ -1,25 +1,25 @@
 services:
   symfony-preprod:
-    image: realt-api:preprod
-    container_name: realtapi_preprod-sf
+    image: symfony-php-api:preprod
+    container_name: preprod-api_sf
     build:
       context: ./
     networks:
-      - realtapipreprod
+      - api-preprod
       - traefik-realt
     volumes:
       - ./logs/symfony:/var/www/html/var/log:cached
       - ./logs/nginx:/var/log/nginx:cached
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sf-realt-api-preprod.rule=Host(`api.preprod.realtoken.community`)"
+      - "traefik.http.routers.api-preprod.rule=Host(`api.preprod.realtoken.community`)"
     restart: always
 
   db-preprod:
     image: mysql:5.7
-    container_name: realtapi_preprod-db
+    container_name: preprod-api_db
     networks:
-      - realtapipreprod
+      - api-preprod
     environment:
       - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
       - "MYSQL_USER=${MYSQL_USER}"
@@ -29,14 +29,14 @@ services:
 
   adminer-preprod:
     image: adminer
-    container_name: realtapi_preprod-adminer
+    container_name: preprod-api_adminer
     ports:
       - "18081:8080"
     networks:
-      - realtapipreprod
+      - api-preprod
     restart: always
 
 networks:
-  realtapipreprod:
+  api-preprod:
   traefik-realt:
     external: true
