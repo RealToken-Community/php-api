@@ -1,8 +1,6 @@
 # RealT-API
 RealT-Community API for RealTokens
 
-[![Alpha](https://github.com/RealToken-Community/php-api/actions/workflows/alpha.yml/badge.svg)](https://github.com/RealToken-Community/php-api/actions/workflows/alpha.yml)
-
 ## Installation
 Build Container :
 ```bash
