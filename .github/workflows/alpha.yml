@@ -1,4 +1,4 @@
-name: Testing Symfony with MySQL and deploy server
+name: Symfony deployment
 
 on:
     push:
