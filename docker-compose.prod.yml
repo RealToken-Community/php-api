@@ -1,32 +1,26 @@
-version: '3.2'
-
 services:
   symfony-prod:
     image: realt-api:1.0
-    container_name: realtapi_prod-sf
+    container_name: prod-api_php-sf
     build:
       context: ./
-    ports:
-      - "9080:80"
     networks:
-      - realtapiprod
+      - api-prod
       - traefik-realt
     volumes:
       - ./logs/symfony:/var/www/html/var/log:cached
       - ./logs/nginx:/var/log/nginx:cached
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sf-realt-api-prod.rule=Host(`api.realt.community`)"
-      - "traefik.http.routers.sf-realt-api-prod.entrypoints=websecure"
+      - "traefik.http.routers.api-prod.rule=Host(`api.realt.community`)||Host(`api.realtoken.community`)"
+      - "traefik.http.services.api-prod.loadbalancer.server.port=80"
     restart: always
 
   db-prod:
     image: mysql:5.7
-    container_name: realtapi_prod-db
-    ports:
-      - "3306:3306"
+    container_name: prod-api_php-db
     networks:
-      - realtapiprod
+      - api-prod
     environment:
       - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
       - "MYSQL_USER=${MYSQL_USER}"
@@ -36,14 +30,14 @@ services:
 
   adminer-prod:
     image: adminer
-    container_name: realtapi_prod-adminer
+    container_name: prod-api_php-adminer
     ports:
       - "18080:8080"
     networks:
-      - realtapiprod
+      - api-prod
     restart: always
 
 networks:
-  realtapiprod:
+  api-prod:
   traefik-realt:
     external: true

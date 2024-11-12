@@ -1,9 +1,11 @@
-FROM sigri44/docker-symfony-php7:latest
+#FROM sigri44/docker-symfony-php7:latest
+#FROM sigri44/docker-symfony-php8:latest
+FROM registry.realtoken.community/docker-symfony-php:8
 
 # Composer
 WORKDIR /var/www/html
 COPY . ./
-RUN cp .env.testing .env
+RUN cp .env.dev .env
 RUN composer install --prefer-dist --no-interaction --optimize-autoloader --no-progress
 
 # HTTPS

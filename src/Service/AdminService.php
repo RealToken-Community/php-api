@@ -521,8 +521,8 @@ class AdminService extends Service
      */
     public function compareOnlineTokensData(): stdClass
     {
-        $ENDPOINT_PREPROD = "https://api.preprod.realt.community/v1/token";
-        $ENDPOINT_PROD = "https://api.realt.community/v1/token";
+        $ENDPOINT_PREPROD = "https://api.preprod.realtoken.community/v1/token";
+        $ENDPOINT_PROD = "https://api.realtoken.community/v1/token";
 
         $headers = array();
         $headers[] = 'Accept: */*';

@@ -26,7 +26,7 @@ class DefiService extends Service
     use NetworkControllerTrait;
 
     const URI_THEGRAPH = "https://api.thegraph.com/subgraphs/name";
-    const URI_REALTOKEN_HISTORY = "https://history.api.realt.community";
+    const URI_REALTOKEN_HISTORY = "https://history.api.realtoken.community";
 
     private CacheInterface $cache;
 
