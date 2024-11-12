@@ -1,13 +1,9 @@
-version: '3.2'
-
 services:
   php-api_symfony:
     image: ${DOCKER_REGISTRY}/api-php:${DOCKER_BRANCH}
     container_name: ${DOCKER_BRANCH}-api_php-symfony
     build:
       context: ./
-    ports:
-      - "9082:80"
     networks:
       - realt
       - traefik-realt
@@ -16,15 +12,12 @@ services:
       - ./logs/nginx:/var/log/nginx:cached
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api-php-${DOCKER_BRANCH}.rule=Host(`api.${DOCKER_BRANCH}.realt.community`)"
-      - "traefik.http.routers.api-php-${DOCKER_BRANCH}.entrypoints=websecure"
+      - "traefik.http.routers.api-php-${DOCKER_BRANCH}.rule=Host(`api.${DOCKER_BRANCH}.realtoken.community`)"
     restart: always
 
   php-api_db:
     image: mysql:5.7
     container_name: ${DOCKER_BRANCH}-api_php-db
-    ports:
-      - "3308:3306"
     networks:
       - realt
     environment:
