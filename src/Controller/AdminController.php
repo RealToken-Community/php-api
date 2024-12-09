@@ -345,16 +345,6 @@ class AdminController extends AbstractController
         );
 
         $links = [
-            "admin_api_prod" => [
-                "env" => "prod",
-                "url" => $_ENV['ADMIN_API_URI'],
-                "description" => "Stats API"
-            ],
-            "portainer_prod" => [
-                "env" => "prod",
-                "url" => $_ENV['PORTAINER_PROD_URI'],
-                "description" => "Portainer"
-            ],
             "adminer_prod" => [
                 "env" => "prod",
                 "url" => $_ENV['ADMINER_PROD_URI'],
@@ -369,16 +359,6 @@ class AdminController extends AbstractController
                 "env" => "alpha",
                 "url" => $_ENV['ADMINER_ALPHA_URI'],
                 "description" => "Adminer"
-            ],
-            "grant_api_form" => [
-                "env" => "prod",
-                "url" => $_ENV['GRANT_API_FORM'],
-                "description" => "Grant API Form"
-            ],
-            "grant_api_response" => [
-                "env" => "prod",
-                "url" => $_ENV['GRANT_API_RESPONSE'],
-                "description" => "Grant API Response"
             ],
         ];
 
