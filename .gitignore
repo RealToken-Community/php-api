@@ -55,3 +55,4 @@
 /config/routes/dev/
 /public/phpinfo.php
 /docker-compose.yml
+/temp_user_creation.sh
