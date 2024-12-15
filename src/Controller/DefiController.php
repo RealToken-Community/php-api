@@ -8,11 +8,12 @@ use App\Traits\DataControllerTrait;
 use App\Traits\HeadersControllerTrait;
 use Exception;
 use Nelmio\ApiDocBundle\Annotation\Security;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/v1', name: 'home')]
 class DefiController
@@ -34,18 +35,17 @@ class DefiController
     /**
      * RealToken list for AMM (deprecated).
      *
-     * @OA\Response(
-     *     response=301,
-     *     description="Get deprecated",
-     * )
-     * @OA\Tag(name="DeFi")
-     *
      * @param Request $request
      *
      * @deprecated
      *
      * @return JsonResponse
      */
+    #[OA\Response(
+        response: 301,
+        description: 'Get deprecated'
+    )]
+    #[OA\Tag(name: 'DeFi')]
     #[Route('/tokenListOld', name: 'amm_list_deprecated', methods: ['GET'])]
     public function getTokenListDeprecated(Request $request): JsonResponse
     {
@@ -55,16 +55,15 @@ class DefiController
     /**
      * RealToken list for AMM.
      *
-     * @OA\Response(
-     *     response=200,
-     *     description="Return list of RealToken for Automatic Market Maker",
-     * )
-     * @OA\Tag(name="DeFi")
-     *
      * @param Request $request
      *
      * @return JsonResponse
      */
+    #[OA\Response(
+        response: 200,
+        description: 'Return list of RealToken for Automatic Market Maker'
+    )]
+    #[OA\Tag(name: 'DeFi')]
     #[Route('/tokenList', name: 'amm_list', methods: ['GET'])]
     public function getTokenList(Request $request): JsonResponse
     {
@@ -74,16 +73,15 @@ class DefiController
     /**
      * RealToken history list.
      * 
-     * @OA\Response(
-     *    response=200,
-     *    description="Return list of RealToken history",
-     * )
-     * @OA\Tag(name="DeFi")
-     * 
      * @param Request $request
      * 
      * @return JsonResponse
      */
+    #[OA\Response(
+        response: 200,
+        description: 'Return list of RealToken history'
+    )]
+    #[OA\Tag(name: 'DeFi')]
     #[Route('/tokenHistory', name: 'token_history', methods: ['GET'])]
     public function getTokenHistory(Request $request): JsonResponse
     {
@@ -93,17 +91,17 @@ class DefiController
     /**
      * Generate token symbol.
      *
-     * @OA\Response(
-     *     response=200,
-     *     description="Generate token symbol",
-     * )
-     * @OA\Tag(name="DeFi")
-     * @Security(name="api_key")
      * @param Request $request
      *
      * @return JsonResponse
      * @throws InvalidArgumentException
      */
+    #[OA\Response(
+        response: 200,
+        description: 'Generate token symbol'
+    )]
+    #[OA\Tag(name: 'DeFi')]
+    #[Security(name: 'api_key')]
     #[Route('/generateSymbol', name: 'token_symbol_generate', methods: ['POST'])]
     public function generateTokenSymbol(Request $request): JsonResponse
     {
@@ -115,12 +113,6 @@ class DefiController
     /**
      * Generate LP pair token.
      *
-     * @OA\Response(
-     *     response=200,
-     *     description="Generate LP pair token",
-     * )
-     * @OA\Tag(name="DeFi")
-     * @Security(name="api_key")
      * @param Request $request
      *
      * @return JsonResponse
@@ -128,14 +120,11 @@ class DefiController
      */
     #[OA\Response(
         response: 200,
-        description: 'Generate LP pair token',
-        content: new OA\JsonContent(
-            type: 'array',
-            items: new OA\Items(ref: new Model(type: AlbumDto::class, groups: ['full']))
-        )
+        description: 'Generate LP pair token'
     )]
     #[OA\Tag(name: 'DeFi')]
     #[Security(name: 'api_key')]
+//    #[IsGranted('ROLE_ADMIN')]
     #[Route('/generateLpPair', name: 'token_lp_pair_generate', methods: ['POST'])]
     public function generateLpPair(Request $request): JsonResponse
     {

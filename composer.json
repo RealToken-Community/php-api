@@ -11,7 +11,7 @@
         "ext-iconv": "*",
         "ext-json": "*",
         "composer/package-versions-deprecated": "1.10.99.1",
-        "doctrine/annotations": "^2.0",
+        "doctrine/annotations": "*",
         "doctrine/doctrine-bundle": "^2.13",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^3.3",
@@ -29,6 +29,7 @@
         "symfony/framework-bundle": "7.2.*",
         "symfony/lock": "7.2.*",
         "symfony/rate-limiter": "7.2.*",
+        "symfony/runtime": "7.2.*",
         "symfony/security-bundle": "7.2.*",
         "symfony/twig-bundle": "^7.2",
         "symfony/validator": "7.2.*",
@@ -46,8 +47,9 @@
         },
         "sort-packages": true,
         "allow-plugins": {
+            "php-http/discovery": true,
             "symfony/flex": true,
-            "php-http/discovery": true
+            "symfony/runtime": true
         }
     },
     "autoload": {
