@@ -1,3 +1,19 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+app.swagger_ui:
+    path: /doc1
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+
+# config/routes.yaml
+app.redocly:
+    path: /doc2
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.redocly }
+
+app.swagger:
+    path: /doc.json
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger }

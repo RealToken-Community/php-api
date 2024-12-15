@@ -8,11 +8,13 @@ doctrine:
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+#        naming_strategy: doctrine.orm.naming_strategy.default
         auto_mapping: true
         mappings:
             App:
                 is_bundle: false
-                type: annotation
+#                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App

@@ -1,9 +1,9 @@
 nelmio_api_doc:
   documentation:
     info:
-      title: RealT API Doc
-      description: The unique RealT API from Community
-      version: 1.0.1
+      title: RealToken Community API Doc
+      description: The unique RealToken API from Community
+      version: 1.1.0
     components:
       securitySchemes:
         api_key:

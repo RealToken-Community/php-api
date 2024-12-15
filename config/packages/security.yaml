@@ -1,7 +1,7 @@
 security:
-    encoders:
-        App\Entity\User:
-            algorithm: auto
+#    encoders:
+#        App\Entity\User:
+#            algorithm: auto
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
@@ -15,14 +15,14 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            anonymous: lazy
+#            anonymous: lazy
             logout: ~
 
             provider: app_user_provider
 
-            guard:
-                authenticators:
-                    - App\Security\TokenAuthenticator
+#            guard:
+#                authenticators:
+#                    - App\Security\TokenAuthenticator
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication

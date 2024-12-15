@@ -14,9 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/v1")
- */
+#[Route('/v1', name: 'home')]
 class DefiController
 {
     use HeadersControllerTrait;
@@ -47,8 +45,8 @@ class DefiController
      * @deprecated
      *
      * @return JsonResponse
-     * @Route("/tokenListOld", name="amm_list_deprecated", methods={"GET"})
      */
+    #[Route('/tokenListOld', name: 'amm_list_deprecated', methods: ['GET'])]
     public function getTokenListDeprecated(Request $request): JsonResponse
     {
         return $this->defiService->getTokenListForAMMDeprecated($this->getReferer($request));
@@ -66,8 +64,8 @@ class DefiController
      * @param Request $request
      *
      * @return JsonResponse
-     * @Route("/tokenList", name="amm_list", methods={"GET"})
      */
+    #[Route('/tokenList', name: 'amm_list', methods: ['GET'])]
     public function getTokenList(Request $request): JsonResponse
     {
         return $this->defiService->getTokenListForAMM($this->getReferer($request));
@@ -85,8 +83,8 @@ class DefiController
      * @param Request $request
      * 
      * @return JsonResponse
-     * @Route("/tokenHistory", name="token_history", methods={"GET"})
      */
+    #[Route('/tokenHistory', name: 'token_history', methods: ['GET'])]
     public function getTokenHistory(Request $request): JsonResponse
     {
         return $this->defiService->getTokenHistory($this->getReferer($request));
@@ -105,8 +103,8 @@ class DefiController
      *
      * @return JsonResponse
      * @throws InvalidArgumentException
-     * @Route("/generateSymbol", name="token_symbol_generate", methods={"POST"})
      */
+    #[Route('/generateSymbol', name: 'token_symbol_generate', methods: ['POST'])]
     public function generateTokenSymbol(Request $request): JsonResponse
     {
         $this->authenticatorService->checkHydratorRights($this->getApiToken($request));
@@ -127,8 +125,18 @@ class DefiController
      *
      * @return JsonResponse
      * @throws Exception|InvalidArgumentException
-     * @Route("/generateLpPair", name="token_lp_pair_generate", methods={"POST"})
      */
+    #[OA\Response(
+        response: 200,
+        description: 'Generate LP pair token',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: AlbumDto::class, groups: ['full']))
+        )
+    )]
+    #[OA\Tag(name: 'DeFi')]
+    #[Security(name: 'api_key')]
+    #[Route('/generateLpPair', name: 'token_lp_pair_generate', methods: ['POST'])]
     public function generateLpPair(Request $request): JsonResponse
     {
         $this->authenticatorService->checkHydratorRights($this->getApiToken($request));
