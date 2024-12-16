@@ -1,17 +1,14 @@
-app.swagger_ui:
-  path: /
-  methods: GET
-  defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+app.swagger_v1:
+    path: /
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
 
-# config/routes.yaml
-app.swagger:
-  path: /doc.json
-  methods: GET
-  defaults: { _controller: nelmio_api_doc.controller.swagger }
+app.swagger_v2:
+    path: /doc
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.redocly }
 
-## Requires the Asset component and the Twig bundle
-## $ composer require twig asset
-#app.swagger_ui:
-#    path: /api/doc
-#    methods: GET
-#    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+app.swagger_doc:
+    path: /doc.json
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger }

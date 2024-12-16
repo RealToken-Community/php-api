@@ -1,17 +1,21 @@
 nelmio_api_doc:
-  documentation:
-    info:
-      title: RealToken Community API Doc
-      description: The unique RealToken API from Community
-      version: 1.1.0
-    components:
-      securitySchemes:
-        api_key:
-          type: apiKey
-          name: 'X-AUTH-REALT-TOKEN'
-          in: header
-    security:
-      - api_key: []
-  areas:
-    path_patterns:
-      - ^/v1
+    documentation:
+        info:
+            title: RealToken Community API Doc
+            description: The unique RealToken API from Community
+            version: 1.1.0
+        components:
+            securitySchemes:
+                api_key:
+                    type: apiKey
+                    name: 'X-AUTH-REALT-TOKEN'
+                    in: header
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+        security:
+            - api_key: []
+    areas:
+        path_patterns:
+            - ^/v1
