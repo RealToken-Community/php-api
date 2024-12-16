@@ -13,9 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/admin")
- */
+#[Route("/admin")]
 class AdminController extends AbstractController
 {
     use HeadersControllerTrait;
@@ -38,8 +36,8 @@ class AdminController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * @Route("/getUsersQuota", name="admin_user_quota", methods={"GET"})
      */
+    #[Route("/getUsersQuota", name: 'admin_user_quota', methods: ['GET'])]
     public function getUsersQuota(Request $request): Response
     {
         // Check admin rights
@@ -63,8 +61,8 @@ class AdminController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * @Route("/manageQuota", name="admin_manage_quota", methods={"GET", "POST"})
      */
+    #[Route("/manageQuota", name: 'admin_manage_quota', methods: ['GET', 'POST'])]
     public function manageQuota(Request $request): Response
     {
         // Check admin rights
@@ -100,8 +98,8 @@ class AdminController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * @Route("/manageQuotas", name="admin_manage_quotas", methods={"GET", "POST"})
      */
+    #[Route("/manageQuotas", name: 'admin_manage_quotas', methods: ['GET', 'POST'])]
     public function manageQuotas(Request $request): Response
     {
         // Check admin rights
@@ -138,8 +136,8 @@ class AdminController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * @Route("/manageTokenMapping", name="admin_manage_token_mapping", methods={"GET", "POST"})
      */
+    #[Route("/manageTokenMapping", name: 'admin_manage_token_mapping', methods: ['GET', 'POST'])]
     public function manageTokenMapping(Request $request): Response
     {
         // Check admin rights
@@ -175,8 +173,8 @@ class AdminController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * @Route("/checkRouteIntegrity", name="admin_check_route_integrity", methods={"GET", "POST"})
      */
+    #[Route("/checkRouteIntegrity", name: 'admin_check_route_integrity', methods: ['GET', 'POST'])]
     public function checkRouteIntegrity(Request $request): Response
     {
         // Check admin rights
@@ -203,8 +201,8 @@ class AdminController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * @Route("/dropTokens", name="admin_drop_tokens", methods={"GET", "POST"})
      */
+    #[Route("/dropTokens", name: 'admin_drop_tokens', methods: ['GET', 'POST'])]
     public function dropTokens(Request $request): Response
     {
         // Check admin rights
@@ -231,8 +229,8 @@ class AdminController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * @Route("/manageTokenList", name="admin_manage_token_list", methods={"GET", "POST"})
      */
+    #[Route("/manageTokenList", name: 'admin_manage_token_list', methods: ['GET', 'POST'])]
     public function manageTokenList(Request $request): Response
     {
         // Check admin rights
@@ -292,8 +290,8 @@ class AdminController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * @Route("/environmentsDifferences", name="admin_environments_differences", methods={"GET"})
      */
+    #[Route("/environmentsDifferences", name: 'admin_environments_differences', methods: ['GET'])]
     public function getEnvironmentsDifferences(Request $request): Response
     {
         // Check admin rights
@@ -312,8 +310,8 @@ class AdminController extends AbstractController
      *
      * @return JsonResponse
      * @throws Exception
-     * @Route("/user", name="admin_create_user", methods={"POST"})
      */
+    #[Route("/user", name: 'admin_create_user', methods: ['POST'])]
     public function createUser(Request $request): JsonResponse
     {
         // Check admin rights

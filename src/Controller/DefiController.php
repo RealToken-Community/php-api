@@ -13,9 +13,8 @@ use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/v1', name: 'home')]
+#[Route('/v1')]
 class DefiController
 {
     use HeadersControllerTrait;
@@ -124,7 +123,6 @@ class DefiController
     )]
     #[OA\Tag(name: 'DeFi')]
     #[Security(name: 'api_key')]
-//    #[IsGranted('ROLE_ADMIN')]
     #[Route('/generateLpPair', name: 'token_lp_pair_generate', methods: ['POST'])]
     public function generateLpPair(Request $request): JsonResponse
     {

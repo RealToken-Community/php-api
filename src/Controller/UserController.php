@@ -35,8 +35,8 @@ class UserController extends AbstractController
      *
      * @return Response
      * @throws Exception
-     * @Route("/admin/register/apiUser", name="register_api_user", methods={"GET", "POST"})
      */
+    #[Route("/admin/register/apiUser", name: 'register_api_user', methods: ['GET', 'POST'])]
     public function registerApiUser(Request $request): Response
     {
         // Check admin rights
