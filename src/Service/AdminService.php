@@ -683,7 +683,7 @@ class AdminService extends Service
      */
     private function sendEmail(string $userEmail, string $userToken): string
     {
-        $uri = "https://emailing.realt.community";
+        $uri = "https://emailing.realtoken.community";
         $data = [
             'accessToken' => $_ENV['EMAILING_ACCESS_TOKEN'],
             'receiverEmail' => $userEmail,
