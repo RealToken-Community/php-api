@@ -1,6 +1,7 @@
 #FROM sigri44/docker-symfony-php7:latest
 #FROM sigri44/docker-symfony-php8:latest
-FROM registry.realtoken.community/docker-symfony-php:8
+#FROM registry.realtoken.community/docker-symfony-php:8
+FROM registry.realtoken.community/docker-symfony-php:7
 
 # Composer
 WORKDIR /var/www/html
