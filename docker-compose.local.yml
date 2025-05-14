@@ -1,0 +1,42 @@
+services:
+  symfony-prod:
+#    image: realt-api:1.0
+    container_name: realtapi_prod-sf
+    build:
+      context: ./
+    ports:
+      - "9080:80"
+    networks:
+      - realtapiprod
+    volumes:
+      - ./logs/symfony:/var/www/html/var/log:cached
+      - ./logs/nginx:/var/log/nginx:cached
+    restart: always
+
+  db-prod:
+    image: mysql:5.7
+    platform: linux/amd64
+    container_name: realtapi_prod-db
+    ports:
+      - "3306:3306"
+    networks:
+      - realtapiprod
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+    restart: always
+
+  adminer-prod:
+    image: adminer
+    platform: linux/amd64
+    container_name: realtapi_prod-adminer
+    ports:
+      - "18080:8080"
+    networks:
+      - realtapiprod
+    restart: always
+
+networks:
+  realtapiprod:

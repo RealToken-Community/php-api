@@ -2,15 +2,14 @@
 
 namespace App\Entity;
 
+use AllowDynamicProperties;
 use App\Repository\TokenRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Attributes as OA;
 
-/**
- * @ORM\Entity(repositoryClass=TokenRepository::class)
- * @ORM\Table(name="tokens")
- */
-class Token
+#[ORM\Table(name: 'tokens'), ORM\Entity(repositoryClass: TokenRepository::class)]
+#[AllowDynamicProperties] class Token
 {
     const CANAL_RELEASE = "release";
     const CANAL_COMING_SOON = "coming_soon";
@@ -20,383 +19,231 @@ class Token
     const CANAL_EXIT_COMPLETE = "exit_complete";
     const CANAL_MIGRATED = "tokens_migrated";
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $fullName;
-
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $shortName;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $tokenPrice;
-
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $canal;
-
-    /**
-     * @ORM\Column(type="string", length=3, nullable=true)
-     */
-    private $currency;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $totalTokens;
-
-    /**
-     * @ORM\Column(type="string", length=42, nullable=true)
-     */
-    private $ethereumContract;
-
-    /**
-     * @ORM\Column(type="string", length=42, nullable=true)
-     */
-    private $xDaiContract;
-
-    /**
-     * @ORM\Column(type="string", length=42, nullable=true)
-     */
-    private $gnosisContract;
-
-    /**
-     * @ORM\Column(type="string", length=42, nullable=true)
-     */
-    private $goerliContract;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $totalInvestment;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $grossRentMonth;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $annualPercentageYield;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $propertyManagementPercent;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $realtPlatformPercent;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $insurance;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $propertyTaxes;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $utilities;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $initialMaintenanceReserve;
-
-    /**
-     * @var array $coordinate
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $coordinate;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $marketplaceLink;
-
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $imageLink = [];
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $propertyType;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $squareFeet;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $lotSize;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $bedroomBath;
-
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $hasTenants;
-
-    /**
-     * @ORM\Column(type="string", length=10, nullable=true)
-     */
-    private $termOfLease;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $renewalDate;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $section8paid;
-
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $sellPropertyTo;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $grossRentYear;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $propertyManagement;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $realtPlatform;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentMonth;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentYear;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentYearPerToken;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentMonthPerToken;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $lastUpdate;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentDay;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentDayPerToken;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $rentedUnits;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $totalUnits;
-
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $secondaryMarketplace = [];
-
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $secondaryMarketplaces = [];
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $symbol;
-
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $blockchainAddresses = [];
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $underlyingAssetPrice;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $renovationReserve;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $propertyMaintenanceMonthly;
-
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $rentStartDate;
-
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $originSecondaryMarketplaces = [];
-
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $initialLaunchDate;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $seriesNumber;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $constructionYear;
-
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $constructionType;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $roofType;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $assetParking;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $foundation;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $heating;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $cooling;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $tokenIdRules;
-
-    /**
-     * @ORM\Column(type="string", length=20, nullable=true)
-     */
-    private $rentCalculationType;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $realtListingFeePercent;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $realtListingFee;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $miscellaneousCosts;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $propertyStories;
-
-    /**
-     * @ORM\Column(type="string", length=42, unique=true)
-     */
-    private $uuid;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $totalTokensRegSummed;
-
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $rentalType;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $subsidyStatus;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $subsidyStatusValue;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $subsidyBy;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $productType;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
+    private ?int $id;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    #[OA\Property(type: 'string', maxLength: 100)]
+    private ?string $fullName;
+
+    #[ORM\Column(type: 'string', length: 50)]
+    private ?string $shortName;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $tokenPrice;
+
+    #[ORM\Column(type: 'string', length: 50)]
+    private ?string $canal;
+
+    #[ORM\Column(type: 'string', length: 3, nullable: true)]
+    private ?string $currency;
+
+    #[ORM\Column(type: 'integer')]
+    private ?int $totalTokens;
+
+    #[ORM\Column(type: 'string', length: 42, nullable: true)]
+    private ?string $ethereumContract;
+
+    #[ORM\Column(type: 'string', length: 42, nullable: true)]
+    private ?string $xDaiContract;
+
+    #[ORM\Column(type: 'string', length: 42, nullable: true)]
+    private ?string $gnosisContract;
+
+    #[ORM\Column(type: 'string', length: 42, nullable: true)]
+    private ?string $goerliContract;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $totalInvestment;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $grossRentMonth;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $annualPercentageYield;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $propertyManagementPercent;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $realtPlatformPercent;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $insurance;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $propertyTaxes;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $utilities;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $initialMaintenanceReserve;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $coordinate;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $marketplaceLink;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $imageLink = [];
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $propertyType;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $squareFeet;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $lotSize;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $bedroomBath;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $hasTenants;
+
+    #[ORM\Column(type: 'string', length: 10, nullable: true)]
+    private ?string $termOfLease;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $renewalDate;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $section8paid;
+
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $sellPropertyTo;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $grossRentYear;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $propertyManagement;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $realtPlatform;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $netRentMonth;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $netRentYear;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $netRentYearPerToken;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $netRentMonthPerToken;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?DateTimeInterface $lastUpdate;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $netRentDay;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $netRentDayPerToken;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $rentedUnits;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $totalUnits;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $secondaryMarketplace = [];
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $secondaryMarketplaces = [];
+
+     #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $symbol;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $blockchainAddresses = [];
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $underlyingAssetPrice;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $renovationReserve;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $propertyMaintenanceMonthly;
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?DateTimeInterface $rentStartDate;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $originSecondaryMarketplaces = [];
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?DateTimeInterface $initialLaunchDate;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $seriesNumber;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $constructionYear;
+
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $constructionType;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $roofType;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $assetParking;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $foundation;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $heating;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $cooling;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $tokenIdRules;
+
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+    private ?string $rentCalculationType;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $realtListingFeePercent;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $realtListingFee;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $miscellaneousCosts;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $propertyStories;
+
+    #[ORM\Column(type: 'string', length: 42, unique: true)]
+    private ?string $uuid;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $totalTokensRegSummed;
+
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $rentalType;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $subsidyStatus;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $subsidyStatusValue;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $subsidyBy;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private string $productType;
 
     public function getId(): ?int
     {
@@ -907,17 +754,11 @@ class Token
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getCoordinate(): array
     {
         return $this->coordinate;
     }
 
-    /**
-     * @param array $coordinate
-     */
     public function setCoordinate(array $coordinate): void
     {
         $this->coordinate = $coordinate;
@@ -1319,13 +1160,6 @@ class Token
       return $this;
     }
 
-    /**
-     * Token toArray.
-     *
-     * @param array $credentials
-     *
-     * @return array
-     */
     public function __toArray(array $credentials): array
     {
         // Check if canal is available for public & check rights

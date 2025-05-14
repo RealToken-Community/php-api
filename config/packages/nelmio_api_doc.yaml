@@ -10,12 +10,33 @@ nelmio_api_doc:
                     type: apiKey
                     name: 'X-AUTH-REALT-TOKEN'
                     in: header
-                Bearer:
-                    type: http
-                    scheme: bearer
-                    bearerFormat: JWT
+#                Bearer:
+#                    type: http
+#                    scheme: bearer
+#                    bearerFormat: JWT
         security:
             - api_key: []
+#            - bearerAuth: []
+        servers:
+            -   url: 'https://api.realtoken.community'
+                description: 'Production Server'
+            -   url: 'https://api.preprod.realtoken.community'
+                description: 'Staging Server'
+            -   url: 'http://localhost:8000'
+                description: 'Local Server'
     areas:
         path_patterns:
             - ^/v1
+#            - ^/v1(?!/doc$)
+    html_config:
+        redocly_config:
+            disableTryIt: false
+            disableTryItRequestUrlEncoding: false
+            expandDefaultServerVariables: true
+            expandResponses: '200,201'
+            expandSingleSchemaField: true
+            hideHostname: false
+            hideRequestPayloadSample: false
+            menuToggle: true
+            showObjectSchemaExamples: true
+

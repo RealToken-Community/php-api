@@ -3,28 +3,33 @@ RealToken-Community API for RealTokens
 
 [![Alpha](https://github.com/RealToken-Community/php-api/actions/workflows/alpha.yml/badge.svg)](https://github.com/RealToken-Community/php-api/actions/workflows/alpha.yml)
 
-## Installation
-Build Container :
+## Local installation
 ```bash
-sudo docker-compose build
+docker build . -t api-php --no-cache
+docker compose -f docker-compose.local.yml up --force-recreate
+
+# For macos users
+docker build . -t api-php --no-cache --platform=linux/amd64
+docker compose -f docker-compose.local.yml up --force-recreate
 ```
 
-Run API Stack :
-```bash
-sudo docker-compose up -d
-```
+Go to :
+- API : `http://localhost:9080`
+- Adminer : `http://localhost:18080`
+
+On macos
 
 Create Database :
 ```
-sudo docker-compose exec -T symfony php bin/console doctrine:database:create
+docker compose exec -T realtapi_prod-sf php bin/console doctrine:database:create
 ```
 
 Create Table :
 ```
-sudo docker-compose exec -T symfony php bin/console doctrine:schema:update --force
+docker compose exec -T realtapi_prod-sf php bin/console doctrine:schema:update --force
 ```
 
 Migrate :
 ```
-sudo docker-compose exec -T symfony php bin/console doctrine:migrations:migrate
+docker compose exec -T realtapi_prod-sf php bin/console doctrine:migrations:migrate
 ```

@@ -1,4 +1,4 @@
-FROM sigri44/docker-symfony-php8:latest
+FROM registry.realtoken.community/docker-symfony-php:8
 
 # Composer
 WORKDIR /var/www/html
@@ -7,7 +7,7 @@ COPY . ./
 RUN composer install --prefer-dist --no-interaction --optimize-autoloader --no-progress
 
 # HTTPS
-ENV HTTPS false
+ENV HTTPS=false
 
 # Nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf

@@ -7,32 +7,20 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=TokenlistReferRepository::class)
- */
+#[ORM\Entity(repositoryClass: TokenlistReferRepository::class)]
 class TokenlistRefer
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private $name;
+    #[ORM\Column(type: "string", length: 100)]
+    private ?string $name;
 
-    /**
-     * @ORM\Column(type="string", length=150)
-     */
-    private $url;
+    #[ORM\Column(type: "string", length: 150)]
+    private ?string $url;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=TokenlistIntegrity::class)
-     */
-    private $integrityTypes;
+    #[ORM\ManyToOne(targetEntity: TokenlistIntegrity::class)]
+    private ?TokenlistIntegrity $integrityTypes;
 
     public function getId(): ?int
     {

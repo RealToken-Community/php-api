@@ -5,52 +5,32 @@ namespace App\Entity;
 use App\Repository\TokenlistIntegrityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=TokenlistIntegrityRepository::class)
- */
+#[ORM\Entity(repositoryClass: TokenlistIntegrityRepository::class)]
 class TokenlistIntegrity
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $timestamp;
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $timestamp;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=TokenlistNetwork::class)
-     */
-    private $network;
+    #[ORM\ManyToOne(targetEntity: TokenlistNetwork::class)]
+    private ?TokenlistNetwork $network;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $versionMajor;
+    #[ORM\Column(type: "integer")]
+    private ?int $versionMajor;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $versionMinor;
+    #[ORM\Column(type: "integer")]
+    private ?int $versionMinor;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $versionPatch;
+    #[ORM\Column(type: "integer")]
+    private ?int $versionPatch;
 
-    /**
-     * @ORM\Column(type="string", length=32)
-     */
-    private $hash;
+    #[ORM\Column(type: "string", length: 32)]
+    private ?string $hash;
 
-    /**
-     * @ORM\Column(type="array")
-     */
-    private $data = [];
+    #[ORM\Column(type: "json")]
+    private array $data = [];
 
     public function getId(): ?int
     {

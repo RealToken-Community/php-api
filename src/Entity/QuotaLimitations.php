@@ -5,52 +5,32 @@ namespace App\Entity;
 use App\Repository\QuotaLimitationsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=QuotaLimitationsRepository::class)
- */
+#[ORM\Entity(repositoryClass: QuotaLimitationsRepository::class)]
 class QuotaLimitations
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $role;
+    #[ORM\Column(type: "string", length: 50)]
+    private ?string $role;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerMinute;
+    #[ORM\Column(type: "integer")]
+    private ?int $limitPerMinute;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerHour;
+    #[ORM\Column(type: "integer")]
+    private ?int $limitPerHour;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerDay;
+    #[ORM\Column(type: "integer")]
+    private ?int $limitPerDay;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerWeek;
+    #[ORM\Column(type: "integer")]
+    private ?int $limitPerWeek;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerMonth;
+    #[ORM\Column(type: "integer")]
+    private ?int $limitPerMonth;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerYear;
+    #[ORM\Column(type: "integer")]
+    private ?int $limitPerYear;
 
     public function getId(): ?int
     {

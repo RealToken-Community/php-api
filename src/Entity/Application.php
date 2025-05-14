@@ -5,44 +5,26 @@ namespace App\Entity;
 use App\Repository\ApplicationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=ApplicationRepository::class)
- */
+#[ORM\Entity(repositoryClass: ApplicationRepository::class)]
 class Application
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+    private ?int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="applications")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $user;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "applications"), ORM\JoinColumn(nullable: false)]
+    private ?User $user;
 
-    /**
-     * @ORM\OneToOne(targetEntity=Quota::class, cascade={"persist", "remove"})
-     */
-    private $quota;
+    #[ORM\OneToOne(targetEntity: Quota::class, cascade: ["persist", "remove"])]
+    private ?Quota $quota;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $name;
+    #[ORM\Column(type: "string", length: 50)]
+    private ?string $name;
 
-    /**
-     * @var string API token
-     * @ORM\Column(type="string", unique=true, nullable=true)
-     */
-    private $apiToken;
+    #[ORM\Column(type: "string", unique: true, nullable: true)]
+    private string $apiToken;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $referer;
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $referer;
 
     public function getId(): ?int
     {
@@ -85,17 +67,11 @@ class Application
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getApiToken(): string
     {
         return $this->apiToken;
     }
 
-    /**
-     * @param string $apiToken
-     */
     public function setApiToken(string $apiToken): void
     {
         $this->apiToken = $apiToken;

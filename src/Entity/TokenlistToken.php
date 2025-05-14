@@ -5,48 +5,29 @@ namespace App\Entity;
 use App\Repository\TokenlistTokenRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=TokenlistTokenRepository::class)
- */
+#[ORM\Entity(repositoryClass: TokenlistTokenRepository::class)]
 class TokenlistToken
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=42)
-     */
-    private $address;
+    #[ORM\Column(type: "string", length: 42)]
+    private ?string $address;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=TokenlistNetwork::class, inversedBy="tokenlistTokens")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $chain;
+    #[ORM\ManyToOne(targetEntity: TokenlistNetwork::class, inversedBy: "tokenlistTokens"), ORM\JoinColumn(nullable: false)]
+    private ?TokenlistNetwork $chain;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private $name;
+    #[ORM\Column(type: "string", length: 100)]
+    private ?string $name;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $symbol;
+    #[ORM\Column(type: "string", length: 50)]
+    private ?string $symbol;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $decimals;
+    #[ORM\Column(type: "integer")]
+    private ?int $decimals;
 
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $tags = [];
+    #[ORM\Column(type: "json", nullable: true)]
+    private array $tags = [];
 
     public function getId(): ?int
     {

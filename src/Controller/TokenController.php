@@ -107,11 +107,24 @@ class TokenController
     #[OA\Response(
         response: 200,
         description: 'Return list of tokens',
+//        content: new Model(type: Token::class)
+//        content: new Model(type: Quota::class)
         content: new OA\JsonContent(
             type: 'array',
-            items: new OA\Items(ref: new Model(type: Token::class))
+            items: new OA\Items(ref: new Model(type: Token::class, groups: ['full']))
         )
+//        content: new OA\JsonContent(
+//            type: 'array',
+//            items: new OA\Items(ref: new Model(type: Token::class))
+//        )
+//        content: new OA\JsonContent(example: new OA\Schema(
+//            type: 'object',
+//            properties: [
+//                new OA\Property(property: 'uuid', ref: new Model(type: Token::class))
+//            ]
+//        ))
     )]
+//    #[OA\RequestBody(new Model(type: Token::class, groups: ["uuid"]))]
     #[OA\Tag(name: 'Tokens')]
     #[Security(name: 'api_key')]
     #[Route("", name: 'tokens_show', methods: ['GET'])]
@@ -238,11 +251,7 @@ class TokenController
      */
     #[OA\Response(
         response: 200,
-        description: 'Create token data',
-        content: new OA\JsonContent(
-            type: 'array',
-            items: new OA\Items(ref: new Model(type: Token::class, groups: ['full']))
-        )
+        description: 'Create token data'
     )]
     #[OA\Tag(name: 'Tokens')]
     #[Security(name: 'api_key')]

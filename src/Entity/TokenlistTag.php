@@ -5,32 +5,20 @@ namespace App\Entity;
 use App\Repository\TokenlistTagRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=TokenlistTagRepository::class)
- */
+#[ORM\Entity(repositoryClass: TokenlistTagRepository::class)]
 class TokenlistTag
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private $tagKey;
+    #[ORM\Column(type: "string", length: 100)]
+    private ?string $tagKey;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private $name;
+    #[ORM\Column(type: "string", length: 100)]
+    private ?string $name;
 
-    /**
-     * @ORM\Column(type="string", length=150)
-     */
-    private $description;
+    #[ORM\Column(type: "string", length: 150)]
+    private ?string $description;
 
     public function getId(): ?int
     {

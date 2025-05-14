@@ -5,32 +5,20 @@ namespace App\Entity;
 use App\Repository\TokenMappingRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=TokenMappingRepository::class)
- */
+#[ORM\Entity(repositoryClass: TokenMappingRepository::class)]
 class TokenMapping
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private $sourceName;
+    #[ORM\Column(type: "string", length: 100)]
+    private ?string $sourceName;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private $destinationName;
+    #[ORM\Column(type: "string", length: 100)]
+    private ?string $destinationName;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $lastUpdate;
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $lastUpdate;
 
     public function getId(): ?int
     {

@@ -7,32 +7,20 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=TokenlistNetworkRepository::class)
- */
+#[ORM\Entity(repositoryClass: TokenlistNetworkRepository::class)]
 class TokenlistNetwork
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $chainId;
+    #[ORM\Column(type: "integer")]
+    private ?int $chainId;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private $name;
+    #[ORM\Column(type: "string", length: 100)]
+    private ?string $name;
 
-    /**
-     * @ORM\OneToMany(targetEntity=TokenlistToken::class, mappedBy="chain", orphanRemoval=true)
-     */
-    private $tokenlistTokens;
+    #[ORM\OneToMany(targetEntity: TokenlistToken::class, mappedBy: "chain", orphanRemoval: true)]
+    private ArrayCollection $tokenlistTokens;
 
     public function __construct()
     {
@@ -68,9 +56,6 @@ class TokenlistNetwork
         return $this;
     }
 
-    /**
-     * @return Collection|TokenlistToken[]
-     */
     public function getTokenlistTokens(): Collection
     {
         return $this->tokenlistTokens;

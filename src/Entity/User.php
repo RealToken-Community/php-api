@@ -8,48 +8,29 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- */
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     */
-    private $email;
+    #[ORM\Column(type: "string", length: 180, unique: true)]
+    private ?string $email;
 
-    /**
-     * @ORM\Column(type="json")
-     */
-    private $roles = [];
+    #[ORM\Column(type: "json")]
+    private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     * @ORM\Column(type="string")
-     */
-    private $password;
+    #[ORM\Column(type: "string")]
+    private string $password;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Application::class, mappedBy="user", orphanRemoval=true)
-     */
-    private $applications;
+    #[ORM\OneToMany(targetEntity: Application::class, mappedBy: "user", orphanRemoval: true)]
+    private ArrayCollection $applications;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $username;
+    #[ORM\Column(type: "string", length: 50)]
+    private string $username;
 
-    /**
-     * @ORM\Column(type="string", length=42)
-     */
-    private $ethereumAddress;
+    #[ORM\Column(type: "string", length: 42)]
+    private ?string $ethereumAddress;
 
     public function __construct()
     {
@@ -126,15 +107,12 @@ class User implements UserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
 
-    /**
-     * @return Collection|Application[]
-     */
     public function getApplications(): Collection
     {
         return $this->applications;
@@ -179,5 +157,10 @@ class User implements UserInterface
         $this->ethereumAddress = $ethereumAddress;
 
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        // TODO: Implement getUserIdentifier() method.
     }
 }

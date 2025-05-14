@@ -7,33 +7,20 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=QuotaRepository::class)
- */
+#[ORM\Entity(repositoryClass: QuotaRepository::class)]
 class Quota
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+    private ?int $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=Application::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $application;
+    #[ORM\OneToOne(targetEntity: Application::class, cascade: ["persist", "remove"]), ORM\JoinColumn(nullable: false)]
+    private ?Application $application;
 
-    /**
-     * @ORM\Column(type="integer", options={"default" : 0})
-     */
-    private $increment;
+    #[ORM\Column(type: "integer", options: ["default" => 0])]
+    private ?int $increment;
 
-    /**
-     * @ORM\OneToMany(targetEntity=QuotaHistory::class, mappedBy="quota", orphanRemoval=true)
-     */
-    private $quotaHistories;
+    #[ORM\OneToMany(targetEntity: QuotaHistory::class, mappedBy: 'quota', orphanRemoval: true)]
+    private ArrayCollection $quotaHistories;
 
     public function __construct()
     {
@@ -69,9 +56,6 @@ class Quota
         return $this;
     }
 
-    /**
-     * @return Collection|QuotaHistory[]
-     */
     public function getQuotaHistories(): Collection
     {
         return $this->quotaHistories;
