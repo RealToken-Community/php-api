@@ -2,50 +2,41 @@
 
 namespace App\Controller;
 
-use App\Service\AuthenticatorService;
+use App\Service\DefiService;
+use App\Service\RequestContextService;
 use App\Service\UserService;
-use App\Traits\DataControllerTrait;
-use App\Traits\HeadersControllerTrait;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
-    use HeadersControllerTrait;
-    use DataControllerTrait;
-
-    /** @var AuthenticatorService */
-    private AuthenticatorService $authenticatorService;
-    /** @var UserService */
     private UserService $userService;
+    private DefiService $defiService;
 
-    public function __construct(AuthenticatorService $authenticatorService, UserService $userService)
-    {
-        $this->authenticatorService = $authenticatorService;
+    public function __construct(
+        UserService $userService,
+        DefiService $defiService
+    ) {
         $this->userService = $userService;
+        $this->defiService = $defiService;
     }
 
     /**
      * Register new Api User.
      *
      * @param Request $request
-     *
+     * @param RequestContextService $ctx
      * @return Response
      * @throws Exception
      */
     #[Route("/admin/register/apiUser", name: 'register_api_user', methods: ['GET', 'POST'])]
-    public function registerApiUser(Request $request): Response
+    public function registerApiUser(Request $request, RequestContextService $ctx): Response
     {
-        // Check admin rights
-        $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights(
-            $apiKey,
-            $this->getRequestOrigin($request)
-        );
-
         $form = [];
         if ($request->getMethod() == 'POST') {
             $form = $this->userService->userRegistration($request);
@@ -53,7 +44,7 @@ class UserController extends AbstractController
 
         return $this->render(
             "admin/registerApiUser.html.twig", [
-                'apiKey' => $apiKey,
+                'apiKey' => $ctx->getApplication()->getApiToken(),
                 'form' => $form,
             ]
         );

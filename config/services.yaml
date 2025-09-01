@@ -25,5 +25,20 @@ services:
         resource: '../src/Controller'
         tags: [ 'controller.service_arguments' ]
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\EventSubscriber\RateLimitSubscriber:
+        arguments:
+            $limiters: !tagged_iterator
+                tag: 'rate_limiter'
+                index_by: 'name'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    App\Service\QuotaService:
+        arguments:
+            $limiters: !tagged_iterator
+                tag: 'rate_limiter'
+                index_by: 'name'
+
+    App\Service\RequestContextService: ~
+
+    Web3p\EthereumUtil\Util: ~

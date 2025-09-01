@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Event;
-
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,9 +12,8 @@ class PublishedMessageExceptionListener
     /**
      * @param ExceptionEvent $event
      */
-    public function onKernelException(ExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event): void
     {
-
         $exception = $event->getThrowable();
         $message = $exception->getMessage();
 
@@ -34,5 +31,4 @@ class PublishedMessageExceptionListener
 
         $event->setResponse(new JsonResponse($responseData, $code));
     }
-
 }

@@ -2,8 +2,6 @@
 
 namespace App\Traits;
 
-use Symfony\Component\HttpFoundation\Request;
-
 trait NetworkControllerTrait
 {
     /**
@@ -15,7 +13,7 @@ trait NetworkControllerTrait
      *
      * @return bool|mixed|string
      */
-    public function curlRequest(string $uri, bool $decode = false, array $headers = [])
+    public function curlRequest(string $uri, bool $decode = false, array $headers = []): mixed
     {
         $curl = curl_init();
 

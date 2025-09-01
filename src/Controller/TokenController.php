@@ -3,13 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Token;
-use App\Service\AuthenticatorService;
+use App\Service\RequestContextService;
 use App\Service\TokenService;
 use App\Traits\DataControllerTrait;
-use App\Traits\HeadersControllerTrait;
 use Exception;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use Nelmio\ApiDocBundle\Attribute\Security;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,24 +17,19 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route("/v1/token")]
 class TokenController
 {
-    use HeadersControllerTrait;
     use DataControllerTrait;
 
-    /** @var AuthenticatorService */
-    private AuthenticatorService $authenticatorService;
-    /** @var TokenService */
     private TokenService $tokenService;
 
-    public function __construct(AuthenticatorService $authenticatorService, TokenService $tokenService)
+    public function __construct(TokenService $tokenService)
     {
-        $this->authenticatorService = $authenticatorService;
         $this->tokenService = $tokenService;
     }
 
     /**
      * Show latest token updated.
      *
-     * @param Request $request
+     * @param RequestContextService $ctx
      * @return JsonResponse
      */
     #[OA\Response(
@@ -44,14 +38,9 @@ class TokenController
     )]
     #[OA\Tag(name: 'Tokens')]
     #[Route("/lastUpdate", name: 'token_last_updated', methods: ['GET'])]
-    public function showLatestUpdated(Request $request): JsonResponse
+    public function showLatestUpdated(RequestContextService $ctx): JsonResponse
     {
-        $credentials = $this->authenticatorService->checkCredentials(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
-        return $this->tokenService->showLatestUpdated($credentials);
+        return $this->tokenService->showLatestUpdated($ctx);
     }
 
     /**
@@ -74,11 +63,10 @@ class TokenController
     /**
      * List all tokens (deprecated).
      *
-     * @param Request $request
-     *
+     * @param RequestContextService $ctx
+     * @return JsonResponse
      * @deprecated
      *
-     * @return JsonResponse
      */
     #[OA\Response(
         response: 301,
@@ -87,21 +75,15 @@ class TokenController
     #[OA\Tag(name: 'Tokens')]
     #[Security(name: 'api_key')]
     #[Route("s", name: 'tokens_show_deprecated', methods: ['GET'])]
-    public function showTokensDeprecated(Request $request): JsonResponse
+    public function showTokensDeprecated(RequestContextService $ctx): JsonResponse
     {
-        $credentials = $this->authenticatorService->checkCredentials(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
-        return $this->tokenService->getTokens($credentials, true);
+        return $this->tokenService->getTokens($ctx, true);
     }
 
     /**
      * List all tokens.
      *
-     * @param Request $request
-     *
+     * @param RequestContextService $ctx
      * @return JsonResponse
      */
     #[OA\Response(
@@ -124,24 +106,22 @@ class TokenController
 //            ]
 //        ))
     )]
-//    #[OA\RequestBody(new Model(type: Token::class, groups: ["uuid"]))]
+    #[OA\Response(
+        response: 429,
+        description: 'Too many requests',
+    )]
     #[OA\Tag(name: 'Tokens')]
     #[Security(name: 'api_key')]
     #[Route("", name: 'tokens_show', methods: ['GET'])]
-    public function showTokens(Request $request): JsonResponse
+    public function showTokens(RequestContextService $ctx): JsonResponse
     {
-        $credentials = $this->authenticatorService->checkCredentials(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
-        return $this->tokenService->getTokens($credentials);
+        return $this->tokenService->getTokens($ctx);
     }
 
     /**
      * Return data from token.
      *
-     * @param Request $request
+     * @param RequestContextService $ctx
      * @param string $uuid
      *
      * @return JsonResponse
@@ -153,14 +133,9 @@ class TokenController
     #[OA\Tag(name: 'Tokens')]
     #[Security(name: 'api_key')]
     #[Route("/{uuid}", name: 'token_show', methods: ['GET'])]
-    public function showToken(Request $request, string $uuid) : JsonResponse
+    public function showToken(RequestContextService $ctx, string $uuid) : JsonResponse
     {
-        $credentials = $this->authenticatorService->checkCredentials(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
-        return $this->tokenService->getToken($credentials, $uuid);
+        return $this->tokenService->getToken($ctx, $uuid);
     }
 
     /**
@@ -181,11 +156,6 @@ class TokenController
     #[Route("/{uuid}", name: 'token_update', methods: ['PUT'])]
     public function updateToken(Request $request, string $uuid) : JsonResponse
     {
-        $this->authenticatorService->checkAdminRights(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
         return $this->tokenService->updateToken($uuid, $this->getDataJson($request));
     }
 
@@ -206,11 +176,6 @@ class TokenController
     #[Route("/{uuid}", name: 'token_delete', methods: ['DELETE'])]
     public function deleteToken(Request $request, string $uuid): JsonResponse
     {
-        $this->authenticatorService->checkAdminRights(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
         return $this->tokenService->deleteToken($uuid);
     }
 
@@ -219,10 +184,9 @@ class TokenController
      *
      * @param Request $request
      *
-     * @deprecated
-     *
      * @return JsonResponse
-     * @throws Exception
+     * @throws Exception|\Doctrine\DBAL\Exception
+     * @deprecated
      */
     #[OA\Response(
         response: 301,
@@ -233,11 +197,6 @@ class TokenController
     #[Route("s", name: 'token_create_deprecated', methods: ['POST'])]
     public function createTokenDeprecated(Request $request): JsonResponse
     {
-        $this->authenticatorService->checkAdminRights(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
         return $this->tokenService->createToken($this->getDataJson($request), true);
     }
 
@@ -247,7 +206,7 @@ class TokenController
      * @param Request $request
      *
      * @return JsonResponse
-     * @throws Exception
+     * @throws Exception|\Doctrine\DBAL\Exception
      */
     #[OA\Response(
         response: 200,
@@ -258,11 +217,6 @@ class TokenController
     #[Route("", name: 'token_create', methods: ['POST'])]
     public function createToken(Request $request): JsonResponse
     {
-        $this->authenticatorService->checkAdminRights(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
         return $this->tokenService->createToken($this->getDataJson($request));
     }
 }

@@ -3,7 +3,7 @@ nelmio_api_doc:
         info:
             title: RealToken Community API Doc
             description: The unique RealToken API from Community
-            version: 1.1.0
+            version: 1.5.0
         components:
             securitySchemes:
                 api_key:
@@ -17,13 +17,6 @@ nelmio_api_doc:
         security:
             - api_key: []
 #            - bearerAuth: []
-        servers:
-            -   url: 'https://api.realtoken.community'
-                description: 'Production Server'
-            -   url: 'https://api.preprod.realtoken.community'
-                description: 'Staging Server'
-            -   url: 'http://localhost:8000'
-                description: 'Local Server'
     areas:
         path_patterns:
             - ^/v1

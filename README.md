@@ -21,15 +21,15 @@ On macos
 
 Create Database :
 ```
-docker compose exec -T realtapi_prod-sf php bin/console doctrine:database:create
+docker exec -it api-sf php bin/console doctrine:database:create
 ```
 
-Create Table :
+Create Table (don't need if you migrate after) :
 ```
-docker compose exec -T realtapi_prod-sf php bin/console doctrine:schema:update --force
+docker exec -it api-sf php bin/console doctrine:schema:update --force
 ```
 
 Migrate :
 ```
-docker compose exec -T realtapi_prod-sf php bin/console doctrine:migrations:migrate
+docker exec -it api-sf php bin/console doctrine:migrations:migrate
 ```

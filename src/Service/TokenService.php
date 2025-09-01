@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Token;
+use App\Repository\TokenRepository;
 use App\Traits\NetworkControllerTrait;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,12 +33,12 @@ class TokenService extends Service
     /**
      * Get list of tokens.
      *
-     * @param array $credentials
+     * @param RequestContextService $ctx
      * @param bool $deprecated
      *
      * @return JsonResponse
      */
-    public function getTokens(array $credentials, bool $deprecated = false): JsonResponse
+    public function getTokens(RequestContextService $ctx, bool $deprecated = false): JsonResponse
     {
         $tokens = $this->em->getRepository(Token::class)->findAll();
 
@@ -47,7 +48,7 @@ class TokenService extends Service
                 throw new HttpException(Response::HTTP_NOT_FOUND, 'Token not found');
             }
 
-            if (!empty($tokenResult = $token->__toArray($credentials))) {
+            if (!empty($tokenResult = $token->__toArray($ctx))) {
                 $result[] = $tokenResult;
             }
         }
@@ -69,7 +70,7 @@ class TokenService extends Service
      *
      * @return JsonResponse
      */
-    public function getToken(array $credentials, string $uuid): JsonResponse
+    public function getToken(RequestContextService $ctx, string $uuid): JsonResponse
     {
         // set token variable with gnosisContract Token entity property. If result is null, find with ethereumContract, if result is null, find with goerliContract
         $token = $this->em->getRepository(Token::class)->findOneBy(['gnosisContract' => $uuid]);
@@ -84,7 +85,7 @@ class TokenService extends Service
             throw new HttpException(Response::HTTP_NOT_FOUND, 'Token not found');
         }
 
-        return new JsonResponse($token->__toArray($credentials), Response::HTTP_OK);
+        return new JsonResponse($token->__toArray($ctx), Response::HTTP_OK);
     }
 
     /**
@@ -95,6 +96,7 @@ class TokenService extends Service
      *
      * @return JsonResponse
      * @throws Exception
+     * @throws \Doctrine\DBAL\Exception
      */
     public function createToken(array $dataJson = [], bool $deprecated = false): JsonResponse
     {
@@ -168,7 +170,7 @@ class TokenService extends Service
      * Update token from uuid.
      *
      * @param string $contractAddress
-     * @param array|null $dataJson
+     * @param array $dataJson
      *
      * @return JsonResponse
      * @throws Exception
@@ -217,17 +219,18 @@ class TokenService extends Service
     /**
      * Show latest token updated.
      *
-     * @param array $credentials
+     * @param RequestContextService $ctx
      * @return JsonResponse
      */
-    public function showLatestUpdated(array $credentials): JsonResponse
+    public function showLatestUpdated(RequestContextService $ctx): JsonResponse
     {
+        /* @var TokenRepository $tokenRepository */
         $tokenRepository = $this->em->getRepository(Token::class);
 
         /** @var Token $lastTokenUpdated */
         $lastTokenUpdated = $tokenRepository->getLastTokenUpdated()[0];
 
-        return new JsonResponse($lastTokenUpdated->__toArray($credentials), Response::HTTP_OK);
+        return new JsonResponse($lastTokenUpdated->__toArray($ctx), Response::HTTP_OK);
     }
 
     /**
@@ -238,6 +241,7 @@ class TokenService extends Service
      */
     public function showLatestUpdateTime(): JsonResponse
     {
+        /* @var TokenRepository $tokenRepository */
         $tokenRepository = $this->em->getRepository(Token::class);
 
         $lastUpdateTime = new DateTime($tokenRepository->getLastTokenUpdateTime());
@@ -290,7 +294,7 @@ class TokenService extends Service
      *
      * @return bool|array
      */
-    private function checkAndParseDataJson(array $dataJson = [])
+    private function checkAndParseDataJson(array $dataJson = []): bool|array
     {
         if (array_keys($dataJson)[0] === "fullName") {
             $newData = [];

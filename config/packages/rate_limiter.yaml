@@ -1,26 +1,49 @@
 framework:
     rate_limiter:
-        freemium_api:
-            policy: 'token_bucket'
-            limit: 1
-            interval: '60 minutes'
-        premium_api:
-            policy: 'sliding_window'
-            limit: 2
-            interval: '60 minutes'
-        external_api:
-            policy: 'sliding_window'
-            limit: 3
-            interval: '60 minutes'
-        vip_api:
-            policy: 'sliding_window'
-            limit: 4
-            interval: '60 minutes'
-        admin_api:
-            policy: 'sliding_window'
-            limit: 5
-            interval: '60 minutes'
-        anonymous_api:
-            policy: 'sliding_window'
-            limit: 1
-            interval: '60 minutes'
+        # ANONYMOUS
+        anonymous_minute: { policy: 'sliding_window', limit: 1, interval: '1 minute' }
+        anonymous_hour:   { policy: 'sliding_window', limit: 2, interval: '1 hour' }
+        anonymous_day:    { policy: 'sliding_window', limit: 5, interval: '1 day' }
+        anonymous_week:   { policy: 'sliding_window', limit: 10, interval: '1 week' }
+        anonymous_month:  { policy: 'sliding_window', limit: 50, interval: '1 month' }
+        anonymous_year:   { policy: 'sliding_window', limit: 400, interval: '1 year' }
+
+        # FREEMIUM
+        freemium_minute: { policy: 'sliding_window', limit: 1, interval: '1 minute' }
+        freemium_hour:   { policy: 'sliding_window', limit: 5, interval: '1 hour' }
+        freemium_day:    { policy: 'sliding_window', limit: 10, interval: '1 day' }
+        freemium_week:   { policy: 'sliding_window', limit: 50, interval: '1 week' }
+        freemium_month:  { policy: 'sliding_window', limit: 100, interval: '1 month' }
+        freemium_year:   { policy: 'sliding_window', limit: 500, interval: '1 year' }
+
+        # PREMIUM
+        premium_minute: { policy: 'sliding_window', limit: 2, interval: '1 minute' }
+        premium_hour:   { policy: 'sliding_window', limit: 10, interval: '1 hour' }
+        premium_day:    { policy: 'sliding_window', limit: 50, interval: '1 day' }
+        premium_week:   { policy: 'sliding_window', limit: 100, interval: '1 week' }
+        premium_month:  { policy: 'sliding_window', limit: 300, interval: '1 month' }
+        premium_year:   { policy: 'sliding_window', limit: 1600, interval: '1 year' }
+
+        # EXTERNAL
+        external_minute: { policy: 'sliding_window', limit: 5, interval: '1 minute' }
+        external_hour:   { policy: 'sliding_window', limit: 20, interval: '1 hour' }
+        external_day:    { policy: 'sliding_window', limit: 50, interval: '1 day' }
+        external_week:   { policy: 'sliding_window', limit: 200, interval: '1 week' }
+        external_month:  { policy: 'sliding_window', limit: 800, interval: '1 month' }
+        external_year:   { policy: 'sliding_window', limit: 2000, interval: '1 year' }
+
+        # VIP
+        vip_minute: { policy: 'sliding_window', limit: 10, interval: '1 minute' }
+        vip_hour:   { policy: 'sliding_window', limit: 50, interval: '1 hour' }
+        vip_day:    { policy: 'sliding_window', limit: 100, interval: '1 day' }
+        vip_week:   { policy: 'sliding_window', limit: 250, interval: '1 week' }
+        vip_month:  { policy: 'sliding_window', limit: 1000, interval: '1 month' }
+        vip_year:   { policy: 'sliding_window', limit: 3000, interval: '1 year' }
+
+        # ADMIN
+        admin_minute: { policy: 'sliding_window', limit: 9999, interval: '1 minute' }
+        admin_hour:   { policy: 'sliding_window', limit: 9999, interval: '1 hour' }
+        admin_day:    { policy: 'sliding_window', limit: 9999, interval: '1 day' }
+        admin_week:   { policy: 'sliding_window', limit: 9999, interval: '1 week' }
+        admin_month:  { policy: 'sliding_window', limit: 9999, interval: '1 month' }
+        admin_year:   { policy: 'sliding_window', limit: 9999, interval: '1 year' }

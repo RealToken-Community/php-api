@@ -1,42 +1,43 @@
 services:
-  symfony-prod:
-#    image: realt-api:1.0
-    container_name: realtapi_prod-sf
+  symfony:
+    container_name: api-sf
+    platform: linux/amd64
     build:
       context: ./
     ports:
       - "9080:80"
     networks:
-      - realtapiprod
+      - api-php
     volumes:
+      - ./:/var/www/html
       - ./logs/symfony:/var/www/html/var/log:cached
       - ./logs/nginx:/var/log/nginx:cached
-    restart: always
+    restart: unless-stopped
 
-  db-prod:
-    image: mysql:5.7
+  db:
+    image: mysql:9.3
     platform: linux/amd64
-    container_name: realtapi_prod-db
+    container_name: api-db
     ports:
       - "3306:3306"
     networks:
-      - realtapiprod
+      - api-php
     environment:
       - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
       - "MYSQL_USER=${MYSQL_USER}"
       - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
       - "MYSQL_DATABASE=${MYSQL_DATABASE}"
-    restart: always
+    restart: unless-stopped
 
-  adminer-prod:
+  adminer:
     image: adminer
     platform: linux/amd64
-    container_name: realtapi_prod-adminer
+    container_name: api-adminer
     ports:
       - "18080:8080"
     networks:
-      - realtapiprod
-    restart: always
+      - api-php
+    restart: unless-stopped
 
 networks:
-  realtapiprod:
+    api-php:

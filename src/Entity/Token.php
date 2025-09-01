@@ -4,13 +4,16 @@ namespace App\Entity;
 
 use AllowDynamicProperties;
 use App\Repository\TokenRepository;
+use App\Service\RequestContextService;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Attributes as OA;
 
 #[ORM\Table(name: 'tokens'), ORM\Entity(repositoryClass: TokenRepository::class)]
 #[AllowDynamicProperties] class Token
 {
+    // Canal
     const CANAL_RELEASE = "release";
     const CANAL_COMING_SOON = "coming_soon";
     const CANAL_OFFERING_CLOSED = "offering_closed";
@@ -19,27 +22,40 @@ use OpenApi\Attributes as OA;
     const CANAL_EXIT_COMPLETE = "exit_complete";
     const CANAL_MIGRATED = "tokens_migrated";
 
+    // PropertyType
+    const PROPERTY_TYPE_SINGLE_FAMILY = "Single Family";
+    const PROPERTY_TYPE_MULTI_FAMILY = "Multi Family";
+    const PROPERTY_TYPE_DUPLEX = "Duplex";
+    const PROPERTY_TYPE_CONDOMINIUM = "Condominium";
+    const PROPERTY_TYPE_APARTMENT = "Apartment";
+    const PROPERTY_TYPE_MIXED_USE = "Mixed-Use";
+    const PROPERTY_TYPE_TRIPLEX = "Triplex";
+    const PROPERTY_TYPE_QUADPLEX = "Quadplex";
+    const PROPERTY_TYPE_COMMERCIAL = "Commercial";
+    const PROPERTY_TYPE_SFR_PORTFOLIO = "SFR Portfolio";
+    const PROPERTY_TYPE_MFR_PORTFOLIO = "MFR Portfolio";
+
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
-    private ?int $id;
+    private int $id;
 
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     #[OA\Property(type: 'string', maxLength: 100)]
     private ?string $fullName;
 
     #[ORM\Column(type: 'string', length: 50)]
-    private ?string $shortName;
+    private string $shortName;
 
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $tokenPrice;
 
     #[ORM\Column(type: 'string', length: 50)]
-    private ?string $canal;
+    private string $canal;
 
     #[ORM\Column(type: 'string', length: 3, nullable: true)]
     private ?string $currency;
 
     #[ORM\Column(type: 'integer')]
-    private ?int $totalTokens;
+    private int $totalTokens;
 
     #[ORM\Column(type: 'string', length: 42, nullable: true)]
     private ?string $ethereumContract;
@@ -80,17 +96,20 @@ use OpenApi\Attributes as OA;
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $initialMaintenanceReserve;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private array $coordinate;
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $coordinate;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $marketplaceLink;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private array $imageLink = [];
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $imageLink = [];
 
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $propertyType;
+
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $propertyTypeName;
 
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $squareFeet;
@@ -152,17 +171,17 @@ use OpenApi\Attributes as OA;
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $totalUnits;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private array $secondaryMarketplace = [];
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $secondaryMarketplace = [];
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private array $secondaryMarketplaces = [];
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $secondaryMarketplaces = [];
 
      #[ORM\Column(type: 'string', length: 100, nullable: true)]
     private ?string $symbol;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private array $blockchainAddresses = [];
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $blockchainAddresses = [];
 
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $underlyingAssetPrice;
@@ -176,8 +195,8 @@ use OpenApi\Attributes as OA;
     #[ORM\Column(type: 'date', nullable: true)]
     private ?DateTimeInterface $rentStartDate;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private array $originSecondaryMarketplaces = [];
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $originSecondaryMarketplaces = [];
 
     #[ORM\Column(type: 'date', nullable: true)]
     private ?DateTimeInterface $initialLaunchDate;
@@ -243,7 +262,10 @@ use OpenApi\Attributes as OA;
     private ?string $subsidyBy;
 
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
-    private string $productType;
+    private ?string $productType;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $neighborhood;
 
     public function getId(): ?int
     {
@@ -658,6 +680,54 @@ use OpenApi\Attributes as OA;
         return $this;
     }
 
+    public function getPropertyTypeName(): ?string
+    {
+        return $this->propertyTypeName;
+    }
+
+    public function setPropertyTypeName(?int $propertyType): self
+    {
+        switch ($propertyType) {
+            case 1:
+                $this->propertyTypeName = self::PROPERTY_TYPE_SINGLE_FAMILY;
+                break;
+            case 2:
+                $this->propertyTypeName = self::PROPERTY_TYPE_MULTI_FAMILY;
+                break;
+            case 3:
+                $this->propertyTypeName = self::PROPERTY_TYPE_DUPLEX;
+                break;
+            case 4:
+                $this->propertyTypeName = self::PROPERTY_TYPE_CONDOMINIUM;
+                break;
+            case 5:
+                $this->propertyTypeName = self::PROPERTY_TYPE_APARTMENT;
+                break;
+            case 6:
+                $this->propertyTypeName = self::PROPERTY_TYPE_MIXED_USE;
+                break;
+            case 7:
+                $this->propertyTypeName = self::PROPERTY_TYPE_TRIPLEX;
+                break;
+            case 8:
+                $this->propertyTypeName = self::PROPERTY_TYPE_QUADPLEX;
+                break;
+            case 9:
+                $this->propertyTypeName = self::PROPERTY_TYPE_COMMERCIAL;
+                break;
+            case 10:
+                $this->propertyTypeName = self::PROPERTY_TYPE_SFR_PORTFOLIO;
+                break;
+            case 11:
+                $this->propertyTypeName = self::PROPERTY_TYPE_MFR_PORTFOLIO;
+                break;
+            default:
+                $this->propertyTypeName = null;
+        }
+
+        return $this;
+    }
+
     public function getSquareFeet(): ?int
     {
         return $this->squareFeet;
@@ -754,7 +824,7 @@ use OpenApi\Attributes as OA;
         return $this;
     }
 
-    public function getCoordinate(): array
+    public function getCoordinate(): ?array
     {
         return $this->coordinate;
     }
@@ -1160,7 +1230,19 @@ use OpenApi\Attributes as OA;
       return $this;
     }
 
-    public function __toArray(array $credentials): array
+    public function getNeighborhood(): ?string
+    {
+        return $this->neighborhood;
+    }
+
+    public function setNeighborhood(?string $neighborhood): self
+    {
+        $this->neighborhood = $neighborhood;
+
+        return $this;
+    }
+
+    public function __toArray(RequestContextService $ctx): array
     {
         // Check if canal is available for public & check rights
         if (!in_array($this->getCanal(), [
@@ -1170,12 +1252,12 @@ use OpenApi\Attributes as OA;
           Token::CANAL_EXIT_COMPLETE,
           Token::CANAL_MIGRATED
         ])) {
-            if (!$credentials['isAdmin']) {
+            if (!$ctx->isAdmin()) {
                 return [];
             }
         }
 
-        if ($credentials['isAuth']) {
+        if ($ctx->isAuthenticated()) {
             $response = [
                 'fullName' => $this->fullName,
                 'shortName' => $this->shortName,
@@ -1213,6 +1295,7 @@ use OpenApi\Attributes as OA;
                 'marketplaceLink' => $this->marketplaceLink,
                 'imageLink' => $this->imageLink,
                 'propertyType' => $this->propertyType,
+                'propertyTypeName' => $this->propertyTypeName,
                 'squareFeet' => $this->squareFeet,
                 'lotSize' => $this->lotSize,
                 'bedroomBath' => $this->bedroomBath,
@@ -1250,7 +1333,8 @@ use OpenApi\Attributes as OA;
                 'realtListingFee' => $this->realtListingFee,
                 'miscellaneousCosts' => $this->miscellaneousCosts,
                 'propertyStories' => $this->propertyStories,
-                'rentalType' => $this->rentalType
+                'rentalType' => $this->rentalType,
+                'neighborhood' => $this->neighborhood,
             ];
         } else {
             $response = [
@@ -1268,7 +1352,7 @@ use OpenApi\Attributes as OA;
             ];
         }
 
-        if ($credentials['isAdmin']) {
+        if ($ctx->isAdmin()) {
             $response['originSecondaryMarketplaces'] = $this->originSecondaryMarketplaces;
         }
 

@@ -24,7 +24,7 @@ class User implements UserInterface
     private string $password;
 
     #[ORM\OneToMany(targetEntity: Application::class, mappedBy: "user", orphanRemoval: true)]
-    private ArrayCollection $applications;
+    private Collection $applications;
 
     #[ORM\Column(type: "string", length: 50)]
     private string $username;
@@ -161,6 +161,6 @@ class User implements UserInterface
 
     public function getUserIdentifier(): string
     {
-        // TODO: Implement getUserIdentifier() method.
+        return (string) $this->email;
     }
 }

@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class Service
 {
-    /** @var EntityManagerInterface */
     protected EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $entityManager)

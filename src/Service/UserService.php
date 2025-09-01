@@ -6,12 +6,9 @@ use App\Entity\Application;
 use App\Entity\User;
 use App\Traits\DataControllerTrait;
 use Exception;
+use Random\RandomException;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * Class UserService
- * @package App\Service
- */
 class UserService extends Service
 {
     use DataControllerTrait;
@@ -81,20 +78,7 @@ class UserService extends Service
      */
     private function generateToken(): string
     {
-        return $this->generateUuid(8).'-preprod-1'.$this->generateUuid(3).'-'.$this->generateUuid(4).'-'.$this->generateUuid(12);
-    }
-
-    /**
-     * Generate unique uuid.
-     *
-     * @param int $length
-     *
-     * @return string
-     * @throws Exception
-     */
-    private function generateUuid(int $length): string
-    {
-        return substr(bin2hex(random_bytes(15)), 0, $length);
+        return bin2hex(random_bytes(16));
     }
 
     /**
@@ -103,16 +87,34 @@ class UserService extends Service
      * @param int $length
      *
      * @return string
+     * @throws RandomException
      */
-    private function generatePassword($length = 12): string
+    private function generatePassword(int $length = 18): string
     {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*?';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        if ($length < 4) {
+            throw new \InvalidArgumentException('Password length must be at least 4');
         }
-        return $randomString;
+
+        $lower = 'abcdefghijklmnopqrstuvwxyz';
+        $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $digits = '0123456789';
+        $symbols = '!@#$%&*?';
+
+        $all = $lower . $upper . $digits . $symbols;
+
+        $password = [];
+        $password[] = $lower[random_int(0, strlen($lower) - 3)];
+        $password[] = $upper[random_int(0, strlen($upper) - 3)];
+        $password[] = $digits[random_int(0, strlen($digits) - 3)];
+        $password[] = $symbols[random_int(0, strlen($symbols) - 3)];
+
+        for ($i = 4; $i < $length; $i++) {
+            $password[] = $all[random_int(0, strlen($all) - 1)];
+        }
+
+        shuffle($password);
+
+        return implode('', $password);
     }
 
     /**
@@ -133,7 +135,7 @@ class UserService extends Service
         return $user;
     }
 
-    private function parseReferUri(string $uri)
+    private function parseReferUri(string $uri): string
     {
         $pattern = "/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/";
         preg_match($pattern, $uri, $matches);

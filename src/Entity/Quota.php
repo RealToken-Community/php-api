@@ -20,7 +20,7 @@ class Quota
     private ?int $increment;
 
     #[ORM\OneToMany(targetEntity: QuotaHistory::class, mappedBy: 'quota', orphanRemoval: true)]
-    private ArrayCollection $quotaHistories;
+    private Collection $quotaHistories;
 
     public function __construct()
     {
@@ -51,7 +51,8 @@ class Quota
 
     public function setIncrement(int $increment = 1): self
     {
-        $this->increment += $increment;
+//        $this->increment += $increment;
+        $this->increment = $increment;
 
         return $this;
     }

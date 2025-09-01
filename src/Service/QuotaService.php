@@ -2,11 +2,7 @@
 
 namespace App\Service;
 
-use App\Entity\Application;
-use App\Entity\QuotaLimitations;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class QuotaService
@@ -14,33 +10,64 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class QuotaService extends Service
 {
-    /**
-     * Get user quotas.
-     *
-     * @param string $apiKey
-     *
-     * @return JsonResponse
-     */
-    public function getUserQuotas(string $apiKey): JsonResponse
+    private array $limiters = [];
+
+    public function __construct(
+        iterable $limiters
+    ) {
+        $this->limiters = [];
+        foreach ($limiters as $name => $limiter) {
+            $key = str_replace('limiter.', '', $name);
+            $this->limiters[$key] = $limiter;
+        }
+    }
+
+    public function getUserQuotas(Request $request, RequestContextService $ctx): array
     {
-        $applicationRepository = $this->em->getRepository(Application::class);
-        $application = $applicationRepository->findOneBy(['apiToken' => $apiKey]);
+        $roles = $ctx->getCurrentUser()?->getRoles() ?? ['ANONYMOUS'];
+        $role = $this->extractMainRole($roles);
 
-        $roles = $application->getUser()->getRoles();
+        $identifier = $ctx->getRateLimiterIdentifier();
 
-        if (($key = array_search("ROLE_USER", $roles)) !== false) {
-            unset($roles[$key]);
+        $periods = ['minute', 'hour', 'day', 'week', 'month', 'year'];
+        $quotas = [];
+
+        foreach ($periods as $period) {
+            $key = $role . '_' . $period;
+
+            if (!isset($this->limiters[$key])) {
+                continue;
+            }
+
+            $limiter = $this->limiters[$key]->create($identifier);
+            $limit = $limiter->consume(0);
+
+            $quotas[$period] = [
+                'remaining' => $limit->getRemainingTokens(),
+                'limit' => $limit->getLimit(),
+                'retry_after' => $limit->getRetryAfter()?->format(DATE_ATOM),
+            ];
         }
 
-        if (empty(array_values($roles))) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, "Not admin user");
+        return $quotas;
+    }
+
+    private function extractMainRole(array $roles): string
+    {
+        $priority = [
+            'ROLE_ADMIN',
+            'ROLE_VIP',
+            'ROLE_EXTERNAL',
+            'ROLE_PREMIUM',
+            'ROLE_FREEMIUM',
+        ];
+
+        foreach ($priority as $role) {
+            if (in_array($role, $roles, true)) {
+                return strtolower(str_replace('ROLE_', '', $role));
+            }
         }
 
-        $role = array_values($roles)[0];
-
-        $quotaLimitationsRepository = $this->em->getRepository(QuotaLimitations::class);
-        $quotaLimitation = $quotaLimitationsRepository->findOneBy(['role' => $role]);
-
-        return new JsonResponse($quotaLimitation->__toArray(),Response::HTTP_OK);
+        return 'anonymous';
     }
 }

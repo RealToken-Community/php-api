@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Web3p\EthereumUtil\Util;
 
 /**
  * Class DefiService
@@ -25,7 +26,7 @@ class DefiService extends Service
 {
     use NetworkControllerTrait;
 
-    const URI_REALTOKEN_HISTORY = "https://history.api.realtoken.community";
+    const string URI_REALTOKEN_HISTORY = "https://history.api.realtoken.community";
 
     private CacheInterface $cache;
 
@@ -70,13 +71,11 @@ class DefiService extends Service
     /**
      * Generate history list for RealToken.
      * 
-     * @param string|null $refer
-     *
      * @return JsonResponse
      */
-    public function getTokenHistory(?string $refer): JsonResponse
+    public function getTokenHistory(): JsonResponse
     {
-        $historyList = $this->getHistoryList($refer);
+        $historyList = $this->getHistoryList();
 
         return new JsonResponse($historyList, Response::HTTP_OK);
     }
@@ -136,7 +135,7 @@ class DefiService extends Service
      * @return false|mixed
      * @throws InvalidArgumentException
      */
-    public function getEtherscanSymbol(string $ethereumContract)
+    public function getEtherscanSymbol(string $ethereumContract): mixed
     {
         return $this->cache->get($ethereumContract.'-symbol', function (ItemInterface $item, bool &$save) use ($ethereumContract) {
             // no expire so we can always use cached data
@@ -547,12 +546,26 @@ class DefiService extends Service
     /**
      * Get history list from RealToken.
      *
-     * @param string|null $refer
-     *
      * @return array
      */
-    private function getHistoryList(?string $refer): array
+    private function getHistoryList(): array
     {
         return $this->curlRequest(self::URI_REALTOKEN_HISTORY, true);
+    }
+
+    private function verifySignature(string $address, string $message, string $signature): bool
+    {
+        $util = new Util();
+
+        // Préparer le message (ajouter le préfixe Ethereum)
+        $msg = "\x19Ethereum Signed Message:\n" . strlen($message) . $message;
+
+        $msgHash = $util->sha3($msg);
+
+        // Décoder la signature, récupérer la clé publique et l'adresse
+
+        $recoveredAddress = $util->recoverAddress($msgHash, $signature);
+
+        return strtolower($recoveredAddress) === strtolower($address);
     }
 }
