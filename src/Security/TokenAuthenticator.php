@@ -25,7 +25,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     /**
      * @inheritDoc
      */
-    public function start(Request $request, ?AuthenticationException $authException = null)
+    public function start(Request $request, ?AuthenticationException $authException = null): ?Response
     {
         $data = [
             'message' => 'Authentication Required'
@@ -37,7 +37,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     /**
      * @inheritDoc
      */
-    public function supports(Request $request)
+    public function supports(Request $request): bool
     {
         return $request->headers->has('X-AUTH-REALT-TOKEN');
     }
@@ -45,7 +45,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     /**
      * @inheritDoc
      */
-    public function getCredentials(Request $request)
+    public function getCredentials(Request $request): ?string
     {
         return $request->headers->get('X-AUTH-REALT-TOKEN');
     }
@@ -53,7 +53,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     /**
      * @inheritDoc
      */
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    public function getUser($credentials, UserProviderInterface $userProvider): ?UserInterface
     {
         if (null === $credentials) {
             return null;
@@ -68,7 +68,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     /**
      * @inheritDoc
      */
-    public function checkCredentials($credentials, UserInterface $user)
+    public function checkCredentials($credentials, UserInterface $user): bool
     {
         return true;
     }
@@ -76,7 +76,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     /**
      * @inheritDoc
      */
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         $data = [
             'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
@@ -88,7 +88,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     /**
      * @inheritDoc
      */
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
         return null;
     }
@@ -96,7 +96,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     /**
      * @inheritDoc
      */
-    public function supportsRememberMe()
+    public function supportsRememberMe(): bool
     {
         return false;
     }
