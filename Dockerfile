@@ -9,7 +9,7 @@ RUN cp .env.dev .env
 RUN composer install --prefer-dist --no-interaction --optimize-autoloader --no-progress
 
 # HTTPS
-ENV HTTPS false
+ENV HTTPS=false
 
 # Nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
