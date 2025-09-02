@@ -17,5 +17,5 @@ docker exec -it api-sf php bin/console doctrine:migrations:migrate
 wrk -t4 -c200 -d30s http://localhost:9080/api/tokens
 
 # Upgrade Symfony version
-php bin/console debug:container --deprecations
+docker exec -it api-sf php bin/console debug:container --deprecations
 ```
