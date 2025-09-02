@@ -1,6 +1,6 @@
 {
-    "name": "realtcommunity/realtapi",
-    "description": "RealT API Community",
+    "name": "realtoken-community/realtoken-api",
+    "description": "RealToken API Community",
     "type": "project",
     "license": "proprietary",
     "require": {
