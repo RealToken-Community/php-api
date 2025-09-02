@@ -1,6 +1,6 @@
 #FROM sigri44/docker-symfony-php7:latest
 #FROM sigri44/docker-symfony-php8:latest
-FROM registry.realtoken.community/docker-symfony-php:8
+FROM registry.realtoken.community/docker-symfony-php:8.1
 
 # Composer
 WORKDIR /var/www/html
@@ -13,7 +13,7 @@ ENV HTTPS false
 
 # Nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
-COPY docker/blockips.conf /etc/nginx/blockips.conf
+#COPY docker/blockips.conf /etc/nginx/blockips.conf
 
 RUN mkdir -p var/cache/prod
 RUN chmod -R 777 var/cache/prod
