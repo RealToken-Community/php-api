@@ -2,1528 +2,1360 @@
 
 namespace App\Entity;
 
+use AllowDynamicProperties;
 use App\Repository\TokenRepository;
+use App\Service\RequestContextService;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Attributes as OA;
 
-/**
- * @ORM\Entity(repositoryClass=TokenRepository::class)
- * @ORM\Table(name="tokens")
- */
-class Token
+#[ORM\Table(name: 'tokens'), ORM\Entity(repositoryClass: TokenRepository::class)]
+#[AllowDynamicProperties] class Token
 {
-    // Canal
-    const CANAL_RELEASE = "release";
-    const CANAL_COMING_SOON = "coming_soon";
-    const CANAL_OFFERING_CLOSED = "offering_closed";
-    const CANAL_OFFERING_CANCELED = "offering_canceled";
-    const CANAL_EXIT_PROPOSED = "exit_proposed";
-    const CANAL_EXIT_COMPLETE = "exit_complete";
-    const CANAL_MIGRATED = "tokens_migrated";
-
-    // PropertyType
-    const PROPERTY_TYPE_SINGLE_FAMILY = "Single Family";
-    const PROPERTY_TYPE_MULTI_FAMILY = "Multi Family";
-    const PROPERTY_TYPE_DUPLEX = "Duplex";
-    const PROPERTY_TYPE_CONDOMINIUM = "Condominium";
-    const PROPERTY_TYPE_APARTMENT = "Apartment";
-    const PROPERTY_TYPE_MIXED_USE = "Mixed-Use";
-    const PROPERTY_TYPE_TRIPLEX = "Triplex";
-    const PROPERTY_TYPE_QUADPLEX = "Quadplex";
-    const PROPERTY_TYPE_COMMERCIAL = "Commercial";
-    const PROPERTY_TYPE_SFR_PORTFOLIO = "SFR Portfolio";
-    const PROPERTY_TYPE_MFR_PORTFOLIO = "MFR Portfolio";
-
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $fullName;
-
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $shortName;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $tokenPrice;
-
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $canal;
-
-    /**
-     * @ORM\Column(type="string", length=3, nullable=true)
-     */
-    private $currency;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $totalTokens;
-
-    /**
-     * @ORM\Column(type="string", length=42, nullable=true)
-     */
-    private $ethereumContract;
-
-    /**
-     * @ORM\Column(type="string", length=42, nullable=true)
-     */
-    private $xDaiContract;
-
-    /**
-     * @ORM\Column(type="string", length=42, nullable=true)
-     */
-    private $gnosisContract;
-
-    /**
-     * @ORM\Column(type="string", length=42, nullable=true)
-     */
-    private $goerliContract;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $totalInvestment;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $grossRentMonth;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $annualPercentageYield;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $propertyManagementPercent;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $realtPlatformPercent;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $insurance;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $propertyTaxes;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $utilities;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $initialMaintenanceReserve;
-
-    /**
-     * @var array $coordinate
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $coordinate;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $marketplaceLink;
-
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $imageLink = [];
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $propertyType;
-
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $propertyTypeName;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $squareFeet;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $lotSize;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $bedroomBath;
-
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $hasTenants;
-
-    /**
-     * @ORM\Column(type="string", length=10, nullable=true)
-     */
-    private $termOfLease;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $renewalDate;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $section8paid;
-
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $sellPropertyTo;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $grossRentYear;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $propertyManagement;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $realtPlatform;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentMonth;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentYear;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentYearPerToken;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentMonthPerToken;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $lastUpdate;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentDay;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $netRentDayPerToken;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $rentedUnits;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $totalUnits;
-
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $secondaryMarketplace = [];
-
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $secondaryMarketplaces = [];
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $symbol;
-
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $blockchainAddresses = [];
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $underlyingAssetPrice;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $renovationReserve;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $propertyMaintenanceMonthly;
-
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $rentStartDate;
-
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $originSecondaryMarketplaces = [];
-
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private $initialLaunchDate;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $seriesNumber;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $constructionYear;
-
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $constructionType;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $roofType;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $assetParking;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $foundation;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $heating;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $cooling;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $tokenIdRules;
-
-    /**
-     * @ORM\Column(type="string", length=20, nullable=true)
-     */
-    private $rentCalculationType;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $realtListingFeePercent;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $realtListingFee;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $miscellaneousCosts;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $propertyStories;
-
-    /**
-     * @ORM\Column(type="string", length=42, unique=true)
-     */
-    private $uuid;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $totalTokensRegSummed;
-
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $rentalType;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $subsidyStatus;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $subsidyStatusValue;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $subsidyBy;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $productType;
-
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
-    private $neighborhood;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+  // Canal
+  const CANAL_RELEASE = "release";
+  const CANAL_COMING_SOON = "coming_soon";
+  const CANAL_OFFERING_CLOSED = "offering_closed";
+  const CANAL_OFFERING_CANCELED = "offering_canceled";
+  const CANAL_EXIT_PROPOSED = "exit_proposed";
+  const CANAL_EXIT_COMPLETE = "exit_complete";
+  const CANAL_MIGRATED = "tokens_migrated";
 
-    public function getFullName(): ?string
-    {
-        return $this->fullName;
-    }
+  // PropertyType
+  const PROPERTY_TYPE_SINGLE_FAMILY = "Single Family";
+  const PROPERTY_TYPE_MULTI_FAMILY = "Multi Family";
+  const PROPERTY_TYPE_DUPLEX = "Duplex";
+  const PROPERTY_TYPE_CONDOMINIUM = "Condominium";
+  const PROPERTY_TYPE_APARTMENT = "Apartment";
+  const PROPERTY_TYPE_MIXED_USE = "Mixed-Use";
+  const PROPERTY_TYPE_TRIPLEX = "Triplex";
+  const PROPERTY_TYPE_QUADPLEX = "Quadplex";
+  const PROPERTY_TYPE_COMMERCIAL = "Commercial";
+  const PROPERTY_TYPE_SFR_PORTFOLIO = "SFR Portfolio";
+  const PROPERTY_TYPE_MFR_PORTFOLIO = "MFR Portfolio";
 
-    public function setFullName(?string $fullName): self
-    {
-        $this->fullName = $fullName;
+  #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
+  private int $id;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  #[OA\Property(type: 'string', maxLength: 100)]
+  private ?string $fullName;
 
-    public function getShortName(): ?string
-    {
-        return $this->shortName;
-    }
+  #[ORM\Column(type: 'string', length: 50)]
+  private string $shortName;
 
-    public function setShortName(string $shortName): self
-    {
-        $this->shortName = $shortName;
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $tokenPrice;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'string', length: 50)]
+  private string $canal;
 
-    public function getTokenPrice(): ?float
-    {
-        return $this->tokenPrice;
-    }
+  #[ORM\Column(type: 'string', length: 3, nullable: true)]
+  private ?string $currency;
 
-    public function setTokenPrice(?float $tokenPrice): self
-    {
-        $this->tokenPrice = $tokenPrice;
+  #[ORM\Column(type: 'integer')]
+  private int $totalTokens;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'string', length: 42, nullable: true)]
+  private ?string $ethereumContract;
 
-    public function getCanal(): ?string
-    {
-        return $this->canal;
-    }
+  #[ORM\Column(type: 'string', length: 42, nullable: true)]
+  private ?string $xDaiContract;
 
-    public function setCanal(string $canal): self
-    {
-        $this->canal = $canal;
+  #[ORM\Column(type: 'string', length: 42, nullable: true)]
+  private ?string $gnosisContract;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'string', length: 42, nullable: true)]
+  private ?string $goerliContract;
 
-    public function getCurrency(): ?string
-    {
-        return $this->currency;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $totalInvestment;
 
-    public function setCurrency(?string $currency): self
-    {
-        $this->currency = $currency;
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $grossRentMonth;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $annualPercentageYield;
 
-    public function getTotalTokens(): ?int
-    {
-        return $this->totalTokens;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $propertyManagementPercent;
 
-    public function setTotalTokens(int $totalTokens): self
-    {
-        $this->totalTokens = $totalTokens;
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $realtPlatformPercent;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $insurance;
 
-    public function getUuid(): ?string
-    {
-        return $this->uuid;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $propertyTaxes;
 
-    public function setUuid(string $uuid): self
-    {
-        $this->uuid = $uuid;
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $utilities;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $initialMaintenanceReserve;
 
-    public function getEthereumContract(): ?string
-    {
-        return $this->ethereumContract;
-    }
+  #[ORM\Column(type: Types::JSON, nullable: true)]
+  private ?array $coordinate;
 
-    public function setEthereumContract(?string $ethereumContract): self
-    {
-        $this->ethereumContract = $ethereumContract;
+  #[ORM\Column(type: 'string', length: 255, nullable: true)]
+  private ?string $marketplaceLink;
 
-        return $this;
-    }
+  #[ORM\Column(type: Types::JSON, nullable: true)]
+  private ?array $imageLink = [];
 
-    public function getXDaiContract(): ?string
-    {
-        return $this->xDaiContract;
-    }
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $propertyType;
 
-    public function setXDaiContract(?string $xDaiContract): self
-    {
-        $this->xDaiContract = $xDaiContract;
+  #[ORM\Column(type: 'string', length: 50, nullable: true)]
+  private ?string $propertyTypeName;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $squareFeet;
 
-    public function getGnosisContract(): ?string
-    {
-        return $this->gnosisContract;
-    }
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $lotSize;
 
-    public function setGnosisContract(?string $gnosisContract): self
-    {
-        $this->gnosisContract = $gnosisContract;
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $bedroomBath;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'boolean', nullable: true)]
+  private ?bool $hasTenants;
 
-    public function getGoerliContract(): ?string
-    {
-        return $this->goerliContract;
-    }
+  #[ORM\Column(type: 'string', length: 10, nullable: true)]
+  private ?string $termOfLease;
 
-    public function setGoerliContract(?string $goerliContract): self
-    {
-        $this->goerliContract = $goerliContract;
+  #[ORM\Column(type: 'datetime', nullable: true)]
+  private ?\DateTime $renewalDate;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $section8paid;
 
-    public function getTotalInvestment(): ?float
-    {
-        return $this->totalInvestment;
-    }
+  #[ORM\Column(type: 'string', length: 50, nullable: true)]
+  private ?string $sellPropertyTo;
 
-    public function setTotalInvestment(?float $totalInvestment): self
-    {
-        $this->totalInvestment = $totalInvestment;
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $grossRentYear;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $propertyManagement;
 
-    public function getGrossRentMonth(): ?float
-    {
-        return $this->grossRentMonth;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $realtPlatform;
 
-    public function setGrossRentMonth(?float $grossRentMonth): self
-    {
-        $this->grossRentMonth = $grossRentMonth;
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $netRentMonth;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $netRentYear;
 
-    public function getGrossRentYear(): ?float
-    {
-        return $this->grossRentYear;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $netRentYearPerToken;
 
-    public function setGrossRentYear(?float $grossRentYear): self
-    {
-        $this->grossRentYear = $grossRentYear;
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $netRentMonthPerToken;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'datetime')]
+  private ?DateTimeInterface $lastUpdate;
 
-    public function getPropertyManagement(): ?float
-    {
-        return $this->propertyManagement;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $netRentDay;
 
-    public function setPropertyManagement(?float $propertyManagement): self
-    {
-        $this->propertyManagement = $propertyManagement;
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $netRentDayPerToken;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $rentedUnits;
 
-    public function getPropertyManagementPercent(): ?float
-    {
-        return $this->propertyManagementPercent;
-    }
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $totalUnits;
 
-    public function setPropertyManagementPercent(?float $propertyManagementPercent): self
-    {
-        $this->propertyManagementPercent = $propertyManagementPercent;
+  #[ORM\Column(type: Types::JSON, nullable: true)]
+  private ?array $secondaryMarketplace = [];
 
-        return $this;
-    }
+  #[ORM\Column(type: Types::JSON, nullable: true)]
+  private ?array $secondaryMarketplaces = [];
 
-    public function getRealtPlatform(): ?float
-    {
-        return $this->realtPlatform;
-    }
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $symbol;
 
-    public function setRealtPlatform(?float $realtPlatform): self
-    {
-        $this->realtPlatform = $realtPlatform;
+  #[ORM\Column(type: Types::JSON, nullable: true)]
+  private ?array $blockchainAddresses = [];
 
-        return $this;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $underlyingAssetPrice;
 
-    public function getRealtPlatformPercent(): ?float
-    {
-        return $this->realtPlatformPercent;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $renovationReserve;
 
-    public function setRealtPlatformPercent(float $realtPlatformPercent): self
-    {
-        $this->realtPlatformPercent = $realtPlatformPercent;
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $propertyMaintenanceMonthly;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'date', nullable: true)]
+  private ?DateTimeInterface $rentStartDate;
 
-    public function getInsurance(): ?float
-    {
-        return $this->insurance;
-    }
+  #[ORM\Column(type: Types::JSON, nullable: true)]
+  private ?array $originSecondaryMarketplaces = [];
 
-    public function setInsurance(?float $insurance): self
-    {
-        $this->insurance = $insurance;
+  #[ORM\Column(type: 'date', nullable: true)]
+  private ?DateTimeInterface $initialLaunchDate;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $seriesNumber;
 
-    public function getPropertyTaxes(): ?float
-    {
-        return $this->propertyTaxes;
-    }
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $constructionYear;
 
-    public function setPropertyTaxes(?float $propertyTaxes): self
-    {
-        $this->propertyTaxes = $propertyTaxes;
+  #[ORM\Column(type: 'string', length: 50, nullable: true)]
+  private ?string $constructionType;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $roofType;
 
-    public function getUtilities(): ?float
-    {
-        return $this->utilities;
-    }
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $assetParking;
 
-    public function setUtilities(?float $utilities): self
-    {
-        $this->utilities = $utilities;
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $foundation;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $heating;
 
-    public function getInitialMaintenanceReserve(): ?float
-    {
-        return $this->initialMaintenanceReserve;
-    }
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $cooling;
 
-    public function setInitialMaintenanceReserve(?float $initialMaintenanceReserve): self
-    {
-        $this->initialMaintenanceReserve = $initialMaintenanceReserve;
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $tokenIdRules;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'string', length: 20, nullable: true)]
+  private ?string $rentCalculationType;
 
-    public function getNetRentDay(): ?float
-    {
-        return $this->netRentDay;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $realtListingFeePercent;
 
-    public function setNetRentDay(?float $netRentDay): self
-    {
-        $this->netRentDay = $netRentDay;
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $realtListingFee;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $miscellaneousCosts;
 
-    public function getNetRentMonth(): ?float
-    {
-        return $this->netRentMonth;
-    }
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $propertyStories;
 
-    public function setNetRentMonth(?float $netRentMonth): self
-    {
-        $this->netRentMonth = $netRentMonth;
+  #[ORM\Column(type: 'string', length: 42, unique: true)]
+  private ?string $uuid;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'integer', nullable: true)]
+  private ?int $totalTokensRegSummed;
 
-    public function getNetRentYear(): ?float
-    {
-        return $this->netRentYear;
-    }
+  #[ORM\Column(type: 'string', length: 50, nullable: true)]
+  private ?string $rentalType;
 
-    public function setNetRentYear(?float $netRentYear): self
-    {
-        $this->netRentYear = $netRentYear;
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $subsidyStatus;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'float', nullable: true)]
+  private ?float $subsidyStatusValue;
 
-    public function getNetRentYearPerToken(): ?float
-    {
-        return $this->netRentYearPerToken;
-    }
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $subsidyBy;
 
-    public function setNetRentYearPerToken(?float $netRentYearPerToken): self
-    {
-        $this->netRentYearPerToken = $netRentYearPerToken;
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $productType;
 
-        return $this;
-    }
+  #[ORM\Column(type: 'string', length: 100, nullable: true)]
+  private ?string $neighborhood;
 
-    public function getNetRentMonthPerToken(): ?float
-    {
-        return $this->netRentMonthPerToken;
-    }
+  public function getId(): ?int
+  {
+    return $this->id;
+  }
 
-    public function setNetRentMonthPerToken(?float $netRentMonthPerToken): self
-    {
-        $this->netRentMonthPerToken = $netRentMonthPerToken;
+  public function getFullName(): ?string
+  {
+    return $this->fullName;
+  }
 
-        return $this;
-    }
+  public function setFullName(?string $fullName): self
+  {
+    $this->fullName = $fullName;
 
-    public function getNetRentDayPerToken(): ?float
-    {
-        return $this->netRentDayPerToken;
-    }
+    return $this;
+  }
 
-    public function setNetRentDayPerToken(?float $netRentDayPerToken): self
-    {
-        $this->netRentDayPerToken = $netRentDayPerToken;
+  public function getShortName(): ?string
+  {
+    return $this->shortName;
+  }
 
-        return $this;
-    }
+  public function setShortName(string $shortName): self
+  {
+    $this->shortName = $shortName;
 
-    public function getAnnualPercentageYield(): ?float
-    {
-        return $this->annualPercentageYield;
-    }
+    return $this;
+  }
 
-    public function setAnnualPercentageYield(?float $annualPercentageYield): self
-    {
-        $this->annualPercentageYield = $annualPercentageYield;
+  public function getTokenPrice(): ?float
+  {
+    return $this->tokenPrice;
+  }
 
-        return $this;
-    }
+  public function setTokenPrice(?float $tokenPrice): self
+  {
+    $this->tokenPrice = $tokenPrice;
 
-    public function getLatitude(): ?string
-    {
-        return $this->latitude;
-    }
+    return $this;
+  }
 
-    public function setLatitude(?string $latitude): self
-    {
-        $this->latitude = $latitude;
+  public function getCanal(): ?string
+  {
+    return $this->canal;
+  }
 
-        return $this;
-    }
+  public function setCanal(string $canal): self
+  {
+    $this->canal = $canal;
 
-    public function getLongitude(): ?string
-    {
-        return $this->longitude;
-    }
+    return $this;
+  }
 
-    public function setLongitude(?string $longitude): self
-    {
-        $this->longitude = $longitude;
+  public function getCurrency(): ?string
+  {
+    return $this->currency;
+  }
 
-        return $this;
-    }
+  public function setCurrency(?string $currency): self
+  {
+    $this->currency = $currency;
 
-    public function getMarketplaceLink(): ?string
-    {
-        return $this->marketplaceLink;
-    }
+    return $this;
+  }
 
-    public function setMarketplaceLink(?string $marketplaceLink): self
-    {
-        $this->marketplaceLink = $marketplaceLink;
+  public function getTotalTokens(): ?int
+  {
+    return $this->totalTokens;
+  }
 
-        return $this;
-    }
+  public function setTotalTokens(int $totalTokens): self
+  {
+    $this->totalTokens = $totalTokens;
 
-    public function getImageLink(): ?array
-    {
-        return $this->imageLink;
-    }
+    return $this;
+  }
 
-    public function setImageLink(?array $imageLink): self
-    {
-        $this->imageLink = $imageLink;
+  public function getUuid(): ?string
+  {
+    return $this->uuid;
+  }
 
-        return $this;
-    }
+  public function setUuid(string $uuid): self
+  {
+    $this->uuid = $uuid;
 
-    public function getPropertyType(): ?int
-    {
-        return $this->propertyType;
-    }
+    return $this;
+  }
 
-    public function setPropertyType(?int $propertyType): self
-    {
-        $this->propertyType = $propertyType;
+  public function getEthereumContract(): ?string
+  {
+    return $this->ethereumContract;
+  }
 
-        return $this;
-    }
+  public function setEthereumContract(?string $ethereumContract): self
+  {
+    $this->ethereumContract = $ethereumContract;
 
-    public function getPropertyTypeName(): ?string
-    {
-        return $this->propertyTypeName;
-    }
+    return $this;
+  }
 
-    public function setPropertyTypeName(?int $propertyType): self
-    {
-        switch ($propertyType) {
-            case 1:
-                $this->propertyTypeName = self::PROPERTY_TYPE_SINGLE_FAMILY;
-                break;
-            case 2:
-                $this->propertyTypeName = self::PROPERTY_TYPE_MULTI_FAMILY;
-                break;
-            case 3:
-                $this->propertyTypeName = self::PROPERTY_TYPE_DUPLEX;
-                break;
-            case 4:
-                $this->propertyTypeName = self::PROPERTY_TYPE_CONDOMINIUM;
-                break;
-            case 5:
-                $this->propertyTypeName = self::PROPERTY_TYPE_APARTMENT;
-                break;
-            case 6:
-                $this->propertyTypeName = self::PROPERTY_TYPE_MIXED_USE;
-                break;
-            case 7:
-                $this->propertyTypeName = self::PROPERTY_TYPE_TRIPLEX;
-                break;
-            case 8:
-                $this->propertyTypeName = self::PROPERTY_TYPE_QUADPLEX;
-                break;
-            case 9:
-                $this->propertyTypeName = self::PROPERTY_TYPE_COMMERCIAL;
-                break;
-            case 10:
-                $this->propertyTypeName = self::PROPERTY_TYPE_SFR_PORTFOLIO;
-                break;
-            case 11:
-                $this->propertyTypeName = self::PROPERTY_TYPE_MFR_PORTFOLIO;
-                break;
-            default:
-                $this->propertyTypeName = null;
-        }
-
-        return $this;
-    }
+  public function getXDaiContract(): ?string
+  {
+    return $this->xDaiContract;
+  }
 
-    public function getSquareFeet(): ?int
-    {
-        return $this->squareFeet;
-    }
+  public function setXDaiContract(?string $xDaiContract): self
+  {
+    $this->xDaiContract = $xDaiContract;
 
-    public function setSquareFeet(?int $squareFeet): self
-    {
-        $this->squareFeet = $squareFeet;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getGnosisContract(): ?string
+  {
+    return $this->gnosisContract;
+  }
 
-    public function getLotSize(): ?int
-    {
-        return $this->lotSize;
-    }
+  public function setGnosisContract(?string $gnosisContract): self
+  {
+    $this->gnosisContract = $gnosisContract;
 
-    public function setLotSize(?int $lotSize): self
-    {
-        $this->lotSize = $lotSize;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getGoerliContract(): ?string
+  {
+    return $this->goerliContract;
+  }
 
-    public function getBedroomBath(): ?string
-    {
-        return $this->bedroomBath;
-    }
+  public function setGoerliContract(?string $goerliContract): self
+  {
+    $this->goerliContract = $goerliContract;
 
-    public function setBedroomBath(?string $bedroomBath): self
-    {
-        $this->bedroomBath = $bedroomBath;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getTotalInvestment(): ?float
+  {
+    return $this->totalInvestment;
+  }
 
-    public function getHasTenants(): ?bool
-    {
-        return $this->hasTenants;
-    }
+  public function setTotalInvestment(?float $totalInvestment): self
+  {
+    $this->totalInvestment = $totalInvestment;
 
-    public function setHasTenants(?bool $hasTenants): self
-    {
-        $this->hasTenants = $hasTenants;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getGrossRentMonth(): ?float
+  {
+    return $this->grossRentMonth;
+  }
 
-    public function getTermOfLease(): ?string
-    {
-        return $this->termOfLease;
-    }
+  public function setGrossRentMonth(?float $grossRentMonth): self
+  {
+    $this->grossRentMonth = $grossRentMonth;
 
-    public function setTermOfLease(?string $termOfLease): self
-    {
-        $this->termOfLease = $termOfLease;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getGrossRentYear(): ?float
+  {
+    return $this->grossRentYear;
+  }
 
-    public function getRenewalDate(): ?\DateTime
-    {
-        return $this->renewalDate;
-    }
+  public function setGrossRentYear(?float $grossRentYear): self
+  {
+    $this->grossRentYear = $grossRentYear;
 
-    public function setRenewalDate(?\DateTime $renewalDate): self
-    {
-        $this->renewalDate = $renewalDate;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getPropertyManagement(): ?float
+  {
+    return $this->propertyManagement;
+  }
 
-    public function getSection8paid(): ?int
-    {
-        return $this->section8paid;
-    }
+  public function setPropertyManagement(?float $propertyManagement): self
+  {
+    $this->propertyManagement = $propertyManagement;
 
-    public function setSection8paid(?int $section8paid): self
-    {
-        $this->section8paid = $section8paid;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getPropertyManagementPercent(): ?float
+  {
+    return $this->propertyManagementPercent;
+  }
 
-    public function getSellPropertyTo(): ?string
-    {
-        return $this->sellPropertyTo;
-    }
+  public function setPropertyManagementPercent(?float $propertyManagementPercent): self
+  {
+    $this->propertyManagementPercent = $propertyManagementPercent;
 
-    public function setSellPropertyTo(?string $sellPropertyTo): self
-    {
-        $this->sellPropertyTo = $sellPropertyTo;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getRealtPlatform(): ?float
+  {
+    return $this->realtPlatform;
+  }
 
-    /**
-     * @return array
-     */
-    public function getCoordinate(): array
-    {
-        return $this->coordinate;
-    }
+  public function setRealtPlatform(?float $realtPlatform): self
+  {
+    $this->realtPlatform = $realtPlatform;
 
-    /**
-     * @param array $coordinate
-     */
-    public function setCoordinate(array $coordinate): void
-    {
-        $this->coordinate = $coordinate;
-    }
+    return $this;
+  }
 
-    public function getLastUpdate(): ?DateTimeInterface
-    {
-        return $this->lastUpdate;
-    }
+  public function getRealtPlatformPercent(): ?float
+  {
+    return $this->realtPlatformPercent;
+  }
 
-    public function setLastUpdate(DateTimeInterface $lastUpdate): self
-    {
-        $this->lastUpdate = $lastUpdate;
+  public function setRealtPlatformPercent(float $realtPlatformPercent): self
+  {
+    $this->realtPlatformPercent = $realtPlatformPercent;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getRentedUnits(): ?int
-    {
-        return $this->rentedUnits;
-    }
+  public function getInsurance(): ?float
+  {
+    return $this->insurance;
+  }
 
-    public function setRentedUnits(?int $rentedUnits): self
-    {
-        $this->rentedUnits = $rentedUnits;
+  public function setInsurance(?float $insurance): self
+  {
+    $this->insurance = $insurance;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getTotalUnits(): ?int
-    {
-        return $this->totalUnits;
-    }
+  public function getPropertyTaxes(): ?float
+  {
+    return $this->propertyTaxes;
+  }
 
-    public function setTotalUnits(?int $totalUnits): self
-    {
-        $this->totalUnits = $totalUnits;
+  public function setPropertyTaxes(?float $propertyTaxes): self
+  {
+    $this->propertyTaxes = $propertyTaxes;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getSecondaryMarketplace(): ?array
-    {
-        return $this->secondaryMarketplace;
-    }
+  public function getUtilities(): ?float
+  {
+    return $this->utilities;
+  }
 
-    public function setSecondaryMarketplace(?array $secondaryMarketplace): self
-    {
-        $this->secondaryMarketplace = $secondaryMarketplace;
+  public function setUtilities(?float $utilities): self
+  {
+    $this->utilities = $utilities;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getSecondaryMarketplaces(): ?array
-    {
-        return $this->secondaryMarketplaces ?: [];
-    }
+  public function getInitialMaintenanceReserve(): ?float
+  {
+    return $this->initialMaintenanceReserve;
+  }
 
-    public function setSecondaryMarketplaces(?array $secondaryMarketplaces): self
-    {
-        $this->secondaryMarketplaces = $secondaryMarketplaces;
+  public function setInitialMaintenanceReserve(?float $initialMaintenanceReserve): self
+  {
+    $this->initialMaintenanceReserve = $initialMaintenanceReserve;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getSymbol(): ?string
-    {
-        return $this->symbol;
-    }
+  public function getNetRentDay(): ?float
+  {
+    return $this->netRentDay;
+  }
 
-    public function setSymbol(?string $symbol): self
-    {
-        $this->symbol = $symbol;
+  public function setNetRentDay(?float $netRentDay): self
+  {
+    $this->netRentDay = $netRentDay;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getBlockchainAddresses(): ?array
-    {
-        return $this->blockchainAddresses;
-    }
+  public function getNetRentMonth(): ?float
+  {
+    return $this->netRentMonth;
+  }
 
-    public function setBlockchainAddresses(?array $blockchainAddresses): self
-    {
-        $this->blockchainAddresses = $blockchainAddresses;
+  public function setNetRentMonth(?float $netRentMonth): self
+  {
+    $this->netRentMonth = $netRentMonth;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getUnderlyingAssetPrice(): ?float
-    {
-        return $this->underlyingAssetPrice;
-    }
+  public function getNetRentYear(): ?float
+  {
+    return $this->netRentYear;
+  }
 
-    public function setUnderlyingAssetPrice(?float $underlyingAssetPrice): self
-    {
-        $this->underlyingAssetPrice = $underlyingAssetPrice;
+  public function setNetRentYear(?float $netRentYear): self
+  {
+    $this->netRentYear = $netRentYear;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getRenovationReserve(): ?float
-    {
-        return $this->renovationReserve;
-    }
+  public function getNetRentYearPerToken(): ?float
+  {
+    return $this->netRentYearPerToken;
+  }
 
-    public function setRenovationReserve(?float $renovationReserve): self
-    {
-        $this->renovationReserve = $renovationReserve;
+  public function setNetRentYearPerToken(?float $netRentYearPerToken): self
+  {
+    $this->netRentYearPerToken = $netRentYearPerToken;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getPropertyMaintenanceMonthly(): ?float
-    {
-        return $this->propertyMaintenanceMonthly;
-    }
+  public function getNetRentMonthPerToken(): ?float
+  {
+    return $this->netRentMonthPerToken;
+  }
 
-    public function setPropertyMaintenanceMonthly(?float $propertyMaintenanceMonthly): self
-    {
-        $this->propertyMaintenanceMonthly = $propertyMaintenanceMonthly;
+  public function setNetRentMonthPerToken(?float $netRentMonthPerToken): self
+  {
+    $this->netRentMonthPerToken = $netRentMonthPerToken;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getRentStartDate(): ?\DateTimeInterface
-    {
-        return $this->rentStartDate;
-    }
+  public function getNetRentDayPerToken(): ?float
+  {
+    return $this->netRentDayPerToken;
+  }
 
-    public function setRentStartDate(?\DateTimeInterface $rentStartDate): self
-    {
-        $this->rentStartDate = $rentStartDate;
+  public function setNetRentDayPerToken(?float $netRentDayPerToken): self
+  {
+    $this->netRentDayPerToken = $netRentDayPerToken;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getOriginSecondaryMarketplaces(): ?array
-    {
-        return $this->originSecondaryMarketplaces;
-    }
+  public function getAnnualPercentageYield(): ?float
+  {
+    return $this->annualPercentageYield;
+  }
 
-    public function setOriginSecondaryMarketplaces(?array $originSecondaryMarketplaces): self
-    {
-        $this->originSecondaryMarketplaces = $originSecondaryMarketplaces;
+  public function setAnnualPercentageYield(?float $annualPercentageYield): self
+  {
+    $this->annualPercentageYield = $annualPercentageYield;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getInitialLaunchDate(): ?\DateTimeInterface
-    {
-        return $this->initialLaunchDate;
-    }
+  public function getLatitude(): ?string
+  {
+    return $this->latitude;
+  }
 
-    public function setInitialLaunchDate(?\DateTimeInterface $initialLaunchDate): self
-    {
-        $this->initialLaunchDate = $initialLaunchDate;
+  public function setLatitude(?string $latitude): self
+  {
+    $this->latitude = $latitude;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getSeriesNumber(): ?int
-    {
-        return $this->seriesNumber;
-    }
+  public function getLongitude(): ?string
+  {
+    return $this->longitude;
+  }
 
-    public function setSeriesNumber(?int $seriesNumber): self
-    {
-        $this->seriesNumber = $seriesNumber;
+  public function setLongitude(?string $longitude): self
+  {
+    $this->longitude = $longitude;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getConstructionYear(): ?int
-    {
-        return $this->constructionYear;
-    }
+  public function getMarketplaceLink(): ?string
+  {
+    return $this->marketplaceLink;
+  }
 
-    public function setConstructionYear(?int $constructionYear): self
-    {
-        $this->constructionYear = $constructionYear;
+  public function setMarketplaceLink(?string $marketplaceLink): self
+  {
+    $this->marketplaceLink = $marketplaceLink;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getConstructionType(): ?string
-    {
-        return $this->constructionType;
-    }
+  public function getImageLink(): ?array
+  {
+    return $this->imageLink;
+  }
 
-    public function setConstructionType(?string $constructionType): self
-    {
-        $this->constructionType = $constructionType;
+  public function setImageLink(?array $imageLink): self
+  {
+    $this->imageLink = $imageLink;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getRoofType(): ?string
-    {
-        return $this->roofType;
-    }
+  public function getPropertyType(): ?int
+  {
+    return $this->propertyType;
+  }
 
-    public function setRoofType(?string $roofType): self
-    {
-        $this->roofType = $roofType;
+  public function setPropertyType(?int $propertyType): self
+  {
+    $this->propertyType = $propertyType;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getAssetParking(): ?string
-    {
-        return $this->assetParking;
+  public function getPropertyTypeName(): ?string
+  {
+    return $this->propertyTypeName;
+  }
+
+  public function setPropertyTypeName(?int $propertyType): self
+  {
+    switch ($propertyType) {
+      case 1:
+        $this->propertyTypeName = self::PROPERTY_TYPE_SINGLE_FAMILY;
+        break;
+      case 2:
+        $this->propertyTypeName = self::PROPERTY_TYPE_MULTI_FAMILY;
+        break;
+      case 3:
+        $this->propertyTypeName = self::PROPERTY_TYPE_DUPLEX;
+        break;
+      case 4:
+        $this->propertyTypeName = self::PROPERTY_TYPE_CONDOMINIUM;
+        break;
+      case 5:
+        $this->propertyTypeName = self::PROPERTY_TYPE_APARTMENT;
+        break;
+      case 6:
+        $this->propertyTypeName = self::PROPERTY_TYPE_MIXED_USE;
+        break;
+      case 7:
+        $this->propertyTypeName = self::PROPERTY_TYPE_TRIPLEX;
+        break;
+      case 8:
+        $this->propertyTypeName = self::PROPERTY_TYPE_QUADPLEX;
+        break;
+      case 9:
+        $this->propertyTypeName = self::PROPERTY_TYPE_COMMERCIAL;
+        break;
+      case 10:
+        $this->propertyTypeName = self::PROPERTY_TYPE_SFR_PORTFOLIO;
+        break;
+      case 11:
+        $this->propertyTypeName = self::PROPERTY_TYPE_MFR_PORTFOLIO;
+        break;
+      default:
+        $this->propertyTypeName = null;
     }
 
-    public function setAssetParking(?string $assetParking): self
-    {
-        $this->assetParking = $assetParking;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getSquareFeet(): ?int
+  {
+    return $this->squareFeet;
+  }
 
-    public function getFoundation(): ?string
-    {
-        return $this->foundation;
-    }
+  public function setSquareFeet(?int $squareFeet): self
+  {
+    $this->squareFeet = $squareFeet;
 
-    public function setFoundation(?string $foundation): self
-    {
-        $this->foundation = $foundation;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getLotSize(): ?int
+  {
+    return $this->lotSize;
+  }
 
-    public function getHeating(): ?string
-    {
-        return $this->heating;
-    }
+  public function setLotSize(?int $lotSize): self
+  {
+    $this->lotSize = $lotSize;
 
-    public function setHeating(?string $heating): self
-    {
-        $this->heating = $heating;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getBedroomBath(): ?string
+  {
+    return $this->bedroomBath;
+  }
 
-    public function getCooling(): ?string
-    {
-        return $this->cooling;
-    }
+  public function setBedroomBath(?string $bedroomBath): self
+  {
+    $this->bedroomBath = $bedroomBath;
 
-    public function setCooling(?string $cooling): self
-    {
-        $this->cooling = $cooling;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getHasTenants(): ?bool
+  {
+    return $this->hasTenants;
+  }
 
-    public function getTokenIdRules(): ?int
-    {
-        return $this->tokenIdRules;
-    }
+  public function setHasTenants(?bool $hasTenants): self
+  {
+    $this->hasTenants = $hasTenants;
 
-    public function setTokenIdRules(?int $tokenIdRules): self
-    {
-        $this->tokenIdRules = $tokenIdRules;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getTermOfLease(): ?string
+  {
+    return $this->termOfLease;
+  }
 
-    public function getRentCalculationType(): ?string
-    {
-        return $this->rentCalculationType;
-    }
+  public function setTermOfLease(?string $termOfLease): self
+  {
+    $this->termOfLease = $termOfLease;
 
-    public function setRentCalculationType(?string $rentCalculationType): self
-    {
-        $this->rentCalculationType = $rentCalculationType;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getRenewalDate(): ?\DateTime
+  {
+    return $this->renewalDate;
+  }
 
-    public function getRealtListingFeePercent(): ?float
-    {
-        return $this->realtListingFeePercent;
-    }
+  public function setRenewalDate(?\DateTime $renewalDate): self
+  {
+    $this->renewalDate = $renewalDate;
 
-    public function setRealtListingFeePercent(?float $realtListingFeePercent): self
-    {
-        $this->realtListingFeePercent = $realtListingFeePercent;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getSection8paid(): ?int
+  {
+    return $this->section8paid;
+  }
 
-    public function getRealtListingFee(): ?float
-    {
-        return $this->realtListingFee;
-    }
+  public function setSection8paid(?int $section8paid): self
+  {
+    $this->section8paid = $section8paid;
 
-    public function setRealtListingFee(?float $realtListingFee): self
-    {
-        $this->realtListingFee = $realtListingFee;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getSellPropertyTo(): ?string
+  {
+    return $this->sellPropertyTo;
+  }
 
-    public function getMiscellaneousCosts(): ?float
-    {
-        return $this->miscellaneousCosts;
-    }
+  public function setSellPropertyTo(?string $sellPropertyTo): self
+  {
+    $this->sellPropertyTo = $sellPropertyTo;
 
-    public function setMiscellaneousCosts(?float $miscellaneousCosts): self
-    {
-        $this->miscellaneousCosts = $miscellaneousCosts;
+    return $this;
+  }
 
-        return $this;
-    }
+  public function getCoordinate(): ?array
+  {
+    return $this->coordinate;
+  }
 
-    public function getPropertyStories(): ?int
-    {
-        return $this->propertyStories;
-    }
+  public function setCoordinate(array $coordinate): void
+  {
+    $this->coordinate = $coordinate;
+  }
 
-    public function setPropertyStories(?int $propertyStories): self
-    {
-        $this->propertyStories = $propertyStories;
+  public function getLastUpdate(): ?DateTimeInterface
+  {
+    return $this->lastUpdate;
+  }
 
-        return $this;
-    }
+  public function setLastUpdate(DateTimeInterface $lastUpdate): self
+  {
+    $this->lastUpdate = $lastUpdate;
 
-    public function getTotalTokensRegSummed(): ?int
-    {
-        return $this->totalTokensRegSummed;
-    }
+    return $this;
+  }
 
-    public function setTotalTokensRegSummed(?int $totalTokensRegSummed): self
-    {
-        $this->totalTokensRegSummed = $totalTokensRegSummed;
+  public function getRentedUnits(): ?int
+  {
+    return $this->rentedUnits;
+  }
 
-        return $this;
-    }
+  public function setRentedUnits(?int $rentedUnits): self
+  {
+    $this->rentedUnits = $rentedUnits;
 
-    public function getRentalType(): ?string
-    {
-      return $this->rentalType;
-    }
+    return $this;
+  }
 
-    public function setRentalType(?string $rentalType): self
-    {
-      $this->rentalType = $rentalType;
+  public function getTotalUnits(): ?int
+  {
+    return $this->totalUnits;
+  }
 
-      return $this;
-    }
+  public function setTotalUnits(?int $totalUnits): self
+  {
+    $this->totalUnits = $totalUnits;
 
-    public function getSubsidyStatus(): ?string
-    {
-      return $this->subsidyStatus;
-    }
+    return $this;
+  }
 
-    public function setSubsidyStatus(?string $subsidyStatus): self
-    {
-      $this->subsidyStatus = $subsidyStatus;
+  public function getSecondaryMarketplace(): ?array
+  {
+    return $this->secondaryMarketplace;
+  }
 
-      return $this;
-    }
+  public function setSecondaryMarketplace(?array $secondaryMarketplace): self
+  {
+    $this->secondaryMarketplace = $secondaryMarketplace;
 
-    public function getSubsidyStatusValue(): ?float
-    {
-      return $this->subsidyStatusValue;
-    }
+    return $this;
+  }
 
-    public function setSubsidyStatusValue(?float $subsidyStatusValue): self
-    {
-      $this->subsidyStatusValue = $subsidyStatusValue;
+  public function getSecondaryMarketplaces(): ?array
+  {
+    return $this->secondaryMarketplaces ?: [];
+  }
 
-      return $this;
-    }
+  public function setSecondaryMarketplaces(?array $secondaryMarketplaces): self
+  {
+    $this->secondaryMarketplaces = $secondaryMarketplaces;
 
-    public function getSubsidyBy(): ?string
-    {
-      return $this->subsidyBy;
-    }
+    return $this;
+  }
 
-    public function setSubsidyBy(?string $subsidyBy): self
-    {
-      $this->subsidyBy = $subsidyBy;
+  public function getSymbol(): ?string
+  {
+    return $this->symbol;
+  }
 
-      return $this;
-    }
+  public function setSymbol(?string $symbol): self
+  {
+    $this->symbol = $symbol;
 
-    public function getProductType(): string
-    {
-      return $this->productType;
-    }
+    return $this;
+  }
 
-    public function setProductType(string $productType): self
-    {
-      $this->productType = $productType;
+  public function getBlockchainAddresses(): ?array
+  {
+    return $this->blockchainAddresses;
+  }
 
-      return $this;
-    }
+  public function setBlockchainAddresses(?array $blockchainAddresses): self
+  {
+    $this->blockchainAddresses = $blockchainAddresses;
 
-    public function getNeighborhood(): ?string
-    {
-        return $this->neighborhood;
-    }
+    return $this;
+  }
 
-    public function setNeighborhood(?string $neighborhood): self
-    {
-        $this->neighborhood = $neighborhood;
+  public function getUnderlyingAssetPrice(): ?float
+  {
+    return $this->underlyingAssetPrice;
+  }
 
-        return $this;
-    }
+  public function setUnderlyingAssetPrice(?float $underlyingAssetPrice): self
+  {
+    $this->underlyingAssetPrice = $underlyingAssetPrice;
 
-    /**
-     * Token toArray.
-     *
-     * @param array $credentials
-     *
-     * @return array
-     */
-    public function __toArray(array $credentials): array
-    {
-        // Check if canal is available for public & check rights
-        if (!in_array($this->getCanal(), [
-          Token::CANAL_RELEASE,
-          Token::CANAL_OFFERING_CLOSED,
-          Token::CANAL_EXIT_PROPOSED,
-          Token::CANAL_EXIT_COMPLETE,
-          Token::CANAL_MIGRATED
-        ])) {
-            if (!$credentials['isAdmin']) {
-                return [];
-            }
-        }
-
-        if ($credentials['isAuth']) {
-            $response = [
-                'fullName' => $this->fullName,
-                'shortName' => $this->shortName,
-                'symbol' => $this->symbol,
-                'productType' => $this->productType,
-                'tokenPrice' => $this->tokenPrice,
-                'canal' => $this->canal,
-                'currency' => $this->currency,
-                'totalTokens' => $this->totalTokens,
-                'totalTokensRegSummed' => $this->totalTokensRegSummed,
-                'uuid' => $this->uuid,
-                'ethereumContract' => $this->ethereumContract,
-                'xDaiContract' => $this->xDaiContract,
-                'gnosisContract' => $this->gnosisContract,
-                'goerliContract' => $this->goerliContract,
-                'totalInvestment' => $this->totalInvestment,
-                'grossRentYear' => $this->grossRentYear,
-                'grossRentMonth' => $this->grossRentMonth,
-                'propertyManagement' => $this->propertyManagement,
-                'propertyManagementPercent' => $this->propertyManagementPercent,
-                'realtPlatform' => $this->realtPlatform,
-                'realtPlatformPercent' => $this->realtPlatformPercent,
-                'insurance' => $this->insurance,
-                'propertyTaxes' => $this->propertyTaxes,
-                'utilities' => $this->utilities,
-                'initialMaintenanceReserve' => $this->initialMaintenanceReserve,
-                'netRentDay' => $this->netRentDay,
-                'netRentMonth' => $this->netRentMonth,
-                'netRentYear' => $this->netRentYear,
-                'netRentDayPerToken' => $this->netRentDayPerToken,
-                'netRentMonthPerToken' => $this->netRentMonthPerToken,
-                'netRentYearPerToken' => $this->netRentYearPerToken,
-                'annualPercentageYield' => $this->annualPercentageYield,
-                'coordinate' => $this->coordinate,
-                'marketplaceLink' => $this->marketplaceLink,
-                'imageLink' => $this->imageLink,
-                'propertyType' => $this->propertyType,
-                'propertyTypeName' => $this->propertyTypeName,
-                'squareFeet' => $this->squareFeet,
-                'lotSize' => $this->lotSize,
-                'bedroomBath' => $this->bedroomBath,
-                'hasTenants' => $this->hasTenants,
-                'rentedUnits' => $this->rentedUnits,
-                'totalUnits' => $this->totalUnits,
-                'termOfLease' => $this->termOfLease,
-                'renewalDate' => $this->renewalDate,
-                'section8paid' => $this->section8paid,
-                'subsidyStatus' => $this->subsidyStatus,
-                'subsidyStatusValue' => $this->subsidyStatusValue,
-                'subsidyBy' => $this->subsidyBy,
-                'sellPropertyTo' => $this->sellPropertyTo,
-                'secondaryMarketplace' => $this->secondaryMarketplace,
-                'secondaryMarketplaces' => $this->secondaryMarketplaces,
-                'blockchainAddresses' => $this->blockchainAddresses,
-                'underlyingAssetPrice' => $this->underlyingAssetPrice,
-                'renovationReserve' => $this->renovationReserve,
-                'propertyMaintenanceMonthly' => $this->propertyMaintenanceMonthly,
-                'rentStartDate' => $this->rentStartDate,
-                'lastUpdate' => $this->lastUpdate,
-                'originSecondaryMarketplaces' => $this->originSecondaryMarketplaces,
-                'initialLaunchDate' => $this->initialLaunchDate,
-                'seriesNumber' => $this->seriesNumber,
-                'constructionYear' => $this->constructionYear,
-                'constructionType' => $this->constructionType,
-                'roofType' => $this->roofType,
-                'assetParking' => $this->assetParking,
-                'foundation' => $this->foundation,
-                'heating' => $this->heating,
-                'cooling' => $this->cooling,
-                'tokenIdRules' => $this->tokenIdRules,
-                'rentCalculationType' => $this->rentCalculationType,
-                'realtListingFeePercent' => $this->realtListingFeePercent,
-                'realtListingFee' => $this->realtListingFee,
-                'miscellaneousCosts' => $this->miscellaneousCosts,
-                'propertyStories' => $this->propertyStories,
-                'rentalType' => $this->rentalType,
-                'neighborhood' => $this->neighborhood,
-            ];
-        } else {
-            $response = [
-                'fullName' => $this->fullName,
-                'shortName' => $this->shortName,
-                'symbol' => $this->symbol,
-                'productType' => $this->productType,
-                'tokenPrice' => $this->tokenPrice,
-                'currency' => $this->currency,
-                'uuid' => $this->uuid,
-                'ethereumContract' => $this->ethereumContract,
-                'xDaiContract' => $this->xDaiContract,
-                'gnosisContract' => $this->gnosisContract,
-                'lastUpdate' => $this->lastUpdate
-            ];
-        }
-
-        if ($credentials['isAdmin']) {
-            $response['originSecondaryMarketplaces'] = $this->originSecondaryMarketplaces;
-        }
-
-        return $response;
-    }
+    return $this;
+  }
+
+  public function getRenovationReserve(): ?float
+  {
+    return $this->renovationReserve;
+  }
+
+  public function setRenovationReserve(?float $renovationReserve): self
+  {
+    $this->renovationReserve = $renovationReserve;
+
+    return $this;
+  }
+
+  public function getPropertyMaintenanceMonthly(): ?float
+  {
+    return $this->propertyMaintenanceMonthly;
+  }
+
+  public function setPropertyMaintenanceMonthly(?float $propertyMaintenanceMonthly): self
+  {
+    $this->propertyMaintenanceMonthly = $propertyMaintenanceMonthly;
+
+    return $this;
+  }
+
+  public function getRentStartDate(): ?\DateTimeInterface
+  {
+    return $this->rentStartDate;
+  }
+
+  public function setRentStartDate(?\DateTimeInterface $rentStartDate): self
+  {
+    $this->rentStartDate = $rentStartDate;
+
+    return $this;
+  }
+
+  public function getOriginSecondaryMarketplaces(): ?array
+  {
+    return $this->originSecondaryMarketplaces;
+  }
+
+  public function setOriginSecondaryMarketplaces(?array $originSecondaryMarketplaces): self
+  {
+    $this->originSecondaryMarketplaces = $originSecondaryMarketplaces;
+
+    return $this;
+  }
+
+  public function getInitialLaunchDate(): ?\DateTimeInterface
+  {
+    return $this->initialLaunchDate;
+  }
+
+  public function setInitialLaunchDate(?\DateTimeInterface $initialLaunchDate): self
+  {
+    $this->initialLaunchDate = $initialLaunchDate;
+
+    return $this;
+  }
+
+  public function getSeriesNumber(): ?int
+  {
+    return $this->seriesNumber;
+  }
+
+  public function setSeriesNumber(?int $seriesNumber): self
+  {
+    $this->seriesNumber = $seriesNumber;
+
+    return $this;
+  }
+
+  public function getConstructionYear(): ?int
+  {
+    return $this->constructionYear;
+  }
+
+  public function setConstructionYear(?int $constructionYear): self
+  {
+    $this->constructionYear = $constructionYear;
+
+    return $this;
+  }
+
+  public function getConstructionType(): ?string
+  {
+    return $this->constructionType;
+  }
+
+  public function setConstructionType(?string $constructionType): self
+  {
+    $this->constructionType = $constructionType;
+
+    return $this;
+  }
+
+  public function getRoofType(): ?string
+  {
+    return $this->roofType;
+  }
+
+  public function setRoofType(?string $roofType): self
+  {
+    $this->roofType = $roofType;
+
+    return $this;
+  }
+
+  public function getAssetParking(): ?string
+  {
+    return $this->assetParking;
+  }
+
+  public function setAssetParking(?string $assetParking): self
+  {
+    $this->assetParking = $assetParking;
+
+    return $this;
+  }
+
+  public function getFoundation(): ?string
+  {
+    return $this->foundation;
+  }
+
+  public function setFoundation(?string $foundation): self
+  {
+    $this->foundation = $foundation;
+
+    return $this;
+  }
+
+  public function getHeating(): ?string
+  {
+    return $this->heating;
+  }
+
+  public function setHeating(?string $heating): self
+  {
+    $this->heating = $heating;
+
+    return $this;
+  }
+
+  public function getCooling(): ?string
+  {
+    return $this->cooling;
+  }
+
+  public function setCooling(?string $cooling): self
+  {
+    $this->cooling = $cooling;
+
+    return $this;
+  }
+
+  public function getTokenIdRules(): ?int
+  {
+    return $this->tokenIdRules;
+  }
+
+  public function setTokenIdRules(?int $tokenIdRules): self
+  {
+    $this->tokenIdRules = $tokenIdRules;
+
+    return $this;
+  }
+
+  public function getRentCalculationType(): ?string
+  {
+    return $this->rentCalculationType;
+  }
+
+  public function setRentCalculationType(?string $rentCalculationType): self
+  {
+    $this->rentCalculationType = $rentCalculationType;
+
+    return $this;
+  }
+
+  public function getRealtListingFeePercent(): ?float
+  {
+    return $this->realtListingFeePercent;
+  }
+
+  public function setRealtListingFeePercent(?float $realtListingFeePercent): self
+  {
+    $this->realtListingFeePercent = $realtListingFeePercent;
+
+    return $this;
+  }
+
+  public function getRealtListingFee(): ?float
+  {
+    return $this->realtListingFee;
+  }
+
+  public function setRealtListingFee(?float $realtListingFee): self
+  {
+    $this->realtListingFee = $realtListingFee;
+
+    return $this;
+  }
+
+  public function getMiscellaneousCosts(): ?float
+  {
+    return $this->miscellaneousCosts;
+  }
+
+  public function setMiscellaneousCosts(?float $miscellaneousCosts): self
+  {
+    $this->miscellaneousCosts = $miscellaneousCosts;
+
+    return $this;
+  }
+
+  public function getPropertyStories(): ?int
+  {
+    return $this->propertyStories;
+  }
+
+  public function setPropertyStories(?int $propertyStories): self
+  {
+    $this->propertyStories = $propertyStories;
+
+    return $this;
+  }
+
+  public function getTotalTokensRegSummed(): ?int
+  {
+    return $this->totalTokensRegSummed;
+  }
+
+  public function setTotalTokensRegSummed(?int $totalTokensRegSummed): self
+  {
+    $this->totalTokensRegSummed = $totalTokensRegSummed;
+
+    return $this;
+  }
+
+  public function getRentalType(): ?string
+  {
+    return $this->rentalType;
+  }
+
+  public function setRentalType(?string $rentalType): self
+  {
+    $this->rentalType = $rentalType;
+
+    return $this;
+  }
+
+  public function getSubsidyStatus(): ?string
+  {
+    return $this->subsidyStatus;
+  }
+
+  public function setSubsidyStatus(?string $subsidyStatus): self
+  {
+    $this->subsidyStatus = $subsidyStatus;
+
+    return $this;
+  }
+
+  public function getSubsidyStatusValue(): ?float
+  {
+    return $this->subsidyStatusValue;
+  }
+
+  public function setSubsidyStatusValue(?float $subsidyStatusValue): self
+  {
+    $this->subsidyStatusValue = $subsidyStatusValue;
+
+    return $this;
+  }
+
+  public function getSubsidyBy(): ?string
+  {
+    return $this->subsidyBy;
+  }
+
+  public function setSubsidyBy(?string $subsidyBy): self
+  {
+    $this->subsidyBy = $subsidyBy;
+
+    return $this;
+  }
+
+  public function getProductType(): string
+  {
+    return $this->productType;
+  }
+
+  public function setProductType(string $productType): self
+  {
+    $this->productType = $productType;
+
+    return $this;
+  }
+
+  public function getNeighborhood(): ?string
+  {
+    return $this->neighborhood;
+  }
+
+  public function setNeighborhood(?string $neighborhood): self
+  {
+    $this->neighborhood = $neighborhood;
+
+    return $this;
+  }
+
+  public function __toArray(RequestContextService $ctx): array
+  {
+    // Check if canal is available for public & check rights
+    if (!in_array($this->getCanal(), [
+      Token::CANAL_RELEASE,
+      Token::CANAL_OFFERING_CLOSED,
+      Token::CANAL_EXIT_PROPOSED,
+      Token::CANAL_EXIT_COMPLETE,
+      Token::CANAL_MIGRATED
+    ])) {
+      if (!$ctx->isAdmin()) {
+        return [];
+      }
+    }
+
+    if ($ctx->isAuthenticated()) {
+      $response = [
+        'fullName' => $this->fullName,
+        'shortName' => $this->shortName,
+        'symbol' => $this->symbol,
+        'productType' => $this->productType,
+        'tokenPrice' => $this->tokenPrice,
+        'canal' => $this->canal,
+        'currency' => $this->currency,
+        'totalTokens' => $this->totalTokens,
+        'totalTokensRegSummed' => $this->totalTokensRegSummed,
+        'uuid' => $this->uuid,
+        'ethereumContract' => $this->ethereumContract,
+        'xDaiContract' => $this->xDaiContract,
+        'gnosisContract' => $this->gnosisContract,
+        'goerliContract' => $this->goerliContract,
+        'totalInvestment' => $this->totalInvestment,
+        'grossRentYear' => $this->grossRentYear,
+        'grossRentMonth' => $this->grossRentMonth,
+        'propertyManagement' => $this->propertyManagement,
+        'propertyManagementPercent' => $this->propertyManagementPercent,
+        'realtPlatform' => $this->realtPlatform,
+        'realtPlatformPercent' => $this->realtPlatformPercent,
+        'insurance' => $this->insurance,
+        'propertyTaxes' => $this->propertyTaxes,
+        'utilities' => $this->utilities,
+        'initialMaintenanceReserve' => $this->initialMaintenanceReserve,
+        'netRentDay' => $this->netRentDay,
+        'netRentMonth' => $this->netRentMonth,
+        'netRentYear' => $this->netRentYear,
+        'netRentDayPerToken' => $this->netRentDayPerToken,
+        'netRentMonthPerToken' => $this->netRentMonthPerToken,
+        'netRentYearPerToken' => $this->netRentYearPerToken,
+        'annualPercentageYield' => $this->annualPercentageYield,
+        'coordinate' => $this->coordinate,
+        'marketplaceLink' => $this->marketplaceLink,
+        'imageLink' => $this->imageLink,
+        'propertyType' => $this->propertyType,
+        'propertyTypeName' => $this->propertyTypeName,
+        'squareFeet' => $this->squareFeet,
+        'lotSize' => $this->lotSize,
+        'bedroomBath' => $this->bedroomBath,
+        'hasTenants' => $this->hasTenants,
+        'rentedUnits' => $this->rentedUnits,
+        'totalUnits' => $this->totalUnits,
+        'termOfLease' => $this->termOfLease,
+        'renewalDate' => $this->renewalDate,
+        'section8paid' => $this->section8paid,
+        'subsidyStatus' => $this->subsidyStatus,
+        'subsidyStatusValue' => $this->subsidyStatusValue,
+        'subsidyBy' => $this->subsidyBy,
+        'sellPropertyTo' => $this->sellPropertyTo,
+        'secondaryMarketplace' => $this->secondaryMarketplace,
+        'secondaryMarketplaces' => $this->secondaryMarketplaces,
+        'blockchainAddresses' => $this->blockchainAddresses,
+        'underlyingAssetPrice' => $this->underlyingAssetPrice,
+        'renovationReserve' => $this->renovationReserve,
+        'propertyMaintenanceMonthly' => $this->propertyMaintenanceMonthly,
+        'rentStartDate' => $this->rentStartDate,
+        'lastUpdate' => $this->lastUpdate,
+        'originSecondaryMarketplaces' => $this->originSecondaryMarketplaces,
+        'initialLaunchDate' => $this->initialLaunchDate,
+        'seriesNumber' => $this->seriesNumber,
+        'constructionYear' => $this->constructionYear,
+        'constructionType' => $this->constructionType,
+        'roofType' => $this->roofType,
+        'assetParking' => $this->assetParking,
+        'foundation' => $this->foundation,
+        'heating' => $this->heating,
+        'cooling' => $this->cooling,
+        'tokenIdRules' => $this->tokenIdRules,
+        'rentCalculationType' => $this->rentCalculationType,
+        'realtListingFeePercent' => $this->realtListingFeePercent,
+        'realtListingFee' => $this->realtListingFee,
+        'miscellaneousCosts' => $this->miscellaneousCosts,
+        'propertyStories' => $this->propertyStories,
+        'rentalType' => $this->rentalType,
+        'neighborhood' => $this->neighborhood,
+      ];
+    } else {
+      $response = [
+        'fullName' => $this->fullName,
+        'shortName' => $this->shortName,
+        'symbol' => $this->symbol,
+        'productType' => $this->productType,
+        'tokenPrice' => $this->tokenPrice,
+        'currency' => $this->currency,
+        'uuid' => $this->uuid,
+        'ethereumContract' => $this->ethereumContract,
+        'xDaiContract' => $this->xDaiContract,
+        'gnosisContract' => $this->gnosisContract,
+        'lastUpdate' => $this->lastUpdate
+      ];
+    }
+
+    if ($ctx->isAdmin()) {
+      $response['originSecondaryMarketplaces'] = $this->originSecondaryMarketplaces;
+    }
+
+    return $response;
+  }
 }

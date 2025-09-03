@@ -6,138 +6,140 @@ use App\Entity\Application;
 use App\Entity\User;
 use App\Traits\DataControllerTrait;
 use Exception;
+use Random\RandomException;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * Class UserService
- * @package App\Service
- */
 class UserService extends Service
 {
-    use DataControllerTrait;
+  use DataControllerTrait;
 
-    /**
-     * Register user form
-     *
-     * @param Request $request
-     *
-     * @return array
-     * @throws Exception
-     */
-    public function userRegistration(Request $request): array
-    {
-        $roles = ["ROLE_USER"];
+  /**
+   * Register user form
+   *
+   * @param Request $request
+   *
+   * @return array
+   * @throws Exception
+   */
+  public function userRegistration(Request $request): array
+  {
+    $roles = ["ROLE_USER"];
 
-        switch ($request->get('quotaRole')) {
-            case 'isAdmin':
-                array_push($roles, "ROLE_ADMIN");
-                break;
-            case 'isVip':
-                array_push($roles, "ROLE_VIP");
-                break;
-            case 'isExternal':
-                array_push($roles, "ROLE_EXTERNAL");
-                break;
-            case 'isPremium':
-                array_push($roles, "ROLE_PREMIUM");
-                break;
-            case 'isFreemium':
-                array_push($roles, "ROLE_FREEMIUM");
-                break;
-            case 'isHydrator':
-                array_push($roles, "ROLE_HYDRATOR");
-                break;
-        }
-
-        $user = $this->checkUserExistence($request->get('email'));
-        
-        if (!$user) {
-            $user = new User();
-            $user->setEmail($request->get('email'));
-            $user->setRoles($roles);
-            $user->setPassword($this->generatePassword());
-            $user->setUsername($request->get('username'));
-            $user->setEthereumAddress($request->get('ethereumAddress'));
-            $this->em->persist($user);
-        }
-
-        $application = new Application();
-        $application->setUser($user);
-        $application->setName($request->get('appName'));
-        $application->setApiToken($this->generateToken());
-        $application->setReferer($this->extractDomainUri($request->get('referer')));
-
-        $this->em->persist($application);
-        $this->em->flush();
-
-        return ['user' => $user, 'application' => $application];
+    switch ($request->get('quotaRole')) {
+      case 'isAdmin':
+        array_push($roles, "ROLE_ADMIN");
+        break;
+      case 'isVip':
+        array_push($roles, "ROLE_VIP");
+        break;
+      case 'isExternal':
+        array_push($roles, "ROLE_EXTERNAL");
+        break;
+      case 'isPremium':
+        array_push($roles, "ROLE_PREMIUM");
+        break;
+      case 'isFreemium':
+        array_push($roles, "ROLE_FREEMIUM");
+        break;
+      case 'isHydrator':
+        array_push($roles, "ROLE_HYDRATOR");
+        break;
     }
 
-    /**
-     * Generate unique token.
-     *
-     * @return string
-     * @throws Exception
-     */
-    private function generateToken(): string
-    {
-        return $this->generateUuid(8).'-preprod-1'.$this->generateUuid(3).'-'.$this->generateUuid(4).'-'.$this->generateUuid(12);
+    $user = $this->checkUserExistence($request->get('email'));
+
+    if (!$user) {
+      $user = new User();
+      $user->setEmail($request->get('email'));
+      $user->setRoles($roles);
+      $user->setPassword($this->generatePassword());
+      $user->setUsername($request->get('username'));
+      $user->setEthereumAddress($request->get('ethereumAddress'));
+      $this->em->persist($user);
     }
 
-    /**
-     * Generate unique uuid.
-     *
-     * @param int $length
-     *
-     * @return string
-     * @throws Exception
-     */
-    private function generateUuid(int $length): string
-    {
-        return substr(bin2hex(random_bytes(15)), 0, $length);
+    $application = new Application();
+    $application->setUser($user);
+    $application->setName($request->get('appName'));
+    $application->setApiToken($this->generateToken());
+    $application->setReferer($this->extractDomainUri($request->get('referer')));
+
+    $this->em->persist($application);
+    $this->em->flush();
+
+    return ['user' => $user, 'application' => $application];
+  }
+
+  /**
+   * Generate unique token.
+   *
+   * @return string
+   * @throws Exception
+   */
+  private function generateToken(): string
+  {
+    return bin2hex(random_bytes(16));
+  }
+
+  /**
+   * Generate random password.
+   *
+   * @param int $length
+   *
+   * @return string
+   * @throws RandomException
+   */
+  private function generatePassword(int $length = 18): string
+  {
+    if ($length < 4) {
+      throw new \InvalidArgumentException('Password length must be at least 4');
     }
 
-    /**
-     * Generate random password.
-     *
-     * @param int $length
-     *
-     * @return string
-     */
-    private function generatePassword($length = 12): string
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*?';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
+    $lower = 'abcdefghijklmnopqrstuvwxyz';
+    $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $digits = '0123456789';
+    $symbols = '!@#$%&*?';
+
+    $all = $lower . $upper . $digits . $symbols;
+
+    $password = [];
+    $password[] = $lower[random_int(0, strlen($lower) - 3)];
+    $password[] = $upper[random_int(0, strlen($upper) - 3)];
+    $password[] = $digits[random_int(0, strlen($digits) - 3)];
+    $password[] = $symbols[random_int(0, strlen($symbols) - 3)];
+
+    for ($i = 4; $i < $length; $i++) {
+      $password[] = $all[random_int(0, strlen($all) - 1)];
     }
 
-    /**
-     * Check user existence.
-     *
-     * @param string $email
-     * @return User|null
-     */
-    private function checkUserExistence(string $email): ?User
-    {
-        $userRepository = $this->em->getRepository(User::class);
-        $user = $userRepository->findOneBy(['email' => $email]);
+    shuffle($password);
 
-        if (!$user instanceof User) {
-            return null;
-        }
-        
-        return $user;
+    return implode('', $password);
+  }
+
+  /**
+   * Check user existence.
+   *
+   * @param string $email
+   * @return User|null
+   */
+  private function checkUserExistence(string $email): ?User
+  {
+    $userRepository = $this->em->getRepository(User::class);
+    $user = $userRepository->findOneBy(['email' => $email]);
+
+    if (!$user instanceof User) {
+      return null;
     }
 
-    private function parseReferUri(string $uri)
-    {
-        $pattern = "/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/";
-        preg_match($pattern, $uri, $matches);
+    return $user;
+  }
 
-        return $matches[1];
-    }
+  private function parseReferUri(string $uri): string
+  {
+    $pattern = "/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/";
+    preg_match($pattern, $uri, $matches);
+
+    return $matches[1];
+  }
 }

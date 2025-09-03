@@ -19,3 +19,10 @@ wrk -t4 -c200 -d30s http://localhost:9080/api/tokens
 # Upgrade Symfony version
 docker exec -it api-sf php bin/console debug:container --deprecations
 ```
+
+## Debug
+
+```bash
+## Get
+composer why symfony/property-info
+```

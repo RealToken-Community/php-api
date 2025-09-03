@@ -2,60 +2,51 @@
 
 namespace App\Controller;
 
-use App\Service\AuthenticatorService;
+use App\Service\DefiService;
+use App\Service\RequestContextService;
 use App\Service\UserService;
-use App\Traits\DataControllerTrait;
-use App\Traits\HeadersControllerTrait;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
-    use HeadersControllerTrait;
-    use DataControllerTrait;
+  private UserService $userService;
+  private DefiService $defiService;
 
-    /** @var AuthenticatorService */
-    private AuthenticatorService $authenticatorService;
-    /** @var UserService */
-    private UserService $userService;
+  public function __construct(
+    UserService $userService,
+    DefiService $defiService
+  ) {
+    $this->userService = $userService;
+    $this->defiService = $defiService;
+  }
 
-    public function __construct(AuthenticatorService $authenticatorService, UserService $userService)
-    {
-        $this->authenticatorService = $authenticatorService;
-        $this->userService = $userService;
+  /**
+   * Register new Api User.
+   *
+   * @param Request $request
+   * @param RequestContextService $ctx
+   * @return Response
+   * @throws Exception
+   */
+  #[Route("/admin/register/apiUser", name: 'register_api_user', methods: ['GET', 'POST'])]
+  public function registerApiUser(Request $request, RequestContextService $ctx): Response
+  {
+    $form = [];
+    if ($request->getMethod() == 'POST') {
+      $form = $this->userService->userRegistration($request);
     }
 
-    /**
-     * Register new Api User.
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * @throws Exception
-     * @Route("/admin/register/apiUser", name="register_api_user", methods={"GET", "POST"})
-     */
-    public function registerApiUser(Request $request): Response
-    {
-        // Check admin rights
-        $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights(
-            $apiKey,
-            $this->getRequestOrigin($request)
-        );
-
-        $form = [];
-        if ($request->getMethod() == 'POST') {
-            $form = $this->userService->userRegistration($request);
-        }
-
-        return $this->render(
-            "admin/registerApiUser.html.twig", [
-                'apiKey' => $apiKey,
-                'form' => $form,
-            ]
-        );
-    }
+    return $this->render(
+      "admin/registerApiUser.html.twig", [
+        'apiKey' => $ctx->getApplication()->getApiToken(),
+        'form' => $form,
+      ]
+    );
+  }
 }
