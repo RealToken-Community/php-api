@@ -8,6 +8,8 @@ doctrine:
   orm:
     auto_generate_proxy_classes: true
     enable_lazy_ghost_objects: true
+    enable_native_lazy_objects: false # garde l’ancien comportement
+#    enable_native_lazy_objects: true # active les lazy objects natifs, si tu veux tester et t’adapter avant DoctrineBundle 3.
     report_fields_where_declared: true
     validate_xml_mapping: true
     #        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

@@ -34,7 +34,7 @@ class QuotaHistoryRepository extends ServiceEntityRepository
      * @return int
      * @throws \Exception
      */
-    public function findLastUsage(Quota $quota, DateTime $datetime = null): int
+    public function findLastUsage(Quota $quota, ?DateTime $datetime = null): int
     {
         try {
             $query = $this->createQueryBuilder('qh')
