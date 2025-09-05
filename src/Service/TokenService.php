@@ -65,7 +65,7 @@ class TokenService extends Service
   /**
    * Get token by uuid.
    *
-   * @param array $credentials
+   * @param RequestContextService $ctx
    * @param string $uuid
    *
    * @return JsonResponse

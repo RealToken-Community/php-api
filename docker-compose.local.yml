@@ -8,10 +8,8 @@ services:
       - "9080:80"
     networks:
       - api-php
-#    volumes:
-#      - ./:/var/www/html
-#      - ./logs/symfony:/var/www/html/var/log:cached
-#      - ./logs/nginx:/var/log/nginx:cached
+    volumes:
+      - ./src:/var/www/html/src
     restart: unless-stopped
 
   db:
