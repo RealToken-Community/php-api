@@ -33,7 +33,7 @@ services:
 
     redis:
         image: redis:7-alpine
-        container_name: api-redis
+        container_name: ${DOCKER_BRANCH}-api_php-redis
 #        ports:
 #            - "6379:6379"
         networks:
