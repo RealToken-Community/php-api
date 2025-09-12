@@ -84,6 +84,7 @@ jobs:
             - uses: actions/checkout@v4
             - name: Set environment variables
               run: |
+                echo "DOCKER_NETWORK_NAME=api-${{ github.ref_name }}" >> $GITHUB_ENV
                 if [[ "${{ github.ref_name }}" == "alpha" ]]; then
                   echo "APP_ENV=dev" >> $GITHUB_ENV
                   echo "DATABASE_URL=mysql://root:symfony@db-branch:3306/symfony" >> $GITHUB_ENV
