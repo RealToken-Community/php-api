@@ -8,7 +8,7 @@ services:
             APP_ENV: ${APP_ENV}
             DATABASE_URL: ${DATABASE_URL}
         networks:
-            - ${DOCKER_NETWORK_NAME}
+            - api-php
             - traefik-realt
 #        volumes:
 #              - ./logs/symfony:/var/www/html/var/log:cached
@@ -23,7 +23,7 @@ services:
         image: mysql:9.3
         container_name: ${DOCKER_BRANCH}-api_php-db
         networks:
-            - ${DOCKER_NETWORK_NAME}
+            - api-php
         environment:
             - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
             - "MYSQL_USER=${MYSQL_USER}"
@@ -37,7 +37,7 @@ services:
 #        ports:
 #            - "6379:6379"
         networks:
-            - ${DOCKER_NETWORK_NAME}
+            - api-php
         restart: unless-stopped
         command: ["redis-server", "--appendonly", "yes"]
 
@@ -47,10 +47,11 @@ services:
         ports:
             - "18080:8080"
         networks:
-            - ${DOCKER_NETWORK_NAME}
+            - api-php
         restart: always
 
 networks:
-    ${DOCKER_NETWORK_NAME}:
+    api-php:
+        name: ${DOCKER_NETWORK_NAME}
     traefik-realt:
         external: true
