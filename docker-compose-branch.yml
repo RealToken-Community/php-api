@@ -3,7 +3,7 @@ services:
         image: ${DOCKER_REGISTRY}/api-php:${DOCKER_BRANCH}
         container_name: ${DOCKER_BRANCH}-api_php-sf
         build:
-        context: ./
+            context: ./
         args:
             APP_ENV: ${APP_ENV}
             DATABASE_URL: ${DATABASE_URL}
