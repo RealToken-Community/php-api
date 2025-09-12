@@ -2,11 +2,11 @@ name: Symfony deployment
 
 on:
     push:
-        #    branches: [ "alpha" ]
-        branches: [ "feature/upgrade_symfony" ]
+        branches: [ "alpha" ]
+#        branches: [ "feature/upgrade_symfony" ]
     pull_request:
-        #    branches: [ "alpha" ]
-        branches: [ "feature/upgrade_symfony" ]
+        branches: [ "alpha" ]
+#        branches: [ "feature/upgrade_symfony" ]
 
 permissions:
     contents: read
