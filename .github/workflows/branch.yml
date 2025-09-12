@@ -148,6 +148,7 @@ jobs:
                     echo 'MYSQL_USER=symfony' >> .env && \
                     echo 'MYSQL_PASSWORD=symfony' >> .env && \
                     echo 'MYSQL_DATABASE=symfony' >> .env && \
+                    git pull origin ${DOCKER_BRANCH} && \
                     docker compose --file docker-compose-branch.yml pull && \
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${{ secrets.DOCKER_REGISTRY }} && \
                     docker compose --project-name ${{ github.ref_name }}-api_php --file docker-compose-branch.yml up -d && \
