@@ -3,10 +3,8 @@ name: Symfony deployment
 on:
     push:
         branches: [ "alpha" ]
-#        branches: [ "feature/upgrade_symfony" ]
     pull_request:
         branches: [ "alpha" ]
-#        branches: [ "feature/upgrade_symfony" ]
 
 permissions:
     contents: read
@@ -119,10 +117,13 @@ jobs:
               run: |
                   if [[ "$DOCKER_BRANCH" == "master" ]]; then
                       export HOSTNAME="api.$DOMAIN_URL"
+                      export APP_ENV="prod"
                   elif [[ "$DOCKER_BRANCH" == "preprod" ]]; then
                       export HOSTNAME="api.$DOCKER_BRANCH.$DOMAIN_URL"
+                      export APP_ENV="prod"
                   else
                       export HOSTNAME="api.$DOCKER_BRANCH.$DOMAIN_URL"
+                      export APP_ENV="dev"
                   fi
                   ssh staging 'export DOCKER_BRANCH=${{ github.ref_name }} DOCKER_REGISTRY=${{ secrets.DOCKER_REGISTRY }}
                   cd /var/docker/api/${DOCKER_BRANCH}

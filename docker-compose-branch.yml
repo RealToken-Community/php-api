@@ -4,6 +4,8 @@ services:
         container_name: ${DOCKER_BRANCH}-api_php-sf
         build:
         context: ./
+        args:
+            APP_ENV: ${APP_ENV}
         networks:
             - api-${DOCKER_BRANCH}
             - traefik-realt
@@ -51,4 +53,3 @@ networks:
     api-${DOCKER_BRANCH}:
     traefik-realt:
         external: true
-
