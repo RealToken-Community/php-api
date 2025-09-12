@@ -141,6 +141,8 @@ jobs:
                       APP_ENV="dev"
                   fi
                   ssh staging "cd /var/docker/api/${DOCKER_BRANCH} && \
+                    export DOCKER_BRANCH=${DOCKER_BRANCH} && \
+                    export DOCKER_REGISTRY=${DOCKER_REGISTRY} && \
                     echo 'APP_ENV=${APP_ENV}' > .env && \
                     echo 'DATABASE_URL=${DATABASE_URL}' >> .env && \
                     echo 'DOCKER_NETWORK_NAME=api-${DOCKER_BRANCH}' >> .env && \
