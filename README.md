@@ -1,28 +1,23 @@
-# RealT-API
-RealT-Community API for RealTokens
+# RealToken-API
+RealToken-Community API for RealToken ecosystem.
 
 ## Installation
-Build Container :
-```bash
-sudo docker-compose build
-```
-
 Run API Stack :
 ```bash
-sudo docker-compose up -d
+docker compose up -d
 ```
 
 Create Database :
 ```
-sudo docker-compose exec -T symfony php bin/console doctrine:database:create
+docker exec -it symfony php bin/console doctrine:database:create
 ```
 
 Create Table :
 ```
-sudo docker-compose exec -T symfony php bin/console doctrine:schema:update --force
+docker exec -it symfony php bin/console doctrine:schema:create
 ```
 
 Migrate :
 ```
-sudo docker-compose exec -T symfony php bin/console doctrine:migrations:migrate
+docker exec -it symfony php bin/console doctrine:migrations:migrate
 ```

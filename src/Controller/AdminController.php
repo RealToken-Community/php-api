@@ -3,9 +3,8 @@
 namespace App\Controller;
 
 use App\Service\AdminService;
-use App\Service\AuthenticatorService;
+use App\Service\RequestContextService;
 use App\Traits\DataControllerTrait;
-use App\Traits\HeadersControllerTrait;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,234 +12,225 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/admin")
- */
+#[Route("/admin")]
 class AdminController extends AbstractController
 {
-    use HeadersControllerTrait;
-    use DataControllerTrait;
+  use DataControllerTrait;
 
-    /** @var AuthenticatorService */
-    private AuthenticatorService $authenticatorService;
-    /** @var AdminService */
-    private AdminService $adminService;
+  private AdminService $adminService;
 
-    public function __construct(AuthenticatorService $authenticatorService, AdminService $adminService)
-    {
-        $this->authenticatorService = $authenticatorService;
-        $this->adminService = $adminService;
+  public function __construct(AdminService $adminService)
+  {
+    $this->adminService = $adminService;
+  }
+
+  /**
+   * Admin get Users Quota.
+   *
+   * @param RequestContextService $ctx
+   * @return Response
+   */
+  #[Route("/getUsersQuota", name: 'admin_user_quota', methods: ['GET'])]
+  public function getUsersQuota(RequestContextService $ctx): Response
+  {
+    if (!$ctx->isAdmin()) {
+      return new JsonResponse(
+        ['error' => 'Unauthorized'],
+        Response::HTTP_UNAUTHORIZED
+      );
     }
 
-    /**
-     * Admin get Users Quota.
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * @Route("/getUsersQuota", name="admin_user_quota", methods={"GET"})
-     */
-    public function getUsersQuota(Request $request): Response
-    {
-        // Check admin rights
-        $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights(
-            $apiKey,
-            $this->getRequestOrigin($request)
-        );
+    return $this->render(
+      "admin/usersQuota.html.twig", [
+        'apiKey' => $ctx->getApplication()->getApiToken(),
+        'usersQuota' => $this->adminService->getTotalUsersQuota(),
+      ]
+    );
+  }
 
-        return $this->render(
-            "admin/usersQuota.html.twig", [
-                'apiKey' => $apiKey,
-                'usersQuota' => $this->adminService->getTotalUsersQuota(),
-            ]
-        );
+  /**
+   * Manage quota (V1).
+   *
+   * @param Request $request
+   * @param RequestContextService $ctx
+   * @return Response
+   */
+  #[Route("/manageQuota", name: 'admin_manage_quota', methods: ['GET', 'POST'])]
+  public function manageQuota(Request $request, RequestContextService $ctx): Response
+  {
+    if (!$ctx->isAdmin()) {
+      return new JsonResponse(
+        ['error' => 'Unauthorized'],
+        Response::HTTP_UNAUTHORIZED
+      );
     }
 
-    /**
-     * Manage quota (V1).
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * @Route("/manageQuota", name="admin_manage_quota", methods={"GET", "POST"})
-     */
-    public function manageQuota(Request $request): Response
-    {
-        // Check admin rights
-        $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights(
-            $apiKey,
-            $this->getRequestOrigin($request)
-        );
-
-        switch ($request->get('method')) {
-            case 'create':
-                $this->adminService->createQuotaLimitations($request);
-                break;
-            case 'update':
-                $this->adminService->updateQuotaLimitations($request);
-                break;
-            case 'delete':
-                $this->adminService->deleteQuotaLimitations($request);
-                break;
-        }
-
-        return $this->render(
-            "admin/quotaLimitations.html.twig", [
-                'apiKey' => $apiKey,
-                'quotas' => $this->adminService->getQuotaLimitations(),
-            ]
-        );
+    switch ($request->get('method')) {
+      case 'create':
+        $this->adminService->createQuotaLimitations($request);
+        break;
+      case 'update':
+        $this->adminService->updateQuotaLimitations($request);
+        break;
+      case 'delete':
+        $this->adminService->deleteQuotaLimitations($request);
+        break;
     }
 
-    /**
-     * Manage quotas (V2).
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * @Route("/manageQuotas", name="admin_manage_quotas", methods={"GET", "POST"})
-     */
-    public function manageQuotas(Request $request): Response
-    {
-        // Check admin rights
-        $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights(
-            $apiKey,
-            $this->getRequestOrigin($request)
-        );
+    return $this->render(
+      "admin/quotaLimitations.html.twig", [
+        'apiKey' => $ctx->getApplication()->getApiToken(),
+        'quotas' => $this->adminService->getQuotaLimitations(),
+      ]
+    );
+  }
 
-        switch ($request->get('method')) {
-            case 'create':
-                $this->adminService->createQuotaManagement($request);
-                break;
-            case 'update':
-                $this->adminService->updateQuotaManagement($request);
-                break;
-            case 'delete':
-                $this->adminService->deleteQuotaManagement($request);
-                break;
-        }
-
-        return $this->render(
-            "admin/quotaManagement.html.twig", [
-                'apiKey' => $apiKey,
-                'quotas' => $this->adminService->getQuotaManagement(),
-            ]
-        );
+  /**
+   * Manage quotas (V2).
+   *
+   * @param Request $request
+   * @param RequestContextService $ctx
+   * @return Response
+   */
+  #[Route("/manageQuotas", name: 'admin_manage_quotas', methods: ['GET', 'POST'])]
+  public function manageQuotas(Request $request, RequestContextService $ctx): Response
+  {
+    if (!$ctx->isAdmin()) {
+      return new JsonResponse(
+        ['error' => 'Unauthorized'],
+        Response::HTTP_UNAUTHORIZED
+      );
     }
 
-
-    /**
-     * Manage token mapping.
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * @Route("/manageTokenMapping", name="admin_manage_token_mapping", methods={"GET", "POST"})
-     */
-    public function manageTokenMapping(Request $request): Response
-    {
-        // Check admin rights
-        $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights(
-            $apiKey,
-            $this->getRequestOrigin($request)
-        );
-
-        switch ($request->get('method')) {
-            case 'create':
-                $this->adminService->createTokenMapping($request);
-                break;
-            case 'update':
-                $this->adminService->updateTokenMapping($request);
-                break;
-            case 'delete':
-                $this->adminService->deleteTokenMapping($request);
-                break;
-        }
-
-        return $this->render(
-            "admin/tokenMapping.html.twig", [
-                'apiKey' => $apiKey,
-                'tokens' => $this->adminService->getTokenMapping(),
-            ]
-        );
+    switch ($request->get('method')) {
+      case 'create':
+        $this->adminService->createQuotaManagement($request);
+        break;
+      case 'update':
+        $this->adminService->updateQuotaManagement($request);
+        break;
+      case 'delete':
+        $this->adminService->deleteQuotaManagement($request);
+        break;
     }
 
-    /**
-     * Check route integrity.
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * @Route("/checkRouteIntegrity", name="admin_check_route_integrity", methods={"GET", "POST"})
-     */
-    public function checkRouteIntegrity(Request $request): Response
-    {
-        // Check admin rights
-        $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights(
-            $apiKey,
-            $this->getRequestOrigin($request)
-        );
+    return $this->render(
+      "admin/quotaManagement.html.twig", [
+        'apiKey' => $ctx->getApplication()->getApiToken(),
+        'quotas' => $this->adminService->getQuotaManagement(),
+      ]
+    );
+  }
 
-        return $this->render(
-            "admin/routeIntegrity.html.twig", [
-                'apiKey' => $apiKey,
-                'routes' => $this->adminService->getRouteIntegrity(),
-                'totalTokens' => $this->adminService->getTotalTokens(),
-                'envServer' => strtoupper($_ENV['APP_ENV']),
-                'tokensDiff' => $this->adminService->compareOnlineTokensData()
-            ]
-        );
+
+  /**
+   * Manage token mapping.
+   *
+   * @param Request $request
+   * @param RequestContextService $ctx
+   * @return Response
+   */
+  #[Route("/manageTokenMapping", name: 'admin_manage_token_mapping', methods: ['GET', 'POST'])]
+  public function manageTokenMapping(Request $request, RequestContextService $ctx): Response
+  {
+    if (!$ctx->isAdmin()) {
+      return new JsonResponse(
+        ['error' => 'Unauthorized'],
+        Response::HTTP_UNAUTHORIZED
+      );
     }
 
-    /**
-     * Drop tokens.
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * @Route("/dropTokens", name="admin_drop_tokens", methods={"GET", "POST"})
-     */
-    public function dropTokens(Request $request): Response
-    {
-        // Check admin rights
-        $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights(
-            $apiKey,
-            $this->getRequestOrigin($request)
-        );
-
-        if ($request->get('method') === 'delete') {
-            $this->adminService->dropTokens();
-        }
-
-        return $this->render(
-            "admin/dropTokens.html.twig", [
-                'apiKey' => $apiKey
-            ]
-        );
+    switch ($request->get('method')) {
+      case 'create':
+        $this->adminService->createTokenMapping($request);
+        break;
+      case 'update':
+        $this->adminService->updateTokenMapping($request);
+        break;
+      case 'delete':
+        $this->adminService->deleteTokenMapping($request);
+        break;
     }
 
-    /**
-     * Manage token list.
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * @Route("/manageTokenList", name="admin_manage_token_list", methods={"GET", "POST"})
-     */
-    public function manageTokenList(Request $request): Response
-    {
-        // Check admin rights
-        $apiKey = $this->getApiToken($request);
-        $this->authenticatorService->checkAdminRights(
-            $apiKey,
-            $this->getRequestOrigin($request)
-        );
+    return $this->render(
+      "admin/tokenMapping.html.twig", [
+        'apiKey' => $ctx->getApplication()->getApiToken(),
+        'tokens' => $this->adminService->getTokenMapping(),
+      ]
+    );
+  }
+
+  /**
+   * Check route integrity.
+   *
+   * @param RequestContextService $ctx
+   * @return Response
+   */
+  #[Route("/checkRouteIntegrity", name: 'admin_check_route_integrity', methods: ['GET', 'POST'])]
+  public function checkRouteIntegrity(RequestContextService $ctx): Response
+  {
+    if (!$ctx->isAdmin()) {
+      return new JsonResponse(
+        ['error' => 'Unauthorized'],
+        Response::HTTP_UNAUTHORIZED
+      );
+    }
+
+    return $this->render(
+      "admin/routeIntegrity.html.twig", [
+        'apiKey' => $ctx->getApplication()->getApiToken(),
+        'routes' => $this->adminService->getRouteIntegrity(),
+        'totalTokens' => $this->adminService->getTotalTokens(),
+        'envServer' => strtoupper($_ENV['APP_ENV']),
+        'tokensDiff' => $this->adminService->compareOnlineTokensData()
+      ]
+    );
+  }
+
+  /**
+   * Drop tokens.
+   *
+   * @param Request $request
+   * @param RequestContextService $ctx
+   * @return Response
+   */
+  #[Route("/dropTokens", name: 'admin_drop_tokens', methods: ['GET', 'POST'])]
+  public function dropTokens(Request $request, RequestContextService $ctx): Response
+  {
+    if (!$ctx->isAdmin()) {
+      return new JsonResponse(
+        ['error' => 'Unauthorized'],
+        Response::HTTP_UNAUTHORIZED
+      );
+    }
+
+    if ($request->get('method') === 'delete') {
+      $this->adminService->dropTokens();
+    }
+
+    return $this->render(
+      "admin/dropTokens.html.twig", [
+        'apiKey' => $ctx->getApplication()->getApiToken()
+      ]
+    );
+  }
+
+  /**
+   * Manage token list.
+   *
+   * @param Request $request
+   * @param RequestContextService $ctx
+   * @return Response
+   */
+  #[Route("/manageTokenList", name: 'admin_manage_token_list', methods: ['GET', 'POST'])]
+  public function manageTokenList(Request $request, RequestContextService $ctx): Response
+  {
+    if (!$ctx->isAdmin()) {
+      return new JsonResponse(
+        ['error' => 'Unauthorized'],
+        Response::HTTP_UNAUTHORIZED
+      );
+    }
 
 //        // Form Chain
 //        $tokenlistNetwork = new TokenlistNetwork();
@@ -262,109 +252,70 @@ class AdminController extends AbstractController
 //        $formToken = $this->createForm(TokenlistTokenType::class, $tokenlistToken);
 //        $formToken->handleRequest($request);
 
-        switch ($request->get('method')) {
-            case 'create':
-                $this->adminService->createTokenList($request, $request->get('type'));
-                break;
-            case 'update':
-                $this->adminService->updateTokenList($request, $request->get('type'));
-                break;
-            case 'delete':
-                $this->adminService->deleteTokenList($request, $request->get('type'));
-                break;
-        }
+    switch ($request->get('method')) {
+      case 'create':
+        $this->adminService->createTokenList($request, $request->get('type'));
+        break;
+      case 'update':
+        $this->adminService->updateTokenList($request, $request->get('type'));
+        break;
+      case 'delete':
+        $this->adminService->deleteTokenList($request, $request->get('type'));
+        break;
+    }
 
-        return $this->render(
-            "admin/tokenList.html.twig", [
-                'apiKey' => $apiKey,
+    return $this->render(
+      "admin/tokenList.html.twig", [
+        'apiKey' => $ctx->getApplication()->getApiToken(),
 //                'formNetwork' => $formNetwork->createView(),
 //                'formRefer' => $formRefer->createView(),
 //                'formTag' => $formTag->createView(),
 //                'formToken' => $formToken->createView(),
-                'tokenList' => $this->adminService->getTokenList(),
-            ]
-        );
+        'tokenList' => $this->adminService->getTokenList(),
+      ]
+    );
+  }
+
+  /**
+   * Get environments differences.
+   *
+   * @param RequestContextService $ctx
+   * @return Response
+   */
+  #[Route("/environmentsDifferences", name: 'admin_environments_differences', methods: ['GET'])]
+  public function getEnvironmentsDifferences(RequestContextService $ctx): Response
+  {
+    if (!$ctx->isAdmin()) {
+      return new JsonResponse(
+        ['error' => 'Unauthorized'],
+        Response::HTTP_UNAUTHORIZED
+      );
+    } else {
+      return new JsonResponse($this->adminService->compareOnlineTokensData(), Response::HTTP_OK);
     }
+  }
 
-    /**
-     * Get environments differences.
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * @Route("/environmentsDifferences", name="admin_environments_differences", methods={"GET"})
-     */
-    public function getEnvironmentsDifferences(Request $request): Response
-    {
-        // Check admin rights
-        $this->authenticatorService->checkAdminRights(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
-        return new JsonResponse($this->adminService->compareOnlineTokensData(), Response::HTTP_OK);
+  /**
+   * Create user.
+   *
+   * @param Request $request
+   * @param RequestContextService $ctx
+   * @return JsonResponse
+   * @throws Exception
+   */
+  #[Route("/user", name: 'admin_create_user', methods: ['POST'])]
+  public function createUser(Request $request, RequestContextService $ctx): JsonResponse
+  {
+    if (!$ctx->isAdmin()) {
+      return new JsonResponse(
+        ['error' => 'Unauthorized'],
+        Response::HTTP_UNAUTHORIZED
+      );
+    } else {
+      return new JsonResponse(
+        $this->adminService->createUser($request),
+        Response::HTTP_OK
+      );
     }
-
-    /**
-     * Create user.
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     * @throws Exception
-     * @Route("/user", name="admin_create_user", methods={"POST"})
-     */
-    public function createUser(Request $request): JsonResponse
-    {
-        // Check admin rights
-        $this->authenticatorService->checkAdminRights(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
-        return new JsonResponse(
-            $this->adminService->createUser($request),
-            Response::HTTP_OK
-        );
-    }
-
-    /**
-     * List index links.
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * @Route("/links", name="admin_index_links", methods={"GET"})
-     */
-    public function indexLinks(Request $request): Response
-    {
-        // Check admin rights
-        $this->authenticatorService->checkAdminRights(
-            $this->getApiToken($request),
-            $this->getRequestOrigin($request)
-        );
-
-        $links = [
-            "adminer_prod" => [
-                "env" => "prod",
-                "url" => $_ENV['ADMINER_PROD_URI'],
-                "description" => "Adminer"
-            ],
-            "adminer_preprod" => [
-                "env" => "preprod",
-                "url" => $_ENV['ADMINER_PREPROD_URI'],
-                "description" => "Adminer"
-            ],
-            "adminer_alpha" => [
-                "env" => "alpha",
-                "url" => $_ENV['ADMINER_ALPHA_URI'],
-                "description" => "Adminer"
-            ],
-        ];
-
-        return $this->render('admin/links.html.twig', [
-            'apiKey' => $this->getApiToken($request),
-            'links' => $links,
-        ]);
-    }
+  }
 }

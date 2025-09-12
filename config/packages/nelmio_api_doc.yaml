@@ -1,17 +1,38 @@
 nelmio_api_doc:
-  documentation:
-    info:
-      title: RealT API Doc
-      description: The unique RealT API from Community
-      version: 1.0.1
-    components:
-      securitySchemes:
-        api_key:
-          type: apiKey
-          name: 'X-AUTH-REALT-TOKEN'
-          in: header
-    security:
-      - api_key: []
-  areas:
-    path_patterns:
-      - ^/v1
+    documentation:
+        info:
+            title: RealToken Community API Doc
+            description: The unique RealToken API from Community
+            version: 1.5.0
+        components:
+            securitySchemes:
+                api_key:
+                    type: apiKey
+                    name: 'X-AUTH-REALT-TOKEN'
+                    in: header
+        #                Bearer:
+        #                    type: http
+        #                    scheme: bearer
+        #                    bearerFormat: JWT
+        security:
+            - api_key: []
+        #            - bearerAuth: []
+    cache:
+        pool: 'nelmio_api_doc_pool'
+        item_id: 'nelmio_api_doc_cache'
+
+    areas:
+        path_patterns:
+            - ^/v1
+    #            - ^/v1(?!/doc$)
+    html_config:
+        redocly_config:
+            disableTryIt: false
+            disableTryItRequestUrlEncoding: false
+            expandDefaultServerVariables: true
+            expandResponses: '200,201'
+            expandSingleSchemaField: true
+            hideHostname: false
+            hideRequestPayloadSample: false
+            menuToggle: true
+            showObjectSchemaExamples: true

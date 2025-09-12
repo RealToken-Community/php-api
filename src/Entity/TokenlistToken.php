@@ -5,123 +5,104 @@ namespace App\Entity;
 use App\Repository\TokenlistTokenRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=TokenlistTokenRepository::class)
- */
+#[ORM\Entity(repositoryClass: TokenlistTokenRepository::class)]
 class TokenlistToken
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+  #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+  private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=42)
-     */
-    private $address;
+  #[ORM\Column(type: "string", length: 42)]
+  private ?string $address;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=TokenlistNetwork::class, inversedBy="tokenlistTokens")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $chain;
+  #[ORM\ManyToOne(targetEntity: TokenlistNetwork::class, inversedBy: "tokenlistTokens"), ORM\JoinColumn(nullable: false)]
+  private ?TokenlistNetwork $chain;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private $name;
+  #[ORM\Column(type: "string", length: 100)]
+  private ?string $name;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $symbol;
+  #[ORM\Column(type: "string", length: 50)]
+  private ?string $symbol;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $decimals;
+  #[ORM\Column(type: "integer")]
+  private ?int $decimals;
 
-    /**
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $tags = [];
+  #[ORM\Column(type: "json", nullable: true)]
+  private array $tags = [];
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+  public function getId(): ?int
+  {
+    return $this->id;
+  }
 
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
+  public function getAddress(): ?string
+  {
+    return $this->address;
+  }
 
-    public function setAddress(string $address): self
-    {
-        $this->address = $address;
+  public function setAddress(string $address): self
+  {
+    $this->address = $address;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getChain(): ?TokenlistNetwork
-    {
-        return $this->chain;
-    }
+  public function getChain(): ?TokenlistNetwork
+  {
+    return $this->chain;
+  }
 
-    public function setChain(?TokenlistNetwork $chain): self
-    {
-        $this->chain = $chain;
+  public function setChain(?TokenlistNetwork $chain): self
+  {
+    $this->chain = $chain;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
+  public function getName(): ?string
+  {
+    return $this->name;
+  }
 
-    public function setName(string $name): self
-    {
-        $this->name = $name;
+  public function setName(string $name): self
+  {
+    $this->name = $name;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getSymbol(): ?string
-    {
-        return $this->symbol;
-    }
+  public function getSymbol(): ?string
+  {
+    return $this->symbol;
+  }
 
-    public function setSymbol(string $symbol): self
-    {
-        $this->symbol = $symbol;
+  public function setSymbol(string $symbol): self
+  {
+    $this->symbol = $symbol;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getDecimals(): ?int
-    {
-        return $this->decimals;
-    }
+  public function getDecimals(): ?int
+  {
+    return $this->decimals;
+  }
 
-    public function setDecimals(int $decimals): self
-    {
-        $this->decimals = $decimals;
+  public function setDecimals(int $decimals): self
+  {
+    $this->decimals = $decimals;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getTags(): ?array
-    {
-        return $this->tags;
-    }
+  public function getTags(): ?array
+  {
+    return $this->tags;
+  }
 
-    public function setTags(?array $tags): self
-    {
-        $this->tags = $tags;
+  public function setTags(?array $tags): self
+  {
+    $this->tags = $tags;
 
-        return $this;
-    }
+    return $this;
+  }
 }

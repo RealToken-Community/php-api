@@ -5,151 +5,131 @@ namespace App\Entity;
 use App\Repository\QuotaLimitationsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=QuotaLimitationsRepository::class)
- */
+#[ORM\Entity(repositoryClass: QuotaLimitationsRepository::class)]
 class QuotaLimitations
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+  #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
+  private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $role;
+  #[ORM\Column(type: "string", length: 50)]
+  private ?string $role;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerMinute;
+  #[ORM\Column(type: "integer")]
+  private ?int $limitPerMinute;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerHour;
+  #[ORM\Column(type: "integer")]
+  private ?int $limitPerHour;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerDay;
+  #[ORM\Column(type: "integer")]
+  private ?int $limitPerDay;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerWeek;
+  #[ORM\Column(type: "integer")]
+  private ?int $limitPerWeek;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerMonth;
+  #[ORM\Column(type: "integer")]
+  private ?int $limitPerMonth;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $limitPerYear;
+  #[ORM\Column(type: "integer")]
+  private ?int $limitPerYear;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+  public function getId(): ?int
+  {
+    return $this->id;
+  }
 
-    public function getRole(): ?string
-    {
-        return $this->role;
-    }
+  public function getRole(): ?string
+  {
+    return $this->role;
+  }
 
-    public function setRole(string $role): self
-    {
-        $this->role = $role;
+  public function setRole(string $role): self
+  {
+    $this->role = $role;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getLimitPerMinute(): ?int
-    {
-        return $this->limitPerMinute;
-    }
+  public function getLimitPerMinute(): ?int
+  {
+    return $this->limitPerMinute;
+  }
 
-    public function setLimitPerMinute(int $limitPerMinute): self
-    {
-        $this->limitPerMinute = $limitPerMinute;
+  public function setLimitPerMinute(int $limitPerMinute): self
+  {
+    $this->limitPerMinute = $limitPerMinute;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getLimitPerHour(): ?int
-    {
-        return $this->limitPerHour;
-    }
+  public function getLimitPerHour(): ?int
+  {
+    return $this->limitPerHour;
+  }
 
-    public function setLimitPerHour(int $limitPerHour): self
-    {
-        $this->limitPerHour = $limitPerHour;
+  public function setLimitPerHour(int $limitPerHour): self
+  {
+    $this->limitPerHour = $limitPerHour;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getLimitPerDay(): ?int
-    {
-        return $this->limitPerDay;
-    }
+  public function getLimitPerDay(): ?int
+  {
+    return $this->limitPerDay;
+  }
 
-    public function setLimitPerDay(int $limitPerDay): self
-    {
-        $this->limitPerDay = $limitPerDay;
+  public function setLimitPerDay(int $limitPerDay): self
+  {
+    $this->limitPerDay = $limitPerDay;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getLimitPerWeek(): ?int
-    {
-        return $this->limitPerWeek;
-    }
+  public function getLimitPerWeek(): ?int
+  {
+    return $this->limitPerWeek;
+  }
 
-    public function setLimitPerWeek(int $limitPerWeek): self
-    {
-        $this->limitPerWeek = $limitPerWeek;
+  public function setLimitPerWeek(int $limitPerWeek): self
+  {
+    $this->limitPerWeek = $limitPerWeek;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getLimitPerMonth(): ?int
-    {
-        return $this->limitPerMonth;
-    }
+  public function getLimitPerMonth(): ?int
+  {
+    return $this->limitPerMonth;
+  }
 
-    public function setLimitPerMonth(int $limitPerMonth): self
-    {
-        $this->limitPerMonth = $limitPerMonth;
+  public function setLimitPerMonth(int $limitPerMonth): self
+  {
+    $this->limitPerMonth = $limitPerMonth;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function getLimitPerYear(): ?int
-    {
-        return $this->limitPerYear;
-    }
+  public function getLimitPerYear(): ?int
+  {
+    return $this->limitPerYear;
+  }
 
-    public function setLimitPerYear(int $limitPerYear): self
-    {
-        $this->limitPerYear = $limitPerYear;
+  public function setLimitPerYear(int $limitPerYear): self
+  {
+    $this->limitPerYear = $limitPerYear;
 
-        return $this;
-    }
+    return $this;
+  }
 
-    public function __toArray(): array
-    {
-        return [
-            'limitPerMinute' => $this->limitPerMinute,
-            'limitPerHour' => $this->limitPerHour,
-            'limitPerDay' => $this->limitPerDay,
-            'limitPerWeek' => $this->limitPerWeek,
-            'limitPerMonth' => $this->limitPerMonth,
-            'limitPerYear' => $this->limitPerYear,
-        ];
-    }
+  public function __toArray(): array
+  {
+    return [
+      'limitPerMinute' => $this->limitPerMinute,
+      'limitPerHour' => $this->limitPerHour,
+      'limitPerDay' => $this->limitPerDay,
+      'limitPerWeek' => $this->limitPerWeek,
+      'limitPerMonth' => $this->limitPerMonth,
+      'limitPerYear' => $this->limitPerYear,
+    ];
+  }
 }

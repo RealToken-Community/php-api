@@ -1,0 +1,52 @@
+services:
+  symfony:
+    container_name: api-sf
+    platform: linux/amd64
+    build:
+      context: ./
+    ports:
+      - "9080:80"
+    networks:
+      - api-php
+    volumes:
+      - ./config:/var/www/html/config
+      - ./src:/var/www/html/src
+    restart: unless-stopped
+
+  db:
+    image: mysql:9.3
+    platform: linux/amd64
+    container_name: api-db
+    ports:
+      - "3306:3306"
+    networks:
+      - api-php
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: api-redis
+#    ports:
+#      - "6379:6379"
+    networks:
+      - api-php
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+
+  adminer:
+    image: adminer
+    platform: linux/amd64
+    container_name: api-adminer
+    ports:
+      - "18080:8080"
+    networks:
+      - api-php
+    restart: unless-stopped
+
+networks:
+  api-php:

@@ -1,19 +1,45 @@
 framework:
     cache:
         # Unique name of your app: used to compute stable namespaces for cache keys.
-        #prefix_seed: your_vendor_name/app_name
+        prefix_seed: realtoken_community/api_php
 
         # The "app" cache stores to the filesystem by default.
-        # The data in this cache should persist between deploys.
-        # Other options include:
-
         # Redis
-        #app: cache.adapter.redis
-        #default_redis_provider: redis://localhost
-
-        # APCu (not recommended with heavy random-write workloads as memory fragmentation can cause perf issues)
-        #app: cache.adapter.apcu
+        app: cache.adapter.redis
+        default_redis_provider: '%env(REDIS_URL)%'
 
         # Namespaced pools use the above "app" backend by default
-        #pools:
-            #my.dedicated.cache: null
+        pools:
+            nelmio_api_doc_pool:
+                adapter: cache.app
+                default_lifetime: "7 days"
+#                fallbacks: 'cache.adapter.file_system'
+            tokens_cache:
+                adapter: cache.app
+                default_lifetime: 86400 # 24 hours in seconds
+    # TODO : Mettre le cache sur les sessions
+#    session:
+#        handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
+#        cookie_secure: auto
+#        cookie_samesite: lax
+#        cookie_lifetime: 86400
+#        storage_factory_id: session.storage.factory.native
+#        save_path: "%env(REDIS_URL)%"
+
+# config/packages/cache.yaml
+#services:
+#    app.cache.adapter.redis:
+#        parent: "cache.adapter.redis"
+#        arguments:
+#            $redis: "@Redis"
+#            $defaultLifetime: 604800 # 7 days in seconds
+##            - '@Redis'
+##            - '%env(APP_CACHE_NAMESPACE)%' # optional namespace prefix for keys, e.g. "app_cache"
+##            - '%env(int:APP_CACHE_DEFAULT_LIFETIME)%' # optional default lifetime in seconds, e.g. 3600 (1 hour)
+##        pools:
+##            app.tokens_cache:
+##                adapter: cache.adapter.redis
+##                provider: 'redis://redis'
+##            cache.rate_limiter:
+##                adapter: cache.adapter.redis
+##                provider: '%env(REDIS_URL)%'
