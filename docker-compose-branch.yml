@@ -4,9 +4,6 @@ services:
         container_name: ${DOCKER_BRANCH}-api_php-sf
         build:
             context: ./
-        args:
-            APP_ENV: ${APP_ENV}
-            DATABASE_URL: ${DATABASE_URL}
         environment:
             APP_ENV: ${APP_ENV}
             DATABASE_URL: ${DATABASE_URL}
