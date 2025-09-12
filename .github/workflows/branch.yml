@@ -65,6 +65,8 @@ jobs:
             - name: Install Composer dependencies
               if: steps.composer-cache.outputs.cache-hit != 'true'
               run: composer install --no-progress --prefer-dist --optimize-autoloader
+              env:
+                  DATABASE_URL: mysql://root:symfony@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/symfony
             - name: Run Migration
               run: |
                   composer require --dev symfony/orm-pack
@@ -74,6 +76,8 @@ jobs:
                   DATABASE_URL: mysql://root:symfony@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/symfony
             - name: Install PHPUnit
               run: composer require --dev phpunit/phpunit && vendor/bin/phpunit --coverage-text
+              env:
+                  DATABASE_URL: mysql://root:symfony@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/symfony
     deploy:
         name: Deploy image
         runs-on: ubuntu-latest
