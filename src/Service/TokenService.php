@@ -38,7 +38,7 @@ class TokenService extends Service
    *
    * @return JsonResponse
    */
-  public function getTokens(RequestContextService $ctx, bool $deprecated = false): JsonResponse
+  public function getTokens(array $userAuth, bool $deprecated = false): JsonResponse
   {
     $tokens = $this->em->getRepository(Token::class)->findAll();
 
@@ -48,7 +48,7 @@ class TokenService extends Service
         throw new HttpException(Response::HTTP_NOT_FOUND, 'Token not found');
       }
 
-      if (!empty($tokenResult = $token->__toArray($ctx))) {
+      if (!empty($tokenResult = $token->__toArray($userAuth))) {
         $result[] = $tokenResult;
       }
     }

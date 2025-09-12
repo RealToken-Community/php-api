@@ -1242,7 +1242,7 @@ use OpenApi\Attributes as OA;
     return $this;
   }
 
-  public function __toArray(RequestContextService $ctx): array
+  public function __toArray(array $userAuth): array
   {
     // Check if canal is available for public & check rights
     if (!in_array($this->getCanal(), [
@@ -1252,12 +1252,12 @@ use OpenApi\Attributes as OA;
       Token::CANAL_EXIT_COMPLETE,
       Token::CANAL_MIGRATED
     ])) {
-      if (!$ctx->isAdmin()) {
+      if (!$userAuth["isAdmin"]) {
         return [];
       }
     }
 
-    if ($ctx->isAuthenticated()) {
+    if ($userAuth["isAuthenticated"]) {
       $response = [
         'fullName' => $this->fullName,
         'shortName' => $this->shortName,
@@ -1352,7 +1352,7 @@ use OpenApi\Attributes as OA;
       ];
     }
 
-    if ($ctx->isAdmin()) {
+    if ($userAuth["isAdmin"]) {
       $response['originSecondaryMarketplaces'] = $this->originSecondaryMarketplaces;
     }
 

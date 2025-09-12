@@ -9,6 +9,7 @@ services:
     networks:
       - api-php
     volumes:
+      - ./config:/var/www/html/config
       - ./src:/var/www/html/src
     restart: unless-stopped
 
@@ -26,6 +27,17 @@ services:
       - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
       - "MYSQL_DATABASE=${MYSQL_DATABASE}"
     restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: api-redis
+#    ports:
+#      - "6379:6379"
+    networks:
+      - api-php
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+
 
   adminer:
     image: adminer

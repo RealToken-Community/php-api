@@ -14,7 +14,7 @@ docker exec -it api-sf php bin/console doctrine:migrations:migrate
 
 
 # Try Redis cache load
-wrk -t4 -c200 -d30s http://localhost:9080/api/tokens
+wrk -t4 -c50 -d30s http://localhost:9080/api/tokens
 
 # Upgrade Symfony version
 docker exec -it api-sf php bin/console debug:container --deprecations

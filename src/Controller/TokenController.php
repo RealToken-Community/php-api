@@ -10,9 +10,13 @@ use Exception;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use Nelmio\ApiDocBundle\Attribute\Security;
 use OpenApi\Attributes as OA;
+use Psr\Cache\InvalidArgumentException;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+
+use Psr\Cache\CacheItemPoolInterface;
 
 #[Route("/v1/token")]
 class TokenController
@@ -80,12 +84,13 @@ class TokenController
     return $this->tokenService->getTokens($ctx, true);
   }
 
-  /**
-   * List all tokens.
-   *
-   * @param RequestContextService $ctx
-   * @return JsonResponse
-   */
+	/**
+	 * List all tokens.
+	 *
+	 * @param RequestContextService $ctx
+	 * @return JsonResponse
+	 * @throws InvalidArgumentException
+	 */
   #[OA\Response(
     response: 200,
     description: 'Return list of tokens',
@@ -113,9 +118,29 @@ class TokenController
   #[OA\Tag(name: 'Tokens')]
   #[Security(name: 'api_key')]
   #[Route("", name: 'tokens_show', methods: ['GET'])]
-  public function showTokens(RequestContextService $ctx): JsonResponse
+  public function showTokens(RequestContextService $ctx, CacheItemPoolInterface $cache): JsonResponse
+//  public function showTokens(RequestContextService $ctx): JsonResponse
   {
-    return $this->tokenService->getTokens($ctx);
+		// Check user authentication and roles
+//		$userAuth = ;
+		$userAuth = [
+			'isAuthenticated' => $ctx->isAuthenticated(),
+			'isAdmin' => $ctx->isAdmin()
+		];
+
+		$cacheItem = $cache->getItem('tokens_cache');
+
+		if (!$cacheItem->isHit()) {
+			print_r($cacheItem);
+			exit();
+			$tokens = $this->tokenService->getTokens($userAuth);
+			$cacheItem->set($tokens);
+			$cache->save($cacheItem);
+		} else {
+			$tokens = $cacheItem->get();
+		}
+
+	    return $tokens;
   }
 
   /**

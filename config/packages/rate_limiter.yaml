@@ -24,3 +24,17 @@ framework:
             policy: 'sliding_window'
             limit: 1
             interval: '60 minutes'
+
+# config/packages/rate_limiter.yaml
+        api:
+            policy: 'sliding_window'
+            limit: 1        # ajuste selon role
+            interval: '1 minute'
+            #           storage_service: 'redis.rate_limiter'
+#            storage_service: 'cache.rate_limiter'
+#            storage_service: 'rate_limiter.storage.redis'
+#services:
+#    redis.rate_limiter:
+#        class: Symfony\Component\RateLimiter\Storage\RedisStorage
+#        arguments:
+#            - '@snc_redis.default'   # ou \Redis via DSN redis://...
