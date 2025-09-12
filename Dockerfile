@@ -3,11 +3,12 @@ FROM registry.realtoken.community/docker-symfony-php:8.4
 WORKDIR /var/www/html
 COPY . ./
 
-# Composer install sans .env
-RUN composer install --prefer-dist --no-interaction --optimize-autoloader --no-progress
-
-#ARG APP_ENV=prod
+ARG APP_ENV=prod
+ARG DATABASE_URL
 ENV APP_ENV=${APP_ENV}
+ENV DATABASE_URL=${DATABASE_URL}
+
+RUN composer install --prefer-dist --no-interaction --optimize-autoloader --no-progress
 RUN composer dump-env ${APP_ENV}
 RUN composer run-script --no-dev post-install-cmd
 

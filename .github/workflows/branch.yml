@@ -82,6 +82,15 @@ jobs:
         needs: validate
         steps:
             - uses: actions/checkout@v4
+            - name: Set environment variables
+              run: |
+                if [[ "${{ github.ref_name }}" == "alpha" ]]; then
+                  echo "APP_ENV=dev" >> $GITHUB_ENV
+                  echo "DATABASE_URL=mysql://root:symfony@db-branch:3306/symfony" >> $GITHUB_ENV
+                else
+                  echo "APP_ENV=prod" >> $GITHUB_ENV
+                  echo "DATABASE_URL=mysql://root:symfony@db-branch:3306/symfony" >> $GITHUB_ENV
+                fi
             - name: Login to registry
               uses: docker/login-action@v3
               with:
@@ -94,6 +103,9 @@ jobs:
                   context: .
                   push: true
                   tags: ${{ secrets.DOCKER_REGISTRY }}/api-php:${{ github.ref_name }}
+                  build-args: |
+                    APP_ENV=${{ env.APP_ENV }}
+                    DATABASE_URL=${{ env.DATABASE_URL }}
             - name: Configure SSH
               run: |
                   mkdir -p ~/.ssh/

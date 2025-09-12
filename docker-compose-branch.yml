@@ -6,6 +6,10 @@ services:
         context: ./
         args:
             APP_ENV: ${APP_ENV}
+            DATABASE_URL: ${DATABASE_URL}
+        environment:
+            APP_ENV: ${APP_ENV}
+            DATABASE_URL: ${DATABASE_URL}
         networks:
             - api-${DOCKER_BRANCH}
             - traefik-realt
