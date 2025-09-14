@@ -1,6 +1,7 @@
 # Build en local
 
 ```bash
+source .env.local
 docker compose -f docker-compose.local.yml up -d --force-recreate --build
 
 Goto: http://localhost:9080/

@@ -19,7 +19,7 @@
         "lukascivil/treewalker": "dev-master",
         "nelmio/api-doc-bundle": "^5.6",
         "nelmio/cors-bundle": "^2.5",
-        "sentry/sentry-symfony": "^5.3",
+        "sentry/sentry-symfony": "^5.5",
         "symfony/asset": "7.3.*",
         "symfony/cache-contracts": "^3.6",
         "symfony/console": "7.3.*",

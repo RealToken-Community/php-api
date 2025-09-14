@@ -155,5 +155,5 @@ jobs:
                     docker compose --file docker-compose-branch.yml pull && \
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${{ secrets.DOCKER_REGISTRY }} && \
                     docker compose --project-name ${{ github.ref_name }}-api_php --file docker-compose-branch.yml up -d && \
-                    until docker compose --file docker-compose-branch.yml exec symfony true 2>/dev/null; do sleep 5; done && \
+                    until docker exec ${{ github.ref_name }}-api_php-sf true 2>/dev/null; do sleep 5; done && \
                     docker compose --file docker-compose-branch.yml exec symfony php bin/console doctrine:migrations:migrate --no-interaction"
