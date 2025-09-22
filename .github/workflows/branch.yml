@@ -92,10 +92,8 @@ jobs:
                 echo "DATABASE_URL=mysql://root:symfony@db:3306/symfony" >> $GITHUB_ENV                  
                   if [[ "${DOCKER_BRANCH}" == "alpha" ]]; then
                   echo "APP_ENV=dev" >> $GITHUB_ENV
-#                  echo "DATABASE_URL=mysql://root:symfony@db:3306/symfony" >> $GITHUB_ENV
                 else
                   echo "APP_ENV=prod" >> $GITHUB_ENV
-#                  echo "DATABASE_URL=mysql://root:symfony@db:3306/symfony" >> $GITHUB_ENV
                 fi
             - name: Login to registry
               uses: docker/login-action@v3
