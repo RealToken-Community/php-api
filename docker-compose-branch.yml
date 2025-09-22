@@ -44,10 +44,13 @@ services:
     adminer:
         image: adminer
         container_name: ${DOCKER_BRANCH}-api_php-adminer
-        ports:
-            - "18080:8080"
         networks:
             - api-php
+            - traefik-realt
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.adminer.api-${DOCKER_BRANCH}.rule=Host(`adminer.${HOSTNAME}`)"
+            - "traefik.http.routers.adminer.api-${DOCKER_BRANCH}.middlewares=auth@file"
         restart: always
 
 networks:
