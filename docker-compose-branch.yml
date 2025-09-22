@@ -49,8 +49,8 @@ services:
             - traefik-realt
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.adminer.api-${DOCKER_BRANCH}.rule=Host(`adminer.${HOSTNAME}`)"
-            - "traefik.http.routers.adminer.api-${DOCKER_BRANCH}.middlewares=auth@file"
+            - "traefik.http.routers.adminer-api-${DOCKER_BRANCH}.rule=Host(`adminer.${HOSTNAME}`)"
+            - "traefik.http.routers.adminer-api-${DOCKER_BRANCH}.middlewares=auth@file"
         restart: always
 
 networks:
