@@ -131,13 +131,13 @@ jobs:
             - name: Update envs & run migrations
               run: |
                   if [[ "$DOCKER_BRANCH" == "master" ]]; then
-                      HOSTNAME="api.$DOMAIN_URL"
+                      HOSTNAME="api.${{ secrets.DOMAIN_URL }}"
                       APP_ENV="prod"
                   elif [[ "$DOCKER_BRANCH" == "preprod" ]]; then
-                      HOSTNAME="api.$DOCKER_BRANCH.$DOMAIN_URL"
+                      HOSTNAME="api.$DOCKER_BRANCH.${{ secrets.DOMAIN_URL }}"
                       APP_ENV="prod"
                   else
-                      HOSTNAME="api.$DOCKER_BRANCH.$DOMAIN_URL"
+                      HOSTNAME="api.$DOCKER_BRANCH.${{ secrets.DOMAIN_URL }}"
                       APP_ENV="dev"
                   fi
                   ssh staging "cd /var/docker/api/${DOCKER_BRANCH} && \
