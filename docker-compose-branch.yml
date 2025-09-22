@@ -41,7 +41,7 @@ services:
         restart: unless-stopped
         command: ["redis-server", "--appendonly", "yes"]
 
-    adminer-branch:
+    adminer:
         image: adminer
         container_name: ${DOCKER_BRANCH}-api_php-adminer
         ports:
