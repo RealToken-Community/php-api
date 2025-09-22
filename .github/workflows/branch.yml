@@ -13,6 +13,8 @@ jobs:
     validate:
         name: Symfony (PHP ${{ matrix.php-versions }})
         runs-on: ubuntu-latest
+        env:
+            DATABASE_URL: mysql://root:symfony@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/symfony?Version=9.3
 
         # Docs: https://docs.github.com/en/actions/using-containerized-services
         services:
