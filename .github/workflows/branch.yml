@@ -99,7 +99,7 @@ jobs:
             - name: Login to registry
               uses: docker/login-action@v3
               with:
-                  registry: ${{ DOCKER_REGISTRY }}
+                  registry: ${{ secrets.DOCKER_REGISTRY }}
                   username: ${{ secrets.DOCKER_LOGIN }}
                   password: ${{ secrets.DOCKER_PASSWD }}
             - name: Build and push Docker image
@@ -107,7 +107,7 @@ jobs:
               with:
                   context: .
                   push: true
-                  tags: $DOCKER_REGISTRY/api-php:$DOCKER_BRANCH
+                  tags: ${{ secrets.DOCKER_REGISTRY }}/api-php:$DOCKER_BRANCH
                   build-args: |
                     APP_ENV=${{ env.APP_ENV }}
                     DATABASE_URL=${{ env.DATABASE_URL }}
