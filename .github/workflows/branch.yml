@@ -14,9 +14,8 @@ jobs:
         name: Symfony (PHP ${{ matrix.php-versions }})
         runs-on: ubuntu-latest
         env:
-            DATABASE_URL: mysql://root:symfony@127.0.0.1:3306/symfony?Version=9.3
+            DATABASE_URL: mysql://root:symfony@127.0.0.1:3306/symfony?serverVersion=9.3
 
-        # Docs: https://docs.github.com/en/actions/using-containerized-services
         services:
             mysql:
                 image: mysql:9.3
@@ -35,7 +34,6 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
-            # Docs: https://github.com/shivammathur/setup-php
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
@@ -44,63 +42,79 @@ jobs:
                   extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, mysql
                   coverage: xdebug
 
-            # Local MySQL service in GitHub hosted environments is disabled by default.
-            # If you are using it instead of service containers, make sure you start it.
-            # - name: Start mysql service
-            #   run: sudo systemctl start mysql.service
-
             - name: Copy .env.dist
               run: php -r "file_exists('.env.local') || copy('.env.dist', '.env.local');"
+
             - name: Get composer cache directory
               id: composer-cache
               run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
             - name: Cache composer dependencies
               uses: actions/cache@v4
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  # Use composer.json for key, if composer.lock is not committed.
-                  # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
                   key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                   restore-keys: ${{ runner.os }}-composer-
+
             - name: Install Composer dependencies
-              if: steps.composer-cache.outputs.cache-hit != 'true'
               run: composer install --no-progress --prefer-dist --optimize-autoloader
               env:
-                  DATABASE_URL: mysql://root:symfony@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/symfony?Version=9.3
+                  DATABASE_URL: mysql://root:symfony@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/symfony?serverVersion=9.3
+
             - name: Run Migration
               run: |
-                  composer require --dev symfony/orm-pack
                   php bin/console doctrine:schema:update --complete --force || echo "No migrations found or schema update failed"
-                  php bin/console doctrine:migrations:migrate || echo "No migrations found or migration failed"
+                  php bin/console doctrine:migrations:migrate --no-interaction || echo "No migrations found or migration failed"
               env:
-                  DATABASE_URL: mysql://root:symfony@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/symfony?Version=9.3
-            - name: Install PHPUnit
-              run: composer require --dev phpunit/phpunit && vendor/bin/phpunit --coverage-text
+                  DATABASE_URL: mysql://root:symfony@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/symfony?serverVersion=9.3
+
+            - name: Run Tests
+              run: |
+                  composer require --dev phpunit/phpunit
+                  vendor/bin/phpunit --coverage-text
+              env:
+                  DATABASE_URL: mysql://root:symfony@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/symfony?serverVersion=9.3
+
     deploy:
         name: Deploy image
         runs-on: ubuntu-latest
         needs: validate
+        if: github.event_name == 'push'
         env:
             DOCKER_BRANCH: ${{ github.ref_name }}
             DOMAIN_URL: ${{ secrets.DOMAIN_URL }}
             DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+            MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+            MYSQL_USER: ${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
         steps:
             - uses: actions/checkout@v4
+
             - name: Set environment variables
+              id: set-env
               run: |
-                echo "DOCKER_NETWORK_NAME=api-${DOCKER_BRANCH}" >> $GITHUB_ENV
-                echo "DATABASE_URL=mysql://root:symfony@db:3306/symfony" >> $GITHUB_ENV                  
-                  if [[ "${DOCKER_BRANCH}" == "alpha" ]]; then
-                  echo "APP_ENV=dev" >> $GITHUB_ENV
-                else
-                  echo "APP_ENV=prod" >> $GITHUB_ENV
-                fi
+                  echo "DOCKER_NETWORK_NAME=api-${DOCKER_BRANCH}" >> $GITHUB_ENV
+                  echo "DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}?serverVersion=9.3" >> $GITHUB_ENV
+                  
+                  if [[ "${DOCKER_BRANCH}" == "master" ]]; then
+                    echo "APP_ENV=prod" >> $GITHUB_ENV
+                    echo "HOSTNAME=api.${DOMAIN_URL}" >> $GITHUB_ENV
+                  elif [[ "${DOCKER_BRANCH}" == "preprod" ]]; then
+                    echo "APP_ENV=prod" >> $GITHUB_ENV
+                    echo "HOSTNAME=api.${DOCKER_BRANCH}.${DOMAIN_URL}" >> $GITHUB_ENV
+                  else
+                    echo "APP_ENV=dev" >> $GITHUB_ENV
+                    echo "HOSTNAME=api.${DOCKER_BRANCH}.${DOMAIN_URL}" >> $GITHUB_ENV
+                  fi
+
             - name: Login to registry
               uses: docker/login-action@v3
               with:
                   registry: ${{ secrets.DOCKER_REGISTRY }}
                   username: ${{ secrets.DOCKER_LOGIN }}
                   password: ${{ secrets.DOCKER_PASSWD }}
+
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
               with:
@@ -108,8 +122,11 @@ jobs:
                   push: true
                   tags: ${{ secrets.DOCKER_REGISTRY }}/api-php:${{ github.ref_name }}
                   build-args: |
-                    APP_ENV=${{ env.APP_ENV }}
-                    DATABASE_URL=${{ env.DATABASE_URL }}
+                      APP_ENV=${{ env.APP_ENV }}
+                      DATABASE_URL=${{ env.DATABASE_URL }}
+                  cache-from: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/api-php:${{ github.ref_name }}
+                  cache-to: type=inline
+
             - name: Configure SSH
               env:
                   SSH_USER: ${{ secrets.SSH_USER }}
@@ -128,34 +145,29 @@ jobs:
                     IdentityFile ~/.ssh/staging.key
                     StrictHostKeyChecking no
                   END
-            - name: Update envs & run migrations
-#              with:
-#                  SYMFONY_ENV: ${{ secrets.SYMFONY_ENV }}
+
+            - name: Deploy and run migrations
               run: |
-                  if [[ "${DOCKER_BRANCH}" == "master" ]]; then
-                      HOSTNAME="api.$DOMAIN_URL"
-                      APP_ENV="prod"
-                  elif [[ "${DOCKER_BRANCH}" == "preprod" ]]; then
-                      HOSTNAME="api.${DOCKER_BRANCH}.$DOMAIN_URL"
-                      APP_ENV="prod"
-                  else
-                      HOSTNAME="api.${DOCKER_BRANCH}.$DOMAIN_URL"
-                      APP_ENV="dev"
-                  fi
                   ssh staging "cd /var/docker/api/${DOCKER_BRANCH} && \
-                    export DOCKER_BRANCH=${DOCKER_BRANCH} && \
-                    export DOCKER_REGISTRY=${DOCKER_REGISTRY} && \
-                    echo 'APP_ENV=${APP_ENV}' > .env && \
-                    echo 'DATABASE_URL=${DATABASE_URL}' >> .env && \
-                    echo 'DOCKER_NETWORK_NAME=api-${DOCKER_BRANCH}' >> .env && \
-                    echo 'HOSTNAME=${HOSTNAME}' >> .env && \
-                    echo 'MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}' >> .env && \
-                    echo 'MYSQL_USER=${{ secrets.MYSQL_USER }}' >> .env && \
-                    echo 'MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}' >> .env && \
-                    echo 'MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}' >> .env && \
+                    export DOCKER_BRANCH='${DOCKER_BRANCH}' && \
+                    export DOCKER_REGISTRY='${DOCKER_REGISTRY}' && \
+                    cat > .env << 'ENVEOF'
+                    APP_ENV=${APP_ENV}
+                    DATABASE_URL=${DATABASE_URL}
+                    DOCKER_NETWORK_NAME=${DOCKER_NETWORK_NAME}
+                    HOSTNAME=${HOSTNAME}
+                    MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+                    MYSQL_USER=${MYSQL_USER}
+                    MYSQL_PASSWORD=${MYSQL_PASSWORD}
+                    MYSQL_DATABASE=${MYSQL_DATABASE}
+                    ENVEOF
                     git pull origin ${DOCKER_BRANCH} && \
                     docker compose --file docker-compose-branch.yml pull && \
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${DOCKER_REGISTRY} && \
-                    docker compose --project-name ${DOCKER_BRANCH}-api_php --file docker-compose-branch.yml up -d && \
-                    until docker exec ${DOCKER_BRANCH}-api_php-sf true 2>/dev/null; do sleep 5; done && \
-                    docker compose --project-name ${DOCKER_BRANCH}-api_php --file docker-compose-branch.yml exec symfony php bin/console doctrine:migrations:migrate --no-interaction"
+                    docker compose --project-name ${DOCKER_BRANCH}-api_php --file docker-compose-branch.yml up -d --remove-orphans && \
+                    echo 'Waiting for container to be ready...' && \
+                    until docker exec ${DOCKER_BRANCH}-api_php-sf true 2>/dev/null; do sleep 2; done && \
+                    echo 'Running migrations...' && \
+                    docker compose --project-name ${DOCKER_BRANCH}-api_php --file docker-compose-branch.yml exec -T symfony php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration && \
+                    echo 'Clearing cache...' && \
+                    docker compose --project-name ${DOCKER_BRANCH}-api_php --file docker-compose-branch.yml exec -T symfony php bin/console cache:clear"
