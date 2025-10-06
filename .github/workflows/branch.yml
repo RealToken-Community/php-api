@@ -80,6 +80,7 @@ jobs:
         runs-on: ubuntu-latest
         needs: validate
         if: github.event_name == 'push'
+        environment: ${{ github.ref_name }}
         env:
             DOCKER_BRANCH: ${{ github.ref_name }}
             DOMAIN_URL: ${{ secrets.DOMAIN_URL }}
