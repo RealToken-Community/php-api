@@ -151,16 +151,14 @@ jobs:
                   ssh staging "cd /var/docker/api/${DOCKER_BRANCH} && \
                     export DOCKER_BRANCH='${DOCKER_BRANCH}' && \
                     export DOCKER_REGISTRY='${DOCKER_REGISTRY}' && \
-                    cat > .env << 'ENVEOF'
-                    APP_ENV=${APP_ENV}
-                    DATABASE_URL=${DATABASE_URL}
-                    DOCKER_NETWORK_NAME=${DOCKER_NETWORK_NAME}
-                    HOSTNAME=${HOSTNAME}
-                    MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-                    MYSQL_USER=${MYSQL_USER}
-                    MYSQL_PASSWORD=${MYSQL_PASSWORD}
-                    MYSQL_DATABASE=${MYSQL_DATABASE}
-                    ENVEOF
+                    echo 'APP_ENV=${APP_ENV}' > .env && \
+                    echo 'DATABASE_URL=${DATABASE_URL}' >> .env && \
+                    echo 'DOCKER_NETWORK_NAME=${DOCKER_NETWORK_NAME}' >> .env && \
+                    echo 'HOSTNAME=${HOSTNAME}' >> .env && \
+                    echo 'MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}' >> .env && \
+                    echo 'MYSQL_USER=${MYSQL_USER}' >> .env && \
+                    echo 'MYSQL_PASSWORD=${MYSQL_PASSWORD}' >> .env && \
+                    echo 'MYSQL_DATABASE=${MYSQL_DATABASE}' >> .env && \
                     git pull origin ${DOCKER_BRANCH} && \
                     docker compose --file docker-compose-branch.yml pull && \
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${DOCKER_REGISTRY} && \
