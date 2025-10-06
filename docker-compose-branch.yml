@@ -28,10 +28,10 @@ services:
         networks:
             - api-php
         environment:
-            - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
-            - "MYSQL_USER=${MYSQL_USER}"
-            - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
-            - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
         healthcheck:
             test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "--silent" ]
             interval: 5s
@@ -47,8 +47,13 @@ services:
 #            - "6379:6379"
         networks:
             - api-php
+        healthcheck:
+            test: [ "CMD", "redis-cli", "ping" ]
+            interval: 5s
+            timeout: 3s
+            retries: 5
         restart: unless-stopped
-        command: ["redis-server", "--appendonly", "yes"]
+        command: [ "redis-server", "--appendonly", "yes" ]
 
     adminer:
         image: adminer
