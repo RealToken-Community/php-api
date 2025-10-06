@@ -13,6 +13,9 @@ services:
 #        volumes:
 #              - ./logs/symfony:/var/www/html/var/log:cached
 #              - ./logs/nginx:/var/log/nginx:cached
+        depends_on:
+            db:
+                condition: service_healthy
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.api-${DOCKER_BRANCH}.rule=Host(`${HOSTNAME}`)"
@@ -29,6 +32,12 @@ services:
             - "MYSQL_USER=${MYSQL_USER}"
             - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
             - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+        healthcheck:
+            test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "--silent" ]
+            interval: 5s
+            timeout: 3s
+            retries: 10
+            start_period: 30s
         restart: always
 
     redis:
@@ -47,6 +56,9 @@ services:
         networks:
             - api-php
             - traefik-realt
+        depends_on:
+            db:
+                condition: service_healthy
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.adminer-api-${DOCKER_BRANCH}.rule=Host(`adminer.${HOSTNAME}`)"
