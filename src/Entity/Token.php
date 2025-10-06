@@ -40,136 +40,136 @@ use OpenApi\Attributes as OA;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
   #[OA\Property(type: 'string', maxLength: 100)]
-  private ?string $fullName;
+  private ?string $fullName = null;
 
   #[ORM\Column(type: 'string', length: 50)]
   private string $shortName;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $tokenPrice;
+  private ?float $tokenPrice = null;
 
   #[ORM\Column(type: 'string', length: 50)]
   private string $canal;
 
   #[ORM\Column(type: 'string', length: 3, nullable: true)]
-  private ?string $currency;
+  private ?string $currency = null;
 
   #[ORM\Column(type: 'integer')]
   private int $totalTokens;
 
   #[ORM\Column(type: 'string', length: 42, nullable: true)]
-  private ?string $ethereumContract;
+  private ?string $ethereumContract = null;
 
   #[ORM\Column(type: 'string', length: 42, nullable: true)]
-  private ?string $xDaiContract;
+  private ?string $xDaiContract = null;
 
   #[ORM\Column(type: 'string', length: 42, nullable: true)]
-  private ?string $gnosisContract;
+  private ?string $gnosisContract = null;
 
   #[ORM\Column(type: 'string', length: 42, nullable: true)]
-  private ?string $goerliContract;
+  private ?string $goerliContract = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $totalInvestment;
+  private ?float $totalInvestment = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $grossRentMonth;
+  private ?float $grossRentMonth = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $annualPercentageYield;
+  private ?float $annualPercentageYield = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $propertyManagementPercent;
+  private ?float $propertyManagementPercent = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $realtPlatformPercent;
+  private ?float $realtPlatformPercent = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $insurance;
+  private ?float $insurance = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $propertyTaxes;
+  private ?float $propertyTaxes = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $utilities;
+  private ?float $utilities = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $initialMaintenanceReserve;
+  private ?float $initialMaintenanceReserve = null;
 
   #[ORM\Column(type: Types::JSON, nullable: true)]
-  private ?array $coordinate;
+  private ?array $coordinate = [];
 
   #[ORM\Column(type: 'string', length: 255, nullable: true)]
-  private ?string $marketplaceLink;
+  private ?string $marketplaceLink = null;
 
   #[ORM\Column(type: Types::JSON, nullable: true)]
   private ?array $imageLink = [];
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $propertyType;
+  private ?int $propertyType = null;
 
   #[ORM\Column(type: 'string', length: 50, nullable: true)]
-  private ?string $propertyTypeName;
+  private ?string $propertyTypeName = null;
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $squareFeet;
+  private ?int $squareFeet = null;
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $lotSize;
+  private ?int $lotSize = null;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $bedroomBath;
+  private ?string $bedroomBath = null;
 
   #[ORM\Column(type: 'boolean', nullable: true)]
-  private ?bool $hasTenants;
+  private ?bool $hasTenants = null;
 
   #[ORM\Column(type: 'string', length: 10, nullable: true)]
-  private ?string $termOfLease;
+  private ?string $termOfLease = null;
 
   #[ORM\Column(type: 'datetime', nullable: true)]
-  private ?\DateTime $renewalDate;
+  private ?\DateTime $renewalDate = null;
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $section8paid;
+  private ?int $section8paid = null;
 
   #[ORM\Column(type: 'string', length: 50, nullable: true)]
-  private ?string $sellPropertyTo;
+  private ?string $sellPropertyTo = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $grossRentYear;
+  private ?float $grossRentYear = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $propertyManagement;
+  private ?float $propertyManagement = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $realtPlatform;
+  private ?float $realtPlatform = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $netRentMonth;
+  private ?float $netRentMonth = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $netRentYear;
+  private ?float $netRentYear = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $netRentYearPerToken;
+  private ?float $netRentYearPerToken = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $netRentMonthPerToken;
+  private ?float $netRentMonthPerToken = null;
 
   #[ORM\Column(type: 'datetime')]
-  private ?DateTimeInterface $lastUpdate;
+  private ?DateTimeInterface $lastUpdate = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $netRentDay;
+  private ?float $netRentDay = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $netRentDayPerToken;
+  private ?float $netRentDayPerToken = null;
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $rentedUnits;
+  private ?int $rentedUnits = null;
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $totalUnits;
+  private ?int $totalUnits = null;
 
   #[ORM\Column(type: Types::JSON, nullable: true)]
   private ?array $secondaryMarketplace = [];
@@ -178,94 +178,94 @@ use OpenApi\Attributes as OA;
   private ?array $secondaryMarketplaces = [];
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $symbol;
+  private ?string $symbol = null;
 
   #[ORM\Column(type: Types::JSON, nullable: true)]
   private ?array $blockchainAddresses = [];
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $underlyingAssetPrice;
+  private ?float $underlyingAssetPrice = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $renovationReserve;
+  private ?float $renovationReserve = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $propertyMaintenanceMonthly;
+  private ?float $propertyMaintenanceMonthly = null;
 
   #[ORM\Column(type: 'date', nullable: true)]
-  private ?DateTimeInterface $rentStartDate;
+  private ?DateTimeInterface $rentStartDate = null;
 
   #[ORM\Column(type: Types::JSON, nullable: true)]
   private ?array $originSecondaryMarketplaces = [];
 
   #[ORM\Column(type: 'date', nullable: true)]
-  private ?DateTimeInterface $initialLaunchDate;
+  private ?DateTimeInterface $initialLaunchDate = null;
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $seriesNumber;
+  private ?int $seriesNumber = null;
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $constructionYear;
+  private ?int $constructionYear = null;
 
   #[ORM\Column(type: 'string', length: 50, nullable: true)]
-  private ?string $constructionType;
+  private ?string $constructionType = null;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $roofType;
+  private ?string $roofType = null;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $assetParking;
+  private ?string $assetParking = null;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $foundation;
+  private ?string $foundation = null;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $heating;
+  private ?string $heating = null;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $cooling;
+  private ?string $cooling = null;
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $tokenIdRules;
+  private ?int $tokenIdRules = null;
 
   #[ORM\Column(type: 'string', length: 20, nullable: true)]
-  private ?string $rentCalculationType;
+  private ?string $rentCalculationType = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $realtListingFeePercent;
+  private ?float $realtListingFeePercent = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $realtListingFee;
+  private ?float $realtListingFee = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $miscellaneousCosts;
+  private ?float $miscellaneousCosts = null;
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $propertyStories;
+  private ?int $propertyStories = null;
 
   #[ORM\Column(type: 'string', length: 42, unique: true)]
-  private ?string $uuid;
+  private ?string $uuid = null;
 
   #[ORM\Column(type: 'integer', nullable: true)]
-  private ?int $totalTokensRegSummed;
+  private ?int $totalTokensRegSummed = null;
 
   #[ORM\Column(type: 'string', length: 50, nullable: true)]
-  private ?string $rentalType;
+  private ?string $rentalType = null;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $subsidyStatus;
+  private ?string $subsidyStatus = null;
 
   #[ORM\Column(type: 'float', nullable: true)]
-  private ?float $subsidyStatusValue;
+  private ?float $subsidyStatusValue = null;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $subsidyBy;
+  private ?string $subsidyBy = null;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $productType;
+  private ?string $productType = null;
 
   #[ORM\Column(type: 'string', length: 100, nullable: true)]
-  private ?string $neighborhood;
+  private ?string $neighborhood = null;
 
   public function getId(): ?int
   {
