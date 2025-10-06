@@ -149,10 +149,10 @@ jobs:
                     echo 'DATABASE_URL=${DATABASE_URL}' >> .env && \
                     echo 'DOCKER_NETWORK_NAME=api-${DOCKER_BRANCH}' >> .env && \
                     echo 'HOSTNAME=${HOSTNAME}' >> .env && \
-                    echo 'MYSQL_ROOT_PASSWORD=symfony' >> .env && \
-                    echo 'MYSQL_USER=symfony' >> .env && \
-                    echo 'MYSQL_PASSWORD=symfony' >> .env && \
-                    echo 'MYSQL_DATABASE=symfony' >> .env && \
+                    echo 'MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}' >> .env && \
+                    echo 'MYSQL_USER=${{ secrets.MYSQL_USER }}' >> .env && \
+                    echo 'MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}' >> .env && \
+                    echo 'MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}' >> .env && \
                     git pull origin ${DOCKER_BRANCH} && \
                     docker compose --file docker-compose-branch.yml pull && \
                     docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWD }} ${DOCKER_REGISTRY} && \
