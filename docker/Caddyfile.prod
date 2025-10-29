@@ -1,0 +1,75 @@
+# ===============================================
+# Caddyfile Production - Optimisé
+# ===============================================
+
+{
+	# Mode FrankenPHP avec worker pour maximum de performance
+	frankenphp {
+		num_threads 4
+		# Mode worker pour Symfony (garde l'app en mémoire)
+		worker {
+			file /app/public/index.php
+			num 2
+			env APP_RUNTIME App\Runtime\FrankenPhpRuntime
+		}
+	}
+
+	order php_server before file_server
+
+	# Logs minimaux en production
+	log {
+		output stdout
+		level WARN
+	}
+}
+
+:80 {
+	root * /app/public
+
+	# Compression optimisée
+	encode {
+		gzip 6
+		zstd
+	}
+
+	request_body {
+		max_size 100MB
+	}
+
+	trusted_proxies static 172.18.0.0/24
+
+	# Logs production (minimal)
+	log {
+		output discard
+	}
+
+	# Cache statique agressif
+	@static {
+		path *.css *.js *.jpg *.jpeg *.png *.gif *.ico *.svg *.woff *.woff2 *.ttf *.eot
+	}
+	header @static {
+		Cache-Control "public, max-age=31536000, immutable"
+	}
+
+	# Symfony routing avec worker mode
+	php_server {
+		resolve_root_symlink
+	}
+
+	file_server
+
+	# Headers de sécurité renforcés
+	header {
+		-Server
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		X-XSS-Protection "1; mode=block"
+		Referrer-Policy "no-referrer-when-downgrade"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+	}
+
+	# Health check endpoint
+	handle /health {
+		respond "OK" 200
+	}
+}

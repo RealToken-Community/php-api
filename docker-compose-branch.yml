@@ -2,11 +2,15 @@ services:
     symfony:
         image: ${DOCKER_REGISTRY}/api-php:${DOCKER_BRANCH}
         container_name: ${DOCKER_BRANCH}-api_php-sf
+#        build:
+#            context: ./
         build:
-            context: ./
-        environment:
-            APP_ENV: ${APP_ENV}
-            DATABASE_URL: ${DATABASE_URL}
+            context: .
+            dockerfile: Dockerfile
+            target: development
+#        environment:
+#            APP_ENV: ${APP_ENV}
+#            DATABASE_URL: ${DATABASE_URL}
         networks:
             - api-php
             - traefik-realt
