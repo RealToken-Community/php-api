@@ -7,7 +7,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-            target: development
+            target: production
 #        environment:
 #            APP_ENV: ${APP_ENV}
 #            DATABASE_URL: ${DATABASE_URL}
