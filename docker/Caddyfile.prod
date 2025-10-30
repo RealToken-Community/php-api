@@ -4,15 +4,15 @@
 
 {
 	# Mode FrankenPHP avec worker pour maximum de performance
-	frankenphp {
-		num_threads 4
-		# Mode worker pour Symfony (garde l'app en mémoire)
-		worker {
-			file /app/public/index.php
-			num 2
-			env APP_RUNTIME App\Runtime\FrankenPhpRuntime
-		}
-	}
+#	frankenphp {
+#		num_threads 4
+#		# Mode worker pour Symfony (garde l'app en mémoire)
+#		worker {
+#			file /app/public/index.php
+#			num 2
+#			env APP_RUNTIME App\Runtime\FrankenPhpRuntime
+#		}
+#	}
 
 	order php_server before file_server
 

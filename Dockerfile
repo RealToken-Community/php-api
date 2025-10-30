@@ -170,7 +170,7 @@ RUN mkdir -p /data/caddy /config/caddy \
 # Variables d'environnement production
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
-ENV FRANKENPHP_CONFIG="worker ./public/index.php"
+#ENV FRANKENPHP_CONFIG="worker ./public/index.php"
 
 # Warmup du cache Symfony
 RUN php bin/console cache:clear --env=prod --no-debug || true \
