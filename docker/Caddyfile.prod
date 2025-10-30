@@ -36,8 +36,6 @@
 		max_size 100MB
 	}
 
-	trusted_proxies static 172.18.0.0/24
-
 	# Logs production (minimal)
 	log {
 		output discard
