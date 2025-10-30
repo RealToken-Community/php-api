@@ -112,6 +112,7 @@ COPY . .
 # Installation des dépendances SANS dev
 RUN composer install \
     --no-dev \
+    --no-scripts \
     --optimize-autoloader \
     --classmap-authoritative \
     --no-interaction \
