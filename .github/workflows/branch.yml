@@ -122,6 +122,7 @@ jobs:
                   context: .
                   push: true
                   tags: ${{ secrets.DOCKER_REGISTRY }}/api-php:${{ github.ref_name }}
+                  target: production
                   build-args: |
                       APP_ENV=${{ env.APP_ENV }}
                       DATABASE_URL=${{ env.DATABASE_URL }}
