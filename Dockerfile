@@ -129,7 +129,7 @@ RUN rm -rf tests/ .git/ .github/ docker/ \
 # ===============================================
 # Stage 4: Production
 # ===============================================
-FROM dunglas/frankenphp:1-php8.3 AS production
+FROM ${BASE_IMAGE} AS production
 
 # Copier Composer depuis l'image officielle
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
