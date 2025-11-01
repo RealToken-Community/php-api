@@ -172,11 +172,16 @@ ENV APP_ENV=prod
 ENV APP_DEBUG=0
 #ENV FRANKENPHP_CONFIG="worker ./public/index.php"
 
+USER www-data
+
 # Warmup du cache Symfony
 RUN php bin/console cache:clear --env=prod --no-debug || true \
     && php bin/console cache:warmup --env=prod --no-debug || true
 
-USER www-data
+# NE PAS faire de cache warmup dans le Dockerfile
+# Le cache sera créé au premier lancement avec les bonnes permissions
+# RUN php bin/console cache:clear --env=prod --no-debug || true
+# RUN php bin/console cache:warmup --env=prod --no-debug || true
 
 EXPOSE 80
 
