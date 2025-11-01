@@ -8,9 +8,14 @@ services:
             context: .
             dockerfile: Dockerfile
             target: production
-#        environment:
-#            APP_ENV: ${APP_ENV}
-#            DATABASE_URL: ${DATABASE_URL}
+        environment:
+            APP_ENV: ${APP_ENV}
+            APP_DEBUG: ${APP_DEBUG:-0}
+            DATABASE_URL: ${DATABASE_URL}
+            REDIS_URL: redis://redis:6379
+            SENTRY_DSN: ${SENTRY_DSN:-}
+            API_TOKEN_CHECK_HEALTH: ${API_TOKEN_CHECK_HEALTH:-}
+            EMAILING_ACCESS_TOKEN: ${EMAILING_ACCESS_TOKEN:-}
         networks:
             - api-php
             - traefik-realt
