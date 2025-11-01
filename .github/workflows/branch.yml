@@ -97,15 +97,13 @@ jobs:
               run: |
                   echo "DOCKER_NETWORK_NAME=api-${DOCKER_BRANCH}" >> $GITHUB_ENV
                   echo "DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}?serverVersion=9.3" >> $GITHUB_ENV
+                  echo "APP_ENV=prod" >> $GITHUB_ENV
                   
                   if [[ "${DOCKER_BRANCH}" == "master" ]]; then
-                    echo "APP_ENV=prod" >> $GITHUB_ENV
                     echo "HOSTNAME=api.${DOMAIN_URL}" >> $GITHUB_ENV
                   elif [[ "${DOCKER_BRANCH}" == "preprod" ]]; then
-                    echo "APP_ENV=prod" >> $GITHUB_ENV
                     echo "HOSTNAME=api.${DOCKER_BRANCH}.${DOMAIN_URL}" >> $GITHUB_ENV
                   else
-                    echo "APP_ENV=dev" >> $GITHUB_ENV
                     echo "HOSTNAME=api.${DOCKER_BRANCH}.${DOMAIN_URL}" >> $GITHUB_ENV
                   fi
 
