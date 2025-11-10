@@ -61,8 +61,24 @@ services:
             interval: 5s
             timeout: 3s
             retries: 5
-        restart: unless-stopped
+        restart: always
         command: [ "redis-server", "--appendonly", "yes" ]
+
+    redisinsight:
+        image: redislabs/redisinsight:latest
+        container_name: ${DOCKER_BRANCH}-api_php-redisinsight
+        ports:
+            - "8001:8001"
+        networks:
+            - api-php
+        depends_on:
+            redis:
+                condition: service_healthy
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.redis-api-${DOCKER_BRANCH}.rule=Host(`redis.${HOSTNAME}`)"
+            - "traefik.http.routers.redis-api-${DOCKER_BRANCH}.middlewares=auth@file"
+        restart: unless-stopped
 
     adminer:
         image: adminer
@@ -77,7 +93,7 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.adminer-api-${DOCKER_BRANCH}.rule=Host(`adminer.${HOSTNAME}`)"
             - "traefik.http.routers.adminer-api-${DOCKER_BRANCH}.middlewares=auth@file"
-        restart: always
+        restart: unless-stopped
 
 networks:
     api-php:

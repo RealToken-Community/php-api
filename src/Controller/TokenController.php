@@ -11,12 +11,14 @@ use Nelmio\ApiDocBundle\Attribute\Model;
 use Nelmio\ApiDocBundle\Attribute\Security;
 use OpenApi\Attributes as OA;
 use Psr\Cache\InvalidArgumentException;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
+//use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\ItemInterface;
 
-use Psr\Cache\CacheItemPoolInterface;
+//use Psr\Cache\CacheItemPoolInterface;
 
 #[Route("/v1/token")]
 class TokenController
@@ -88,7 +90,7 @@ class TokenController
 	 * List all tokens.
 	 *
 	 * @param RequestContextService $ctx
-	 * @return JsonResponse
+//	 * @return \Symfony\Component\Cache\CacheItem
 	 * @throws InvalidArgumentException
 	 */
   #[OA\Response(
@@ -118,7 +120,8 @@ class TokenController
   #[OA\Tag(name: 'Tokens')]
   #[Security(name: 'api_key')]
   #[Route("", name: 'tokens_show', methods: ['GET'])]
-  public function showTokens(RequestContextService $ctx, CacheItemPoolInterface $cache): JsonResponse
+//  public function showTokens(RequestContextService $ctx, CacheItemPoolInterface $cache): \Symfony\Component\Cache\CacheItem
+  public function showTokens(RequestContextService $ctx, ItemInterface $cache): \Symfony\Component\Cache\CacheItem
 //  public function showTokens(RequestContextService $ctx): JsonResponse
   {
 		// Check user authentication and roles
@@ -128,19 +131,25 @@ class TokenController
 			'isAdmin' => $ctx->isAdmin()
 		];
 
-		$cacheItem = $cache->getItem('tokens_cache');
+//		// Method PSR
+//		$cacheItem = $cache->getItem('tokens_cache');
+//
+//		if (!$cacheItem->isHit()) {
+//			print_r($cacheItem);
+//			//exit();
+//			$tokens = $this->tokenService->getTokens($userAuth);
+//			$cacheItem->set($tokens);
+//			$cache->save($cacheItem);
+//		} else {
+//			$tokens = $cacheItem->get();
+//		}
 
-		if (!$cacheItem->isHit()) {
-			print_r($cacheItem);
-			//exit();
-			$tokens = $this->tokenService->getTokens($userAuth);
-			$cacheItem->set($tokens);
-			$cache->save($cacheItem);
-		} else {
-			$tokens = $cacheItem->get();
-		}
+		// Method NOT PSR
+		$user = $ctx->getCurrentUser();
+		$ttl = "7 days";
+		$cache = new FilesystemAdapter("token.role-{$user->getRoles()}", $ttl);
 
-	    return $tokens;
+		return $cache->getItem('tokens_cache', $tokens = $this->tokenService->getTokens($userAuth));
   }
 
   /**
