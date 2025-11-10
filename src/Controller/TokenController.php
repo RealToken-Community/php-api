@@ -132,7 +132,7 @@ class TokenController
 
 		if (!$cacheItem->isHit()) {
 			print_r($cacheItem);
-			exit();
+			//exit();
 			$tokens = $this->tokenService->getTokens($userAuth);
 			$cacheItem->set($tokens);
 			$cache->save($cacheItem);
