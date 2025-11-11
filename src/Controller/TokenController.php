@@ -84,7 +84,13 @@ class TokenController
   #[Route("s", name: 'tokens_show_deprecated', methods: ['GET'])]
   public function showTokensDeprecated(RequestContextService $ctx): JsonResponse
   {
-    return $this->tokenService->getTokens($ctx, true);
+    // Build minimal userAuth context used by TokenService
+    $userAuth = [
+      'isAuthenticated' => $ctx->isAuthenticated(),
+      'isAdmin' => $ctx->isAdmin()
+    ];
+
+    return $this->tokenService->getTokens($userAuth, true);
   }
 
 	/**
@@ -121,9 +127,7 @@ class TokenController
   #[OA\Tag(name: 'Tokens')]
   #[Security(name: 'api_key')]
   #[Route("", name: 'tokens_show', methods: ['GET'])]
-//  public function showTokens(RequestContextService $ctx, CacheItemPoolInterface $cache): \Symfony\Component\Cache\CacheItem
-  public function showTokens(RequestContextService $ctx, ItemInterface $cache): JsonResponse
-//  public function showTokens(RequestContextService $ctx): JsonResponse
+  public function showTokens(RequestContextService $ctx): JsonResponse
   {
 		// Check user authentication and roles
 //		$userAuth = ;
