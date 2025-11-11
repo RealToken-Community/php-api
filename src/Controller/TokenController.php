@@ -15,6 +15,7 @@ use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -121,7 +122,7 @@ class TokenController
   #[Security(name: 'api_key')]
   #[Route("", name: 'tokens_show', methods: ['GET'])]
 //  public function showTokens(RequestContextService $ctx, CacheItemPoolInterface $cache): \Symfony\Component\Cache\CacheItem
-  public function showTokens(RequestContextService $ctx, ItemInterface $cache): \Symfony\Component\Cache\CacheItem
+  public function showTokens(RequestContextService $ctx, ItemInterface $cache): JsonResponse
 //  public function showTokens(RequestContextService $ctx): JsonResponse
   {
 		// Check user authentication and roles
@@ -131,25 +132,28 @@ class TokenController
 			'isAdmin' => $ctx->isAdmin()
 		];
 
-//		// Method PSR
-//		$cacheItem = $cache->getItem('tokens_cache');
-//
-//		if (!$cacheItem->isHit()) {
-//			print_r($cacheItem);
-//			//exit();
-//			$tokens = $this->tokenService->getTokens($userAuth);
-//			$cacheItem->set($tokens);
-//			$cache->save($cacheItem);
-//		} else {
-//			$tokens = $cacheItem->get();
-//		}
+    // Get current user to scope the cache key by roles
+    $user = $ctx->getCurrentUser();
+    $rolesKey = md5(serialize($user ? $user->getRoles() : []));
 
-		// Method NOT PSR
-		$user = $ctx->getCurrentUser();
-		$ttl = "7 days";
-		$cache = new FilesystemAdapter("token.role-{$user->getRoles()}", $ttl);
+    // FilesystemAdapter expects an integer TTL (in seconds). 7 days = 604800 seconds
+    $ttlSeconds = 7 * 24 * 3600;
+    $cache = new FilesystemAdapter("tokens_{$rolesKey}", $ttlSeconds);
 
-		return $cache->getItem('tokens_cache', $tokens = $this->tokenService->getTokens($userAuth));
+    // Use callback form as recommended by Symfony cache contracts.
+    // The callback must return the data to cache (we store the decoded array, not a JsonResponse object).
+    $tokensData = $cache->get('tokens_cache_'.$rolesKey, function (ItemInterface $item) use ($userAuth, $ttlSeconds) {
+      $item->expiresAfter($ttlSeconds);
+      $response = $this->tokenService->getTokens($userAuth);
+	  $content = $response->getContent();
+	  $decoded = json_decode($content, true);
+	  return $decoded ?: [];
+
+      // Fallback: if service returns array already
+//      return is_array($response) ? $response : [];
+    });
+
+    return new JsonResponse($tokensData, Response::HTTP_OK);
   }
 
   /**
