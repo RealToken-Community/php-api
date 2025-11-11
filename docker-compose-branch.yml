@@ -65,7 +65,7 @@ services:
         command: [ "redis-server", "--appendonly", "yes" ]
 
     redisinsight:
-        image: redislabs/redisinsight:latest
+        image: redis/redisinsight:latest
         container_name: ${DOCKER_BRANCH}-api_php-redisinsight
         ports:
             - "8001:8001"
