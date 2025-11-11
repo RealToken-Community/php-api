@@ -41,6 +41,9 @@ services:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_DATABASE}
+        # Persistance des données MySQL : monte un volume nommé (par branche)
+        volumes:
+            - ${DOCKER_BRANCH}-api_mysql_data:/var/lib/mysql
         healthcheck:
             test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "--silent" ]
             interval: 5s
@@ -100,3 +103,8 @@ networks:
         name: ${DOCKER_NETWORK_NAME}
     traefik-realt:
         external: true
+
+# Volume nommé pour persister les données MySQL entre les redéploiements
+volumes:
+    ${DOCKER_BRANCH}-api_mysql_data:
+        driver: local
