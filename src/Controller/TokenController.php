@@ -138,10 +138,12 @@ class TokenController
     // Get current user to scope the cache key by roles
     $user = $ctx->getCurrentUser();
     $rolesKey = md5(serialize($user ? $user->getRoles() : []));
+	print_r($rolesKey);
 
     // FilesystemAdapter expects an integer TTL (in seconds). 7 days = 604800 seconds
     $ttlSeconds = 7 * 24 * 3600;
     $cache = new FilesystemAdapter("tokens_{$rolesKey}", $ttlSeconds);
+	print_r($cache);
 
     // Use callback form as recommended by Symfony cache contracts.
     // The callback must return the data to cache (we store the decoded array, not a JsonResponse object).
@@ -150,6 +152,7 @@ class TokenController
       $response = $this->tokenService->getTokens($userAuth);
 	  $content = $response->getContent();
 	  $decoded = json_decode($content, true);
+	  print_r($decoded);
 	  return $decoded ?: [];
 
       // Fallback: if service returns array already
