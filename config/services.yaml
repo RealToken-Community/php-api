@@ -9,6 +9,8 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            'Symfony\\Contracts\\Cache\\CacheInterface $tokensCache': '@cache.pool.tokens_cache'
 
     App\:
         resource: '../src/'
@@ -45,3 +47,7 @@ services:
         class: Symfony\Component\RateLimiter\Storage\RedisStorage
         arguments:
             - '@Redis'
+
+    # Inject named cache pools for direct use via autowiring
+    Symfony\Contracts\Cache\CacheInterface $tokensCache:
+        alias: 'cache.pool.tokens_cache'

@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\CacheInterface as ContractsCacheInterface;
 
 /**
  * Class TokenService
@@ -22,10 +23,12 @@ class TokenService extends Service
   use NetworkControllerTrait;
 
   private CacheInterface $cache;
+  private ContractsCacheInterface $tokensCache;
 
-  public function __construct(EntityManagerInterface $entityManager, CacheInterface $cache)
+  public function __construct(EntityManagerInterface $entityManager, CacheInterface $cache, ContractsCacheInterface $tokensCache)
   {
     $this->cache = $cache;
+    $this->tokensCache = $tokensCache;
 
     parent::__construct($entityManager);
   }
@@ -85,7 +88,12 @@ class TokenService extends Service
       throw new HttpException(Response::HTTP_NOT_FOUND, 'Token not found');
     }
 
-    return new JsonResponse($token->__toArray($ctx), Response::HTTP_OK);
+    $userAuth = [
+      'isAuthenticated' => $ctx->isAuthenticated(),
+      'isAdmin' => $ctx->isAdmin()
+    ];
+
+    return new JsonResponse($token->__toArray($userAuth), Response::HTTP_OK);
   }
 
   /**
@@ -115,6 +123,12 @@ class TokenService extends Service
 
       $this->createOrUpdateToken($token, $parsedJson, $count);
       $this->em->flush();
+      // Invalidate tokens cache pool after creation
+      try {
+        $this->tokensCache->clear();
+      } catch (\Throwable $e) {
+        // don't break the API if cache clear fails
+      }
     } else { // Multiple
       $tokens = $tokenRepository->findBy(['uuid' => array_column($parsedJson, 'uuid')]);
 
@@ -190,6 +204,13 @@ class TokenService extends Service
     $this->em->persist($token);
     $this->em->flush();
 
+    // Invalidate tokens cache pool after update
+    try {
+      $this->tokensCache->clear();
+    } catch (\Throwable $e) {
+      // ignore cache errors
+    }
+
     return new JsonResponse(
       ["status" => "success", "message" => "Token updated successfully"],
       Response::HTTP_ACCEPTED
@@ -209,6 +230,13 @@ class TokenService extends Service
 
     $this->em->remove($token);
     $this->em->flush();
+
+    // Invalidate tokens cache pool after delete
+    try {
+      $this->tokensCache->clear();
+    } catch (\Throwable $e) {
+      // ignore
+    }
 
     return new JsonResponse(
       ["status" => "success", "message" => "Token deleted successfully"],
@@ -230,7 +258,12 @@ class TokenService extends Service
     /** @var Token $lastTokenUpdated */
     $lastTokenUpdated = $tokenRepository->getLastTokenUpdated()[0];
 
-    return new JsonResponse($lastTokenUpdated->__toArray($ctx), Response::HTTP_OK);
+    $userAuth = [
+      'isAuthenticated' => $ctx->isAuthenticated(),
+      'isAdmin' => $ctx->isAdmin()
+    ];
+
+    return new JsonResponse($lastTokenUpdated->__toArray($userAuth), Response::HTTP_OK);
   }
 
   /**

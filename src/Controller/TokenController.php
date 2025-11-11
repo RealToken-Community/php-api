@@ -13,6 +13,9 @@ use OpenApi\Attributes as OA;
 use Psr\Cache\InvalidArgumentException;
 //use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\CacheInterface as ContractsCacheInterface;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
+use Symfony\Component\Cache\Adapter\RedisTagAwareAdapter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,10 +30,12 @@ class TokenController
   use DataControllerTrait;
 
   private TokenService $tokenService;
+  private ContractsCacheInterface $tokensCache;
 
-  public function __construct(TokenService $tokenService)
+  public function __construct(TokenService $tokenService, ContractsCacheInterface $tokensCache)
   {
     $this->tokenService = $tokenService;
+    $this->tokensCache = $tokensCache;
   }
 
   /**
@@ -138,22 +143,30 @@ class TokenController
     // Get current user to scope the cache key by roles
     $user = $ctx->getCurrentUser();
     $rolesKey = md5(serialize($user ? $user->getRoles() : []));
-	print_r($rolesKey);
 
     // FilesystemAdapter expects an integer TTL (in seconds). 7 days = 604800 seconds
     $ttlSeconds = 7 * 24 * 3600;
-    $cache = new FilesystemAdapter("tokens_{$rolesKey}", $ttlSeconds);
-	print_r($cache);
+//    $cache = new FilesystemAdapter("tokens_{$rolesKey}", $ttlSeconds);
+//	$client = RedisAdapter::createConnection('redis://localhost');
+//    $cache = new RedisTagAwareAdapter($client, "tokens_{$rolesKey}", $ttlSeconds);
+//	print_r($cache);
+    // Use injected named cache pool ($this->tokensCache) which is configured to use Redis
+    $cache = $this->tokensCache;
 
     // Use callback form as recommended by Symfony cache contracts.
     // The callback must return the data to cache (we store the decoded array, not a JsonResponse object).
     $tokensData = $cache->get('tokens_cache_'.$rolesKey, function (ItemInterface $item) use ($userAuth, $ttlSeconds) {
-      $item->expiresAfter($ttlSeconds);
-      $response = $this->tokenService->getTokens($userAuth);
-	  $content = $response->getContent();
-	  $decoded = json_decode($content, true);
-	  print_r($decoded);
-	  return $decoded ?: [];
+//	  $content = $response->getContent();
+//	  $decoded = json_decode($content, true);
+//	  print_r($decoded);
+//	  return $decoded ?: [];
+	    $response = $this->tokenService->getTokens($userAuth);
+	    $content = $response->getContent();
+	    $decoded = json_decode($content, true);
+	    return $decoded ?: [];
+
+//      $decoded = json_decode($content, true);
+//      return $decoded ?: [];
 
       // Fallback: if service returns array already
 //      return is_array($response) ? $response : [];
