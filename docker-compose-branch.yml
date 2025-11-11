@@ -73,6 +73,8 @@ services:
         depends_on:
             redis:
                 condition: service_healthy
+        volumes:
+            - redis-insight:/data
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.redis-api-${DOCKER_BRANCH}.rule=Host(`redis.${HOSTNAME}`)"
@@ -102,4 +104,6 @@ networks:
 
 volumes:
     db_data:
+        driver: local
+    redis-insight:
         driver: local
