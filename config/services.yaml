@@ -48,6 +48,6 @@ services:
         arguments:
             - '@Redis'
 
-    # Inject named cache pools for direct use via autowiring
-    Symfony\Contracts\Cache\CacheInterface $tokensCache:
-        alias: 'cache.pool.tokens_cache'
+#    # Inject named cache pools for direct use via autowiring
+#    Symfony\Contracts\Cache\CacheInterface $tokensCache:
+#        alias: 'cache.pool.tokens_cache'
