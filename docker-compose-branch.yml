@@ -70,10 +70,9 @@ services:
     redisinsight:
         image: redis/redisinsight:latest
         container_name: ${DOCKER_BRANCH}-api_php-redisinsight
-        ports:
-            - "8001:8001"
         networks:
             - api-php
+            - traefik-realt
         depends_on:
             redis:
                 condition: service_healthy
