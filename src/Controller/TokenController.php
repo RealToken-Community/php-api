@@ -129,12 +129,11 @@ class TokenController
   #[Route("", name: 'tokens_show', methods: ['GET'])]
   public function showTokens(RequestContextService $ctx): JsonResponse
   {
-		// Check user authentication and roles
-//		$userAuth = ;
-		$userAuth = [
-			'isAuthenticated' => $ctx->isAuthenticated(),
-			'isAdmin' => $ctx->isAdmin()
-		];
+	// Check user authentication and roles
+	$userAuth = [
+		'isAuthenticated' => $ctx->isAuthenticated(),
+		'isAdmin' => $ctx->isAdmin()
+	];
 
     // Get current user to scope the cache key by roles
     $user = $ctx->getCurrentUser();
