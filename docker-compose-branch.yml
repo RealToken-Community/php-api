@@ -41,9 +41,8 @@ services:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_DATABASE}
-        # Persistance des données MySQL : monte un volume nommé (par branche)
         volumes:
-            - ${DOCKER_BRANCH}-api_mysql_data:/var/lib/mysql
+            - db_data:/var/lib/mysql
         healthcheck:
             test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "--silent" ]
             interval: 5s
@@ -55,8 +54,6 @@ services:
     redis:
         image: redis:7-alpine
         container_name: ${DOCKER_BRANCH}-api_php-redis
-#        ports:
-#            - "6379:6379"
         networks:
             - api-php
         healthcheck:
@@ -103,7 +100,6 @@ networks:
     traefik-realt:
         external: true
 
-# Volume nommé pour persister les données MySQL entre les redéploiements
 volumes:
-    ${DOCKER_BRANCH}-api_mysql_data:
+    db_data:
         driver: local
