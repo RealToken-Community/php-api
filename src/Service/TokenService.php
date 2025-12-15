@@ -436,32 +436,14 @@ class TokenService extends Service
         $token->setPropertyTaxes((float)$dataJson['propertyTaxes'] ?: 0);
         $token->setUtilities((float)$dataJson['utilities'] ?: 0);
         $token->setPropertyMaintenanceMonthly((float)$dataJson['propertyMaintenanceMonthly'] ?: 0);
-        $token->setNetRentMonth(0);
-        $expenses = $token->getPropertyManagement()
-            + $token->getRealtPlatform()
-            + $token->getPropertyTaxes()
-            + $token->getInsurance()
-            + $token->getUtilities()
-            + $token->getPropertyMaintenanceMonthly();
-        if ($token->getGrossRentMonth() - $expenses > 0) {
-            $token->setNetRentMonth(
-                $token->getGrossRentMonth()
-                - $expenses ?: 0);
-        }
-        $token->setNetRentYear($token->getNetRentMonth() * 12 ?: 0);
-        $token->setNetRentDay($token->getNetRentYear() / 365 ?: 0);
-        if (empty($token->getTotalTokensRegSummed()) && empty($token->getTotalTokens())) {
-            $token->setNetRentYearPerToken(0);
-        } else {
-            $token->setNetRentYearPerToken(
-                !empty($token->getTotalTokensRegSummed())
-                    ? $token->getNetRentYear() / $token->getTotalTokensRegSummed()
-                    : $token->getNetRentYear() / $token->getTotalTokens());
-        }
+        $token->setNetRentYearPerToken((float)$dataJson['rentPerTokenNet']);
+        $token->setNetRentYear($token->getNetRentYearPerToken() * $token->getTotalTokens() ?: 0);
         $token->setNetRentMonthPerToken($token->getNetRentYearPerToken() / 12 ?: 0);
+        $token->setNetRentMonth($token->getNetRentYear() / 12 ?: 0);
         $token->setNetRentDayPerToken($token->getNetRentYearPerToken() / 365 ?: 0);
+        $token->setNetRentDay($token->getNetRentYear() / 365 ?: 0);
         $token->setAnnualPercentageYield($token->getTotalInvestment()
-            ? $token->getNetRentYear() / $token->getTotalInvestment() * 100
+            ? 100 / $token->getTokenPrice() * $token->getNetRentYearPerToken()
             : null
         );
         $token->setCoordinate([
