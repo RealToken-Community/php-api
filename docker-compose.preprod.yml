@@ -31,10 +31,14 @@ services:
   adminer-preprod:
     image: adminer
     container_name: preprod-api_php-adminer
-    ports:
-      - "18081:8080"
     networks:
       - api-preprod
+      - traefik-realt
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer-api-preprod.rule=Host(`adminer.api.preprod.realtoken.community`)"
+      - "traefik.http.routers.adminer-api-preprod.middlewares=auth@file"
+      - "traefik.http.services.adminer-api-preprod.loadbalancer.server.port=8080"
     restart: always
 
 networks:
