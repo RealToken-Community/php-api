@@ -524,7 +524,16 @@ class TokenService extends Service
                 ? $dataJson['neighborhood']
                 : null
         );
-
+	    $token->setTokenPrices(
+		    !empty($dataJson['tokenPrices'])
+			    ? $dataJson['tokenPrices']
+			    : null);
+		$token->setRenovationPoolMonthlyPercentFee((float)$dataJson['renovationPoolMonthlyPercentFee'] ?: null);
+		$token->setRenovationPoolInitialFee((float)$dataJson['renovationPoolInitialFee'] ?: null);
+	    $token->setRentalHistory(
+		    !empty($dataJson['rental_history'])
+			    ? $dataJson['rental_history']
+			    : null);
         $token->setLastUpdate(new DateTime());
 
         return $token;
