@@ -422,6 +422,26 @@ class Token
      */
     private $neighborhood;
 
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $tokenPrices;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $renovationPoolMonthlyPercentFee;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $renovationPoolInitialFee;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $rentalHistory;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -1403,6 +1423,54 @@ class Token
         return $this;
     }
 
+	public function getTokenPrices(): ?array
+	{
+		return $this->tokenPrices;
+	}
+
+	public function setTokenPrices(?array $tokenPrices): self
+	{
+		$this->tokenPrices = $tokenPrices;
+
+		return $this;
+	}
+
+	public function getRenovationPoolMonthlyPercentFee(): ?float
+	{
+		return $this->renovationPoolMonthlyPercentFee;
+	}
+
+	public function setRenovationPoolMonthlyPercentFee(?float $renovationPoolMonthlyPercentFee): self
+	{
+		$this->renovationPoolMonthlyPercentFee = $renovationPoolMonthlyPercentFee;
+
+		return $this;
+	}
+
+	public function getRenovationPoolInitialFee(): ?float
+	{
+		return $this->renovationPoolInitialFee;
+	}
+
+	public function setRenovationPoolInitialFee(?float $renovationPoolInitialFee): self
+	{
+		$this->renovationPoolInitialFee = $renovationPoolInitialFee;
+
+		return $this;
+	}
+
+	public function getRentalHistory(): ?array
+	{
+		return $this->rentalHistory;
+	}
+
+	public function setRentalHistory(?array $rentalHistory): self
+	{
+		$this->rentalHistory = $rentalHistory;
+
+		return $this;
+	}
+
     /**
      * Token toArray.
      *
@@ -1502,6 +1570,10 @@ class Token
                 'miscellaneousCosts' => $this->miscellaneousCosts,
                 'propertyStories' => $this->propertyStories,
                 'rentalType' => $this->rentalType,
+                'tokenPrices' => $this->tokenPrices,
+                'renovationPoolMonthlyPercentFee' => $this->renovationPoolMonthlyPercentFee,
+                'renovationPoolInitialFee' => $this->renovationPoolInitialFee,
+                'rentalHistory' => $this->rentalHistory,
                 'neighborhood' => $this->neighborhood,
             ];
         } else {
